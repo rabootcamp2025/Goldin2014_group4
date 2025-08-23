@@ -1,0 +1,3140 @@
+------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\MichiganLawSchoolAlumniData\Longitudinal_New\CGlawyerLog.log
+  log type:  text
+ opened on:  10 Jan 2014, 20:17:01
+
+. *use lawyerlongit <did this already>
+. *do lawyervars  <did this already>
+. ***
+. *next correct the zeros issue for loghrs
+. *note that you could use the 0s and add missinghourswk_X var
+. replace loghourswk_15 = . if hrsperwk_15 == 0 | hrsperwk_15 == .
+(6013 real changes made, 6013 to missing)
+
+. replace loghourswk_5 = . if hrsperwk_5 == 0 | hrsperwk_5 == .
+(6028 real changes made, 6028 to missing)
+
+. ***
+. *in search of non-linearities in payment with respect to hours of work in year 15
+. gen loghrind40_15 = loghourswk_15 - log(40) if hrsperwk_15 >= 40
+(6476 missing values generated)
+
+. replace loghrind40_15 = 0 if hrsperwk_15 < 40 & hrsperwk_15 ~= 0 & hrsperwk_15 ~= .
+(402 real changes made)
+
+. 
+. gen loghrind43_15 = loghourswk_15 - log(43) if hrsperwk_15 >= 43
+(7000 missing values generated)
+
+. replace loghrind43_15 = 0 if hrsperwk_15 < 43 & hrsperwk_15 ~= 0 & hrsperwk_15 ~= .
+(926 real changes made)
+
+. 
+. gen loghrind45_15 = loghourswk_15 - log(45) if hrsperwk_15 >= 45
+(7059 missing values generated)
+
+. replace loghrind45_15 = 0 if hrsperwk_15 < 45 & hrsperwk_15 ~= 0 & hrsperwk_15 ~= .
+(985 real changes made)
+
+. 
+. *incomes for those who begin in law firms (wksetting == 1) and who work in both periods
+. 
+. table female if returned_5 == 1 & returned_15 == 1 & wksetting_5 == 1 & hrsperwk_5 > 9 & hrsperwk_15 > 9, c(mean logincadj_5
+>  mean logincadj_15)
+
+------------------------------------------
+   female | mean(loginc~5)  mean(login~15)
+----------+-------------------------------
+     Male |       11.59851        12.34493
+   Female |       11.52729        11.78963
+------------------------------------------
+
+. 
+. *stayers in law firms
+. table female if returned_5 == 1 & returned_15 == 1 & wksetting_5 == 1 & wksetting_15 == 1 & hrsperwk_5 > 9 & hrsperwk_15 > 9
+> , c(mean logincadj_5 mean logincadj_15)
+
+------------------------------------------
+   female | mean(loginc~5)  mean(login~15)
+----------+-------------------------------
+     Male |       11.60277        12.47149
+   Female |       11.55295        12.04611
+------------------------------------------
+
+. table female if returned_5 == 1 & returned_15 == 1 & wksetting_5 == 1 & wksetting_15 == 1 & hrsperwk_5 > 9 & hrsperwk_15 > 9
+> , c(mean hrsperwk_5 mean hrsperwk_15)
+
+------------------------------------------
+   female | mean(hrsper~5)  mean(hrspe~15)
+----------+-------------------------------
+     Male |       53.58368        51.21758
+   Female |       51.03623        43.28261
+------------------------------------------
+
+. 
+. *movers from law firms
+. table female if returned_5 == 1 & returned_15 == 1 & wksetting_5 == 1 & wksetting_15 ~= 1 & hrsperwk_5 > 9 & hrsperwk_15 > 9
+> , c(mean logincadj_5 mean logincadj_15)
+
+------------------------------------------
+   female | mean(loginc~5)  mean(login~15)
+----------+-------------------------------
+     Male |       11.58986        12.08396
+   Female |       11.49739        11.46903
+------------------------------------------
+
+. table female if returned_5 == 1 & returned_15 == 1 & wksetting_5 == 1 & wksetting_15 ~= 1 & hrsperwk_5 > 9 & hrsperwk_15 > 9
+> , c(mean hrsperwk_5 mean hrsperwk_15)
+
+------------------------------------------
+   female | mean(hrsper~5)  mean(hrspe~15)
+----------+-------------------------------
+     Male |        52.3913            50.1
+   Female |       49.75652        41.31304
+------------------------------------------
+
+. 
+. *movers to law firms
+. table female if returned_5 == 1 & returned_15 == 1 & wksetting_5 ~= 1 & wksetting_15 == 1 & hrsperwk_5 > 9 & hrsperwk_15 > 9
+> , c(mean logincadj_5 mean logincadj_15)
+
+------------------------------------------
+   female | mean(loginc~5)  mean(login~15)
+----------+-------------------------------
+     Male |       11.19746        11.98602
+   Female |       11.24774        11.69536
+------------------------------------------
+
+. table female if returned_5 == 1 & returned_15 == 1 & wksetting_5 ~= 1 & wksetting_15 == 1 & hrsperwk_5 > 9 & hrsperwk_15 > 9
+> , c(mean hrsperwk_5 mean hrsperwk_15)
+
+------------------------------------------
+   female | mean(hrsper~5)  mean(hrspe~15)
+----------+-------------------------------
+     Male |             50        49.47826
+   Female |       50.08333        42.45833
+------------------------------------------
+
+. 
+. *never in law firm
+. table female if returned_5 == 1 & returned_15 == 1 & wksetting_5 ~= 1 & wksetting_15 ~= 1 & hrsperwk_5 > 9 & hrsperwk_15 > 9
+> , c(mean logincadj_5 mean logincadj_15)
+
+------------------------------------------
+   female | mean(loginc~5)  mean(login~15)
+----------+-------------------------------
+     Male |       11.31084          11.996
+   Female |       11.19239        11.43849
+------------------------------------------
+
+. table female if returned_5 == 1 & returned_15 == 1 & wksetting_5 ~= 1 & wksetting_15 ~= 1 & hrsperwk_5 > 9 & hrsperwk_15 > 9
+> , c(mean hrsperwk_5 mean hrsperwk_15)
+
+------------------------------------------
+   female | mean(hrsper~5)  mean(hrspe~15)
+----------+-------------------------------
+     Male |       51.08621        49.48276
+   Female |       48.73984        42.17073
+------------------------------------------
+
+. 
+. *out in year 5, in year 15
+. table female if returned_5 == 1 & returned_15 == 1 & wksetting_5 == 0 & wksetting_15 ~= 0 & hrsperwk_5 > 9 & hrsperwk_15 > 9
+> , c(mean logincadj_15)
+
+--------------------------
+   female | mean(login~15)
+----------+---------------
+     Male |       12.31738
+   Female |       10.71983
+--------------------------
+
+. table female if returned_5 == 1 & returned_15 == 1 & wksetting_5 == 0 & wksetting_15 ~= 0 & hrsperwk_5 > 9 & hrsperwk_15 > 9
+> , c(mean hrsperwk_15)
+
+--------------------------
+   female | mean(hrspe~15)
+----------+---------------
+     Male |             60
+   Female |       27.66667
+--------------------------
+
+. 
+. *out in year 15, in year 5
+. table female if returned_5 == 1 & returned_15 == 1 & wksetting_5 ~= 0 & wksetting_15 == 0 & hrsperwk_5 > 9 & hrsperwk_15 > 9
+> , c(mean logincadj_5)
+
+--------------------------
+   female | mean(loginc~5)
+----------+---------------
+     Male |       11.43567
+   Female |       11.35128
+--------------------------
+
+. table female if returned_5 == 1 & returned_15 == 1 & wksetting_5 ~= 0 & wksetting_15 == 0 & hrsperwk_5 > 9 & hrsperwk_15 > 9
+> , c(mean hrsperwk_5)
+
+--------------------------
+   female | mean(hrsper~5)
+----------+---------------
+     Male |       47.66667
+   Female |       52.22222
+--------------------------
+
+. 
+. *Children variables
+. *fix ch06_year variable which indicates whether the kids are < 7 years conditional on having children
+. replace ch06_5 = 0 if ch06_5 == . & ch_5 ~= .
+(4958 real changes made)
+
+. replace ch06_15 = 0 if ch06_15 == . & ch_15 ~= .
+(2134 real changes made)
+
+. gen Fch_15 = female * ch_15
+(5813 missing values generated)
+
+. gen Fch6_15 = female * ch06_15
+(5813 missing values generated)
+
+. gen Fch_5 = female * ch_5
+(4665 missing values generated)
+
+. gen Fch6_5 = female * ch06_5
+(4665 missing values generated)
+
+. 
+. *Labor force
+. gen out_5 = wksetting_5 == 0
+
+. gen out_15 = wksetting_15 == 0
+
+. 
+. *Income change
+. gen logincch = (logincadj_15 - logincadj_5) if returned_5 == 1 & returned_15 == 1
+(9104 missing values generated)
+
+. 
+. *Job experience
+. *experience is measured in months, change to years
+. replace exp_15 = exp_15/12
+(3211 real changes made)
+
+. replace exp_5 = exp_5/12
+(3211 real changes made)
+
+. 
+. 
+. ***job transitions
+. *define via wksetting vars if in law firm (LF) or not, can be out of the labor force if 0 or in another sector or not practi
+> cing as a lawyer
+. 
+. gen occLF11 = 1 if wksetting_5 == 1 & wksetting_15 == 1 & returned_5 == 1 & returned_15 == 1
+(9771 missing values generated)
+
+. gen occLF10 = 1 if wksetting_5 == 1 & wksetting_15 ~= 1 & returned_5 == 1 & returned_15 == 1
+(10009 missing values generated)
+
+. gen occLF00 = 1 if wksetting_5 ~= 1 & wksetting_15 ~= 1 & returned_5 == 1 & returned_15 == 1
+(9987 missing values generated)
+
+. gen occLF01 = 1 if wksetting_5 ~= 1 & wksetting_15 == 1 & returned_5 == 1 & returned_15 == 1
+(10339 missing values generated)
+
+. 
+. replace occLF11 = 0 if occLF11 == . & returned_5 == 1 & returned_15 == 1
+(922 real changes made)
+
+. replace occLF10 = 0 if occLF10 == . & returned_5 == 1 & returned_15 == 1
+(1160 real changes made)
+
+. replace occLF00 = 0 if occLF00 == . & returned_5 == 1 & returned_15 == 1
+(1138 real changes made)
+
+. replace occLF01 = 0 if occLF01 == . & returned_5 == 1 & returned_15 == 1
+(1490 real changes made)
+
+. 
+. *define partner in a law firm, define lawfirm
+. gen partner_15 = 1 if wksetting_15 == 1 & attystatus_15 == 2
+(8496 missing values generated)
+
+. replace partner_15 = 0 if partner_15 == .
+(8496 real changes made)
+
+. gen partner_5 = 1 if wksetting_5 == 1 & attystatus_5 == 2
+(9795 missing values generated)
+
+. replace partner_5 = 0 if partner_5 == .
+(9795 real changes made)
+
+. gen lawfirm_5 = wksetting_5 == 1
+
+. gen lawfirm_15 = wksetting_15 == 1
+
+. 
+. *marital issues
+. gen Fspouseprof_15 = female * spouseprof_15
+
+. 
+. ***
+. *regressions on the LONGITUDINAL data
+. ***
+. *note that you have to get rid of the really low hours people
+. *you also got rid of the missing hours people, alternatively you can use missinghrswk_X var
+. 
+. *15 year baselines and beyond
+. *note that lsgpa matters but not lawreview and lsatperc when lsgpa is added, there is one guy with missing timeoff
+. areg logincadj_15 female if returned_5 == 1 & returned_15 == 1 & hrsperwk_15 > 9 [aw=weight_15], absorb(surveyyear_15)
+(sum of wgt is   2.1938e+03)
+
+Linear regression, absorbing indicators           Number of obs   =       1299
+                                                  F(   1,   1288) =     123.03
+                                                  Prob > F        =     0.0000
+                                                  R-squared       =     0.0927
+                                                  Adj R-squared   =     0.0856
+                                                  Root MSE        =     0.8232
+
+------------------------------------------------------------------------------
+logincadj_15 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      female |  -.5615735   .0506301   -11.09   0.000    -.6608999   -.4622471
+       _cons |   12.22163   .0270762   451.38   0.000     12.16851    12.27475
+-------------+----------------------------------------------------------------
+surveyyea~15 |        F(9, 1288) =      0.936   0.493          (10 categories)
+
+. areg logincadj_15 female lsgpa lawreview if returned_5 == 1 & returned_15 == 1 & hrsperwk_15 > 9 [aw=weight_15], absorb(surv
+> eyyear_15)
+(sum of wgt is   2.1938e+03)
+
+Linear regression, absorbing indicators           Number of obs   =       1299
+                                                  F(   3,   1286) =      60.63
+                                                  Prob > F        =     0.0000
+                                                  R-squared       =     0.1292
+                                                  Adj R-squared   =     0.1211
+                                                  Root MSE        =     0.8071
+
+------------------------------------------------------------------------------
+logincadj_15 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      female |  -.5491809   .0497724   -11.03   0.000    -.6468249   -.4515368
+       lsgpa |   .1642355   .0250161     6.57   0.000     .1151587    .2133124
+   lawreview |   .0488044   .0540706     0.90   0.367    -.0572719    .1548807
+       _cons |   12.19379   .0296427   411.36   0.000     12.13563    12.25194
+-------------+----------------------------------------------------------------
+surveyyea~15 |        F(9, 1286) =      0.900   0.525          (10 categories)
+
+. areg logincadj_15 female lsgpa lawreview loghourswk_15 logwksyr_15 if returned_5 == 1 & returned_15 == 1 & hrsperwk_15 > 9 [
+> aw=weight_15], absorb(surveyyear_15)
+(sum of wgt is   2.1938e+03)
+
+Linear regression, absorbing indicators           Number of obs   =       1299
+                                                  F(   5,   1284) =     127.21
+                                                  Prob > F        =     0.0000
+                                                  R-squared       =     0.3353
+                                                  Adj R-squared   =     0.3280
+                                                  Root MSE        =     0.7057
+
+-------------------------------------------------------------------------------
+ logincadj_15 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+--------------+----------------------------------------------------------------
+       female |  -.2333418   .0463089    -5.04   0.000    -.3241913   -.1424923
+        lsgpa |   .1842687   .0219027     8.41   0.000     .1412997    .2272377
+    lawreview |   .0092203   .0473361     0.19   0.846    -.0836444     .102085
+loghourswk_15 |   1.461243   .0750219    19.48   0.000     1.314064    1.608422
+  logwksyr_15 |   .0604122   .0449522     1.34   0.179    -.0277756       .1486
+        _cons |   6.270605   .3173437    19.76   0.000     5.648035    6.893174
+--------------+----------------------------------------------------------------
+surveyyear_15 |        F(9, 1284) =      0.928   0.499          (10 categories)
+
+. areg logincadj_15 female lsgpa lawreview loghourswk_15 logwksyr_15 yrspt_15 exp_15 missingexp_15 if returned_5 == 1 & return
+> ed_15 == 1 & hrsperwk_15 > 9 [aw=weight_15], absorb(surveyyear_15)
+(sum of wgt is   2.1938e+03)
+
+Linear regression, absorbing indicators           Number of obs   =       1299
+                                                  F(   8,   1281) =      89.12
+                                                  Prob > F        =     0.0000
+                                                  R-squared       =     0.3614
+                                                  Adj R-squared   =     0.3530
+                                                  Root MSE        =     0.6925
+
+-------------------------------------------------------------------------------
+ logincadj_15 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+--------------+----------------------------------------------------------------
+       female |  -.1661731   .0470646    -3.53   0.000    -.2585053   -.0738409
+        lsgpa |   .1797348   .0215736     8.33   0.000     .1374114    .2220582
+    lawreview |   .0149226   .0465028     0.32   0.748    -.0763075    .1061527
+loghourswk_15 |   1.244856   .0829951    15.00   0.000     1.082034    1.407677
+  logwksyr_15 |   .0553351   .0441193     1.25   0.210     -.031219    .1418892
+     yrspt_15 |  -.0520306   .0119611    -4.35   0.000    -.0754961   -.0285652
+       exp_15 |   1.171389    .333579     3.51   0.000     .5169684    1.825811
+missingexp_15 |   16.46939   5.000036     3.29   0.001     6.660234    26.27855
+        _cons |  -10.41417   4.946882    -2.11   0.035    -20.11905   -.7092878
+--------------+----------------------------------------------------------------
+surveyyear_15 |        F(9, 1281) =      0.910   0.515          (10 categories)
+
+. areg logincadj_15 female lsgpa lawreview loghourswk_15 logwksyr_15 yrspt_15 exp_15 missingexp_15 timeoff if returned_5 == 1 
+> & returned_15 == 1 & hrsperwk_15 > 9 [aw=weight_15], absorb(surveyyear_15)
+(sum of wgt is   2.1919e+03)
+
+Linear regression, absorbing indicators           Number of obs   =       1298
+                                                  F(   9,   1279) =      82.07
+                                                  Prob > F        =     0.0000
+                                                  R-squared       =     0.3701
+                                                  Adj R-squared   =     0.3612
+                                                  Root MSE        =     0.6877
+
+-------------------------------------------------------------------------------
+ logincadj_15 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+--------------+----------------------------------------------------------------
+       female |  -.1534177   .0468264    -3.28   0.001    -.2452826   -.0615527
+        lsgpa |   .1862737   .0215081     8.66   0.000     .1440787    .2284687
+    lawreview |   .0167515   .0462004     0.36   0.717    -.0738854    .1073885
+loghourswk_15 |   1.254797   .0824576    15.22   0.000      1.09303    1.416564
+  logwksyr_15 |   .0552123   .0438131     1.26   0.208    -.0307412    .1411658
+     yrspt_15 |    -.05159   .0118784    -4.34   0.000    -.0748932   -.0282867
+       exp_15 |    1.07165   .3321161     3.23   0.001     .4200975    1.723202
+missingexp_15 |   14.98787   4.977866     3.01   0.003     5.222191    24.75355
+      timeoff |  -.0628207   .0149429    -4.20   0.000     -.092136   -.0335054
+        _cons |  -8.910628   4.925575    -1.81   0.071    -18.57372    .7524663
+--------------+----------------------------------------------------------------
+surveyyear_15 |        F(9, 1279) =      0.962   0.470          (10 categories)
+
+. 
+. *add partner, no difference if interaction with female and partner is added
+. areg logincadj_15 female lsgpa lawreview loghourswk_15 logwksyr_15 exp_15 yrspt_15 missingexp_15 timeoff partner_15 if retur
+> ned_15 == 1 & returned_5 == 1 & hrsperwk_15 > 9 [aw=weight_15], absorb(surveyyear_15)
+(sum of wgt is   2.1919e+03)
+
+Linear regression, absorbing indicators           Number of obs   =       1298
+                                                  F(  10,   1278) =      92.65
+                                                  Prob > F        =     0.0000
+                                                  R-squared       =     0.4239
+                                                  Adj R-squared   =     0.4154
+                                                  Root MSE        =     0.6580
+
+-------------------------------------------------------------------------------
+ logincadj_15 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+--------------+----------------------------------------------------------------
+       female |  -.1156132   .0449317    -2.57   0.010    -.2037612   -.0274652
+        lsgpa |   .1592319   .0207248     7.68   0.000     .1185735    .1998904
+    lawreview |   .0309761   .0442187     0.70   0.484    -.0557731    .1177252
+loghourswk_15 |   1.156089   .0794018    14.56   0.000     1.000317    1.311862
+  logwksyr_15 |   .0458098   .0419244     1.09   0.275    -.0364384     .128058
+       exp_15 |   .9083433   .3180833     2.86   0.004     .2843204    1.532366
+     yrspt_15 |  -.0495927   .0113654    -4.36   0.000    -.0718896   -.0272959
+missingexp_15 |    12.5706   4.767409     2.64   0.008     3.217791     21.9234
+      timeoff |  -.0568633   .0143061    -3.97   0.000    -.0849293   -.0287973
+   partner_15 |    .442958   .0405338    10.93   0.000     .3634379    .5224781
+        _cons |  -6.214941     4.7187    -1.32   0.188    -15.47219    3.042309
+--------------+----------------------------------------------------------------
+surveyyear_15 |        F(9, 1278) =      1.567   0.120          (10 categories)
+
+. areg logincadj_15 female lsgpa lawreview loghourswk_15 logwksyr_15 exp_15 yrspt_15 missingexp_15 timeoff partner_15 occLF11 
+> if returned_15 == 1 & returned_5 == 1 & hrsperwk_15 > 9 [aw=weight_15], absorb(surveyyear_15)
+(sum of wgt is   2.1919e+03)
+
+Linear regression, absorbing indicators           Number of obs   =       1298
+                                                  F(  11,   1277) =      86.50
+                                                  Prob > F        =     0.0000
+                                                  R-squared       =     0.4306
+                                                  Adj R-squared   =     0.4217
+                                                  Root MSE        =     0.6544
+
+-------------------------------------------------------------------------------
+ logincadj_15 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+--------------+----------------------------------------------------------------
+       female |  -.1060074   .0447574    -2.37   0.018    -.1938136   -.0182012
+        lsgpa |    .163878   .0206476     7.94   0.000     .1233709     .204385
+    lawreview |   .0290633    .043982     0.66   0.509    -.0572217    .1153483
+loghourswk_15 |   1.158554   .0789745    14.67   0.000      1.00362    1.313488
+  logwksyr_15 |   .0488351   .0417048     1.17   0.242    -.0329823    .1306525
+       exp_15 |   .8928562   .3163867     2.82   0.005     .2721615    1.513551
+     yrspt_15 |  -.0532731   .0113439    -4.70   0.000    -.0755278   -.0310185
+missingexp_15 |   12.36611   4.741894     2.61   0.009     3.063351    21.66887
+      timeoff |  -.0533971   .0142569    -3.75   0.000    -.0813666   -.0254277
+   partner_15 |   .2864312   .0571314     5.01   0.000     .1743495    .3985129
+      occLF11 |   .2054625   .0531374     3.87   0.000     .1012164    .3097086
+        _cons |  -6.044027   4.693363    -1.29   0.198    -15.25158    3.163521
+--------------+----------------------------------------------------------------
+surveyyear_15 |        F(9, 1277) =      1.607   0.108          (10 categories)
+
+. 
+. *15 year extended to include job site and family variables, note that kids does not matter differentially by sex except wome
+> n have fewer
+. *timeoff = between BA and LS entry
+. areg logincadj_15 female lsgpa lawreview loghourswk_15 logwksyr_15 exp_15 missingexp_15 yrspt_15 occLF11 partner_15 if retur
+> ned_15 == 1 & returned_5 == 1 & hrsperwk_15 > 9 [aw=weight_15], absorb(surveyyear_15)
+(sum of wgt is   2.1938e+03)
+
+Linear regression, absorbing indicators           Number of obs   =       1299
+                                                  F(  10,   1279) =      93.14
+                                                  Prob > F        =     0.0000
+                                                  R-squared       =     0.4248
+                                                  Adj R-squared   =     0.4163
+                                                  Root MSE        =     0.6578
+
+-------------------------------------------------------------------------------
+ logincadj_15 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+--------------+----------------------------------------------------------------
+       female |  -.1154117   .0449233    -2.57   0.010    -.2035432   -.0272803
+        lsgpa |   .1580363    .020676     7.64   0.000     .1174736     .198599
+    lawreview |   .0279451   .0441916     0.63   0.527    -.0587509    .1146411
+loghourswk_15 |   1.148526   .0793379    14.48   0.000     .9928794    1.304173
+  logwksyr_15 |    .048928   .0419206     1.17   0.243    -.0333128    .1311688
+       exp_15 |   .9734211     .31727     3.07   0.002     .3509943    1.595848
+missingexp_15 |   13.56444   4.755318     2.85   0.004     4.235355    22.89351
+     yrspt_15 |   -.053833   .0114017    -4.72   0.000    -.0762011   -.0314648
+      occLF11 |   .2182367   .0533065     4.09   0.000     .1136589    .3228144
+   partner_15 |    .284297   .0573992     4.95   0.000       .17169     .396904
+        _cons |  -7.258117   4.706117    -1.54   0.123    -16.49067     1.97444
+--------------+----------------------------------------------------------------
+surveyyear_15 |        F(9, 1279) =      1.532   0.131          (10 categories)
+
+. areg logincadj_15 female lsgpa lawreview loghourswk_15 logwksyr_15 exp_15 yrspt_15 missingexp_15 timeoff if returned_15 == 1
+>  & returned_5 == 1 & hrsperwk_15 > 9 [aw=weight_15], absorb(surveyyear_15)
+(sum of wgt is   2.1919e+03)
+
+Linear regression, absorbing indicators           Number of obs   =       1298
+                                                  F(   9,   1279) =      82.07
+                                                  Prob > F        =     0.0000
+                                                  R-squared       =     0.3701
+                                                  Adj R-squared   =     0.3612
+                                                  Root MSE        =     0.6877
+
+-------------------------------------------------------------------------------
+ logincadj_15 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+--------------+----------------------------------------------------------------
+       female |  -.1534177   .0468264    -3.28   0.001    -.2452826   -.0615527
+        lsgpa |   .1862737   .0215081     8.66   0.000     .1440787    .2284687
+    lawreview |   .0167515   .0462004     0.36   0.717    -.0738854    .1073885
+loghourswk_15 |   1.254797   .0824576    15.22   0.000      1.09303    1.416564
+  logwksyr_15 |   .0552123   .0438131     1.26   0.208    -.0307412    .1411658
+       exp_15 |    1.07165   .3321161     3.23   0.001     .4200975    1.723202
+     yrspt_15 |    -.05159   .0118784    -4.34   0.000    -.0748932   -.0282867
+missingexp_15 |   14.98787   4.977866     3.01   0.003     5.222191    24.75355
+      timeoff |  -.0628207   .0149429    -4.20   0.000     -.092136   -.0335054
+        _cons |  -8.910628   4.925575    -1.81   0.071    -18.57372    .7524663
+--------------+----------------------------------------------------------------
+surveyyear_15 |        F(9, 1279) =      0.962   0.470          (10 categories)
+
+. areg logincadj_15 female lsgpa lawreview loghourswk_15 logwksyr_15 exp_15 yrspt_15 missingexp_15 timeoff ch_15 if returned_1
+> 5 == 1 & returned_5 == 1 & hrsperwk_15 > 9 [aw=weight_15], absorb(surveyyear_15)
+(sum of wgt is   2.1860e+03)
+
+Linear regression, absorbing indicators           Number of obs   =       1295
+                                                  F(  10,   1275) =      77.57
+                                                  Prob > F        =     0.0000
+                                                  R-squared       =     0.3823
+                                                  Adj R-squared   =     0.3731
+                                                  Root MSE        =     0.6814
+
+-------------------------------------------------------------------------------
+ logincadj_15 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+--------------+----------------------------------------------------------------
+       female |  -.1206346   .0469865    -2.57   0.010    -.2128139   -.0284552
+        lsgpa |   .1764205   .0214002     8.24   0.000      .134437    .2184041
+    lawreview |   .0180406   .0457897     0.39   0.694    -.0717909    .1078721
+loghourswk_15 |   1.269502   .0817584    15.53   0.000     1.109106    1.429898
+  logwksyr_15 |   .0592196   .0434119     1.36   0.173    -.0259471    .1443862
+       exp_15 |   1.037744   .3291036     3.15   0.002     .3920997    1.683388
+     yrspt_15 |  -.0562755   .0118195    -4.76   0.000    -.0794633   -.0330877
+missingexp_15 |   14.55538    4.93237     2.95   0.003     4.878928    24.23184
+      timeoff |  -.0634007   .0148078    -4.28   0.000     -.092451   -.0343503
+        ch_15 |   .2278488   .0464075     4.91   0.000     .1368055    .3188922
+        _cons |  -8.655752   4.879956    -1.77   0.076    -18.22938     .917875
+--------------+----------------------------------------------------------------
+surveyyear_15 |        F(9, 1275) =      0.973   0.461          (10 categories)
+
+. areg logincadj_15 female lsgpa lawreview loghourswk_15 logwksyr_15 exp_15 yrspt_15 missingexp_15 timeoff ch_15 yrscurrjob_15
+>  missingyrscurrjob_15 partner_15 if returned_15 == 1 & returned_5 == 1 & hrsperwk_15 > 9 [aw=weight_15], absorb(surveyyear_1
+> 5)
+(sum of wgt is   2.1860e+03)
+
+Linear regression, absorbing indicators           Number of obs   =       1295
+                                                  F(  13,   1272) =      74.30
+                                                  Prob > F        =     0.0000
+                                                  R-squared       =     0.4353
+                                                  Adj R-squared   =     0.4255
+                                                  Root MSE        =     0.6523
+
+--------------------------------------------------------------------------------------
+        logincadj_15 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+---------------------+----------------------------------------------------------------
+              female |  -.0929231     .04505    -2.06   0.039    -.1813036   -.0045427
+               lsgpa |   .1508321   .0206255     7.31   0.000     .1103683    .1912959
+           lawreview |   .0294926   .0438521     0.67   0.501    -.0565377    .1155229
+       loghourswk_15 |   1.186475   .0789661    15.03   0.000     1.031557    1.341393
+         logwksyr_15 |   .0506177   .0415851     1.22   0.224    -.0309653    .1322007
+              exp_15 |   .8192401   .3181301     2.58   0.010     .1951227    1.443358
+            yrspt_15 |  -.0538171   .0113225    -4.75   0.000    -.0760298   -.0316043
+       missingexp_15 |   11.33325   4.766628     2.38   0.018     1.981936    20.68457
+             timeoff |   -.057524   .0142017    -4.05   0.000    -.0853853   -.0296627
+               ch_15 |   .1515385   .0450341     3.36   0.001     .0631893    .2398877
+       yrscurrjob_15 |   .0139933   .0041399     3.38   0.001     .0058716     .022115
+missingyrscurrjob_15 |   .5054985   .2765287     1.83   0.068     -.037004    1.048001
+          partner_15 |   .3681079   .0435963     8.44   0.000     .2825794    .4536364
+               _cons |  -5.214543   4.717466    -1.11   0.269    -14.46941    4.040328
+---------------------+----------------------------------------------------------------
+       surveyyear_15 |        F(9, 1272) =      1.628   0.102          (10 categories)
+
+. 
+. *5 year baselines and beyond
+. 
+. areg logincadj_5 female if returned_5 == 1 & returned_15 == 1 & hrsperwk_5 > 9 [aw=weight_5], absorb(surveyyear_5)
+(sum of wgt is   2.1485e+03)
+
+Linear regression, absorbing indicators           Number of obs   =       1449
+                                                  F(   1,   1438) =      16.01
+                                                  Prob > F        =     0.0001
+                                                  R-squared       =     0.0297
+                                                  Adj R-squared   =     0.0230
+                                                  Root MSE        =     0.4674
+
+------------------------------------------------------------------------------
+ logincadj_5 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      female |  -.1070298   .0267513    -4.00   0.000    -.1595056   -.0545539
+       _cons |   11.50103   .0147572   779.35   0.000     11.47208    11.52998
+-------------+----------------------------------------------------------------
+surveyyear_5 |        F(9, 1438) =      2.969   0.002          (10 categories)
+
+. areg logincadj_5 female lsgpa lawreview if returned_5 == 1 & returned_15 == 1 & hrsperwk_5 > 9 [aw=weight_5], absorb(surveyy
+> ear_5)
+(sum of wgt is   2.1485e+03)
+
+Linear regression, absorbing indicators           Number of obs   =       1449
+                                                  F(   3,   1436) =      28.84
+                                                  Prob > F        =     0.0000
+                                                  R-squared       =     0.0747
+                                                  Adj R-squared   =     0.0669
+                                                  Root MSE        =     0.4567
+
+------------------------------------------------------------------------------
+ logincadj_5 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      female |  -.1004399   .0262001    -3.83   0.000    -.1518344   -.0490453
+       lsgpa |   .0957576   .0134568     7.12   0.000     .0693606    .1221546
+   lawreview |    .055323   .0286108     1.93   0.053    -.0008004    .1114465
+       _cons |   11.47525    .016072   713.99   0.000     11.44372    11.50678
+-------------+----------------------------------------------------------------
+surveyyear_5 |        F(9, 1436) =      3.194   0.001          (10 categories)
+
+. areg logincadj_5 female lsgpa lawreview loghourswk_5 logwksyr_5 if returned_5 == 1 & returned_15 == 1 & hrsperwk_5 > 9 [aw=w
+> eight_5], absorb(surveyyear_5)
+(sum of wgt is   2.1485e+03)
+
+Linear regression, absorbing indicators           Number of obs   =       1449
+                                                  F(   5,   1434) =      76.09
+                                                  Prob > F        =     0.0000
+                                                  R-squared       =     0.2247
+                                                  Adj R-squared   =     0.2171
+                                                  Root MSE        =     0.4184
+
+------------------------------------------------------------------------------
+ logincadj_5 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      female |  -.0455375   .0242745    -1.88   0.061    -.0931548    .0020799
+       lsgpa |   .0855538   .0123536     6.93   0.000     .0613207    .1097869
+   lawreview |    .037001   .0262314     1.41   0.159    -.0144551    .0884572
+loghourswk_5 |   .8074457   .0496533    16.26   0.000     .7100449    .9048465
+  logwksyr_5 |   .0639865   .0248278     2.58   0.010     .0152838    .1126892
+       _cons |   8.050627    .212721    37.85   0.000     7.633349    8.467905
+-------------+----------------------------------------------------------------
+surveyyear_5 |        F(9, 1434) =      2.518   0.007          (10 categories)
+
+. areg logincadj_5 female lsgpa lawreview loghourswk_5 logwksyr_5 yrspt_5 exp_5 missingexp_15 if returned_5 == 1 & returned_15
+>  == 1 & hrsperwk_5 > 9 [aw=weight_5], absorb(surveyyear_5)
+(sum of wgt is   2.1485e+03)
+
+Linear regression, absorbing indicators           Number of obs   =       1449
+                                                  F(   8,   1431) =      58.58
+                                                  Prob > F        =     0.0000
+                                                  R-squared       =     0.2610
+                                                  Adj R-squared   =     0.2522
+                                                  Root MSE        =     0.4089
+
+-------------------------------------------------------------------------------
+  logincadj_5 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+--------------+----------------------------------------------------------------
+       female |  -.0383774   .0238898    -1.61   0.108    -.0852401    .0084853
+        lsgpa |   .0853556    .012142     7.03   0.000     .0615376    .1091736
+    lawreview |   .0355001   .0256411     1.38   0.166    -.0147981    .0857982
+ loghourswk_5 |   .6286571   .0542175    11.60   0.000     .5223027    .7350115
+   logwksyr_5 |   .0651554   .0242927     2.68   0.007     .0175022    .1128085
+      yrspt_5 |  -.2800317   .0354738    -7.89   0.000    -.3496178   -.2104455
+        exp_5 |   .0368008   .0144711     2.54   0.011     .0084141    .0651876
+missingexp_15 |  -.1554029   .0783382    -1.98   0.047     -.309073   -.0017328
+        _cons |   8.656042   .2332803    37.11   0.000     8.198434     9.11365
+--------------+----------------------------------------------------------------
+ surveyyear_5 |        F(9, 1431) =      3.061   0.001          (10 categories)
+
+. areg logincadj_5 female lsgpa lawreview loghourswk_5 logwksyr_5 yrspt_5 exp_5 missingexp_15 timeoff if returned_5 == 1 & ret
+> urned_15 == 1 & hrsperwk_5 > 9 [aw=weight_5], absorb(surveyyear_5)
+(sum of wgt is   2.1470e+03)
+
+Linear regression, absorbing indicators           Number of obs   =       1448
+                                                  F(   9,   1429) =      54.23
+                                                  Prob > F        =     0.0000
+                                                  R-squared       =     0.2688
+                                                  Adj R-squared   =     0.2596
+                                                  Root MSE        =     0.4070
+
+-------------------------------------------------------------------------------
+  logincadj_5 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+--------------+----------------------------------------------------------------
+       female |  -.0345427      .0238    -1.45   0.147    -.0812294    .0121439
+        lsgpa |   .0887317   .0121238     7.32   0.000     .0649494     .112514
+    lawreview |   .0371717   .0255315     1.46   0.146    -.0129116     .087255
+ loghourswk_5 |   .6312904   .0539767    11.70   0.000     .5254084    .7371724
+   logwksyr_5 |   .0653044   .0241794     2.70   0.007     .0178735    .1127353
+      yrspt_5 |  -.2790429   .0353121    -7.90   0.000    -.3483121   -.2097737
+        exp_5 |   .0387652   .0144124     2.69   0.007     .0104934    .0670369
+missingexp_15 |  -.1556283   .0779727    -2.00   0.046    -.3085816   -.0026751
+      timeoff |  -.0325273   .0083558    -3.89   0.000    -.0489183   -.0161362
+        _cons |   8.664069   .2322416    37.31   0.000     8.208498     9.11964
+--------------+----------------------------------------------------------------
+ surveyyear_5 |        F(9, 1429) =      3.102   0.001          (10 categories)
+
+. 
+. ***Note that there is nothing, it appears, that can bring the coefficient on female below around 0.09 at year 15.
+. 
+. *5 year extended to include job site and family variables
+. *note that kids do matter a lot in year 5 but married does not, given kids
+. areg logincadj_5 female lsgpa lawreview loghourswk_5 logwksyr_5 exp_5 missingexp_5 yrspt_5 occLF11 partner_5 if returned_15 
+> == 1 & returned_5 == 1 & hrsperwk_5 > 9 [aw=weight_5], absorb(surveyyear_5)
+(sum of wgt is   2.1485e+03)
+
+Linear regression, absorbing indicators           Number of obs   =       1449
+                                                  F(  10,   1429) =      61.46
+                                                  Prob > F        =     0.0000
+                                                  R-squared       =     0.3140
+                                                  Adj R-squared   =     0.3049
+                                                  Root MSE        =     0.3942
+
+------------------------------------------------------------------------------
+ logincadj_5 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      female |  -.0047664   .0233256    -0.20   0.838    -.0505225    .0409897
+       lsgpa |   .0830271    .011722     7.08   0.000     .0600329    .1060213
+   lawreview |   .0412825   .0247303     1.67   0.095     -.007229    .0897941
+loghourswk_5 |    .566488   .0526327    10.76   0.000     .4632424    .6697337
+  logwksyr_5 |   .0466993   .0234865     1.99   0.047     .0006276     .092771
+       exp_5 |   5.496849   .6439001     8.54   0.000     4.233758     6.75994
+missingexp_5 |   27.19026   3.202988     8.49   0.000      20.9072    33.47333
+     yrspt_5 |  -.2602196   .0343398    -7.58   0.000    -.3275814   -.1928577
+     occLF11 |   .1332497   .0216846     6.14   0.000     .0907127    .1757867
+   partner_5 |   .0554404    .055011     1.01   0.314    -.0524705    .1633513
+       _cons |  -18.33796   3.199156    -5.73   0.000    -24.61351   -12.06242
+-------------+----------------------------------------------------------------
+surveyyear_5 |        F(9, 1429) =      4.182   0.000          (10 categories)
+
+. areg logincadj_5 female lsgpa lawreview loghourswk_5 logwksyr_5 exp_5 missingexp_5 yrspt_5 timeoff if returned_15 == 1 & ret
+> urned_5 == 1 & hrsperwk_5 > 9 [aw=weight_5], absorb(surveyyear_5)
+(sum of wgt is   2.1470e+03)
+
+Linear regression, absorbing indicators           Number of obs   =       1448
+                                                  F(   9,   1429) =      64.24
+                                                  Prob > F        =     0.0000
+                                                  R-squared       =     0.3016
+                                                  Adj R-squared   =     0.2928
+                                                  Root MSE        =     0.3977
+
+------------------------------------------------------------------------------
+ logincadj_5 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      female |  -.0225514   .0233055    -0.97   0.333     -.068268    .0231652
+       lsgpa |   .0892009   .0118466     7.53   0.000     .0659623    .1124395
+   lawreview |   .0381544     .02495     1.53   0.126    -.0107881    .0870969
+loghourswk_5 |   .6020307   .0528613    11.39   0.000     .4983366    .7057249
+  logwksyr_5 |   .0502321   .0236875     2.12   0.034     .0037661    .0966981
+       exp_5 |   5.524066   .6496762     8.50   0.000     4.249644    6.798487
+missingexp_5 |   27.29297   3.231822     8.45   0.000     20.95335     33.6326
+     yrspt_5 |   -.253051   .0346342    -7.31   0.000    -.3209904   -.1851116
+     timeoff |  -.0313262   .0081674    -3.84   0.000    -.0473475   -.0153049
+       _cons |  -18.52459   3.227685    -5.74   0.000     -24.8561   -12.19308
+-------------+----------------------------------------------------------------
+surveyyear_5 |        F(9, 1429) =      4.576   0.000          (10 categories)
+
+. areg logincadj_5 female lsgpa lawreview loghourswk_5 logwksyr_5 exp_5 missingexp_5 yrspt_5 timeoff ch_5 Fch_5 if returned_15
+>  == 1 & returned_5 == 1 & hrsperwk_5 > 9 [aw=weight_5], absorb(surveyyear_5)
+(sum of wgt is   2.1430e+03)
+
+Linear regression, absorbing indicators           Number of obs   =       1445
+                                                  F(  11,   1424) =      52.41
+                                                  Prob > F        =     0.0000
+                                                  R-squared       =     0.3018
+                                                  Adj R-squared   =     0.2920
+                                                  Root MSE        =     0.3981
+
+------------------------------------------------------------------------------
+ logincadj_5 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      female |  -.0139028    .026356    -0.53   0.598    -.0656035    .0377978
+       lsgpa |   .0888371   .0119263     7.45   0.000     .0654422     .112232
+   lawreview |   .0387072   .0250345     1.55   0.122    -.0104013    .0878157
+loghourswk_5 |   .5964279   .0533507    11.18   0.000     .4917735    .7010823
+  logwksyr_5 |   .0495776   .0237173     2.09   0.037      .003053    .0961023
+       exp_5 |   5.402965   .6702928     8.06   0.000     4.088098    6.717832
+missingexp_5 |   26.67938   3.338403     7.99   0.000     20.13066     33.2281
+     yrspt_5 |   -.250546    .034967    -7.17   0.000    -.3191383   -.1819537
+     timeoff |  -.0313397   .0082782    -3.79   0.000    -.0475784   -.0151011
+        ch_5 |   .0150864   .0275992     0.55   0.585    -.0390529    .0692258
+       Fch_5 |  -.0475109   .0591267    -0.80   0.422    -.1634956    .0684738
+       _cons |  -17.89647    3.33893    -5.36   0.000    -24.44622   -11.34672
+-------------+----------------------------------------------------------------
+surveyyear_5 |        F(9, 1424) =      4.591   0.000          (10 categories)
+
+. areg logincadj_5 female lsgpa lawreview loghourswk_5 logwksyr_5 exp_5 missingexp_5 yrspt_5 timeoff ch06_5 Fch6_5 if returned
+> _15 == 1 & returned_5 == 1 & hrsperwk_5 > 9 [aw=weight_5], absorb(surveyyear_5)
+(sum of wgt is   2.1430e+03)
+
+Linear regression, absorbing indicators           Number of obs   =       1445
+                                                  F(  11,   1424) =      52.45
+                                                  Prob > F        =     0.0000
+                                                  R-squared       =     0.3019
+                                                  Adj R-squared   =     0.2921
+                                                  Root MSE        =     0.3980
+
+------------------------------------------------------------------------------
+ logincadj_5 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      female |  -.0178267   .0249426    -0.71   0.475    -.0667548    .0311014
+       lsgpa |    .088351   .0118975     7.43   0.000     .0650125    .1116895
+   lawreview |   .0394149   .0250275     1.57   0.116    -.0096798    .0885097
+loghourswk_5 |   .6009749   .0530604    11.33   0.000       .49689    .7050598
+  logwksyr_5 |   .0492448   .0237551     2.07   0.038     .0026461    .0958435
+       exp_5 |   5.470929   .6710847     8.15   0.000     4.154508    6.787349
+missingexp_5 |   27.03222   3.334694     8.11   0.000     20.49078    33.57366
+     yrspt_5 |  -.2524816   .0349676    -7.22   0.000     -.321075   -.1838881
+     timeoff |  -.0316354   .0081981    -3.86   0.000     -.047717   -.0155538
+      ch06_5 |   .0389273   .0385411     1.01   0.313    -.0366761    .1145306
+      Fch6_5 |  -.0414998   .0740699    -0.56   0.575    -.1867976     .103798
+       _cons |  -18.25889   3.337697    -5.47   0.000    -24.80622   -11.71156
+-------------+----------------------------------------------------------------
+surveyyear_5 |        F(9, 1424) =      4.460   0.000          (10 categories)
+
+. 
+. **note that you can extend the jdyr group by not restricting the sample to be the longitudinal one
+. **note that you weight using the Hurder weight but it doesn't change much that you have explored
+. **note that almost nothing you just did uses the longitudinal nature of the data (except job experience, etc.) although you 
+> restrict it in this way
+. 
+. ***Hours analysis
+. *Look at hours by first position and by transition
+. *this is for the bar chart, note that LF means LAW FIRM, not labor force
+. 
+. sort female
+
+. 
+. ** Year 5
+. 
+. by female: sum hrsperwk_5 if returned_5 == 1 & returned_15 == 1 & occLF11 == 1 & hrsperwk_5 > 9 [aw=weight_5]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+  hrsperwk_5 |     488  726.915354    53.51739   8.749818         10         85
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+  hrsperwk_5 |     142  200.707952    50.64796   11.36926         10         80
+
+
+. by female: sum hrsperwk_5 if returned_5 == 1 & returned_15 == 1 & occLF10 == 1 & hrsperwk_5 > 9 [aw=weight_5]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+  hrsperwk_5 |     244  366.997978    52.29653    9.38172         10         87
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+  hrsperwk_5 |     147   214.60885    49.71865   10.88018         10         80
+
+
+. by female: sum hrsperwk_5 if returned_5 == 1 & returned_15 == 1 & occLF01 == 1 & hrsperwk_5 > 9 [aw=weight_5]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+  hrsperwk_5 |      47  71.8342568    49.65498   7.221607         35         65
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+  hrsperwk_5 |      24  34.5646404    50.67068   11.82043         20         70
+
+
+. by female: sum hrsperwk_5 if returned_5 == 1 & returned_15 == 1 & occLF00 == 1& hrsperwk_5 > 9 [aw=weight_5]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+  hrsperwk_5 |     244  372.878244    51.01083   10.17603         20         90
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+  hrsperwk_5 |     155  226.569881    48.52297   9.565122         10         75
+
+
+. by female: sum hrsperwk_5 if returned_5 == 1 & returned_15 == 1 & out_5 == 0 & out_15 == 1 & hrsperwk_5 > 9 [aw=weight_5]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+  hrsperwk_5 |      17  26.5329431    49.57824   9.475601         40         72
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+  hrsperwk_5 |      67  94.6000855    48.77159   11.03253         16         80
+
+
+. 
+. *separating out making partner by year 15
+. 
+. by female: sum hrsperwk_5 if returned_5 == 1 & returned_15 == 1 & occLF11 == 1 & partner_15 == 1 & hrsperwk_5 > 9 [aw=weight
+> _5]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+  hrsperwk_5 |     367  540.419381    54.17154   8.474464         10         85
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+  hrsperwk_5 |      83  116.066849    52.05889   10.47435         12         80
+
+
+. by female: sum hrsperwk_5 if returned_5 == 1 & returned_15 == 1 & occLF11 == 1 & partner_15 == 0 & hrsperwk_5 > 9 [aw=weight
+> _5]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+  hrsperwk_5 |     121  186.495973    51.62182   9.280998         20         80
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+  hrsperwk_5 |      59  84.6411023    48.71319   12.32155         10         75
+
+
+. by female: sum hrsperwk_5 if returned_5 == 1 & returned_15 == 1 & occLF01 == 1 & partner_15 == 1 & hrsperwk_5 > 9 [aw=weight
+> _5]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+  hrsperwk_5 |      22  32.0554433    52.71995   7.075045         35         60
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+  hrsperwk_5 |       9  12.3472753    47.65919   12.83686         20         60
+
+
+. 
+. ** Year 15
+. 
+. by female: sum hrsperwk_15 if returned_5 == 1 & returned_15 == 1 & occLF11 == 1 & hrsperwk_15 > 9 [aw=weight_15]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+ hrsperwk_15 |     490  820.743115    51.11467   8.968411         10         95
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+ hrsperwk_15 |     141  230.526116    43.21952   13.79649         10         90
+
+
+. by female: sum hrsperwk_15 if returned_5 == 1 & returned_15 == 1 & occLF10 == 1 & hrsperwk_15 > 9 [aw=weight_15]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+ hrsperwk_15 |     239  404.111985    49.78682   9.838789         10         90
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+ hrsperwk_15 |     118    201.4349    41.47293   13.33914         10         65
+
+
+. by female: sum hrsperwk_15 if returned_5 == 1 & returned_15 == 1 & occLF01 == 1 & hrsperwk_15 > 9 [aw=weight_15]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+ hrsperwk_15 |      49  85.0861059    50.02144   9.313952         37         80
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+ hrsperwk_15 |      27  45.0439123    40.91068   12.78344         10         70
+
+
+. by female: sum hrsperwk_15 if returned_5 == 1 & returned_15 == 1 & occLF00 == 1 & hrsperwk_15 > 9 [aw=weight_15]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+ hrsperwk_15 |     242  415.506517    49.50664    9.57055         11         80
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+ hrsperwk_15 |     131   226.89661    41.87357   13.58723         10         70
+
+
+. by female: sum hrsperwk_15 if returned_5 == 1 & returned_15 == 1 & out_5 == 1 & out_15 == 0 & hrsperwk_15 > 9  [aw=weight_15
+> ]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+ hrsperwk_15 |       4  7.83309639    59.69446   18.64979         40         80
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+ hrsperwk_15 |       8  13.7717032    34.77632   19.33257         15         70
+
+
+. 
+. *separating out partners by year 15
+. 
+. by female: sum hrsperwk_15 if returned_5 == 1 & returned_15 == 1 & occLF11 == 1 & partner_15 == 1 & hrsperwk_15 > 9 [aw=weig
+> ht_15]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+ hrsperwk_15 |     367  606.373066    52.28361   8.029058         25         95
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+ hrsperwk_15 |      82  132.113064     46.7512   12.39943         10         90
+
+
+. by female: sum hrsperwk_15 if returned_5 == 1 & returned_15 == 1 & occLF11 == 1 & partner_15 == 0 & hrsperwk_15 > 9 [aw=weig
+> ht_15]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+ hrsperwk_15 |     123  214.370049    47.80819   10.56284         10         80
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+ hrsperwk_15 |      59  98.4130518    38.47847   14.24947         10         75
+
+
+. by female: sum hrsperwk_15 if returned_5 == 1 & returned_15 == 1 & occLF01 == 1 & partner_15 == 1 & hrsperwk_15 > 9 [aw=weig
+> ht_15]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+ hrsperwk_15 |      22  35.9142866    51.50432   8.886189         40         80
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+ hrsperwk_15 |      11  17.1952519    45.23993   8.498608         25         53
+
+
+. 
+. *part-time  (note that part-time is derived from hours so it is fine whereas exp does not exist for all cohorts)
+. ** Year 5
+. 
+. by female: sum ptnow_5 if returned_5 == 1 & returned_15 == 1 & occLF11 == 1 & hrsperwk_5 > 9 [aw=weight_5]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+     ptnow_5 |     488  726.915354    .0250771   .1565198          0          1
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+     ptnow_5 |     142  200.707952      .07628   .2663853          0          1
+
+
+. by female: sum ptnow_5 if returned_5 == 1 & returned_15 == 1 & occLF10 == 1 & hrsperwk_5 > 9 [aw=weight_5]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+     ptnow_5 |     244  366.997978    .0234811   .1517368          0          1
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+     ptnow_5 |     147   214.60885    .0856217   .2807613          0          1
+
+
+. by female: sum ptnow_5 if returned_5 == 1 & returned_15 == 1 & occLF01 == 1 & hrsperwk_5 > 9 [aw=weight_5]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+     ptnow_5 |      47  71.8342568           0          0          0          0
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+     ptnow_5 |      24  34.5646404    .0848606   .2846678          0          1
+
+
+. by female: sum ptnow_5 if returned_5 == 1 & returned_15 == 1 & occLF00 == 1& hrsperwk_5 > 9 [aw=weight_5]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+     ptnow_5 |     244  372.878244    .0149934   .1217759          0          1
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+     ptnow_5 |     155  226.569881    .0310286    .173957          0          1
+
+
+. by female: sum ptnow_5 if returned_5 == 1 & returned_15 == 1 & out_5 == 0 & out_15 == 1 & hrsperwk_5 > 9 [aw=weight_5]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+     ptnow_5 |      17  26.5329431           0          0          0          0
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+     ptnow_5 |      67  94.6000855     .043078    .204565          0          1
+
+
+. 
+. *separating out partners by year 15
+. 
+. by female: sum ptnow_5 if returned_5 == 1 & returned_15 == 1 & occLF11 == 1 & partner_15 == 1 & hrsperwk_5 > 9 [aw=weight_5]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+     ptnow_5 |     367  540.419381    .0166226    .128027          0          1
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+     ptnow_5 |      83  116.066849    .0593264   .2376707          0          1
+
+
+. by female: sum ptnow_5 if returned_5 == 1 & returned_15 == 1 & occLF11 == 1 & partner_15 == 0 & hrsperwk_5 > 9 [aw=weight_5]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+     ptnow_5 |     121  186.495973    .0495763   .2179704          0          1
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+     ptnow_5 |      59  84.6411023    .0995282   .3019397          0          1
+
+
+. by female: sum ptnow_5 if returned_5 == 1 & returned_15 == 1 & occLF01 == 1 & partner_15 == 1 & hrsperwk_5 > 9 [aw=weight_5]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+     ptnow_5 |      22  32.0554433           0          0          0          0
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+     ptnow_5 |       9  12.3472753    .1029694   .3223547          0          1
+
+
+. 
+. ** Year 15
+. 
+. by female: sum ptnow_15 if returned_5 == 1 & returned_15 == 1 & occLF11 == 1 & hrsperwk_15 > 9 [aw=weight_15]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    ptnow_15 |     490  820.743115    .0204993   .1418455          0          1
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    ptnow_15 |     141  230.526116    .2442806   .4311916          0          1
+
+
+. by female: sum ptnow_15 if returned_5 == 1 & returned_15 == 1 & occLF10 == 1 & hrsperwk_15 > 9 [aw=weight_15]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    ptnow_15 |     239  404.111985    .0292624   .1688948          0          1
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    ptnow_15 |     118    201.4349    .2155621   .4129653          0          1
+
+
+. by female: sum ptnow_15 if returned_5 == 1 & returned_15 == 1 & occLF01 == 1 & hrsperwk_15 > 9 [aw=weight_15]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    ptnow_15 |      49  85.0861059           0          0          0          0
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    ptnow_15 |      27  45.0439123    .2882138   .4615591          0          1
+
+
+. by female: sum ptnow_15 if returned_5 == 1 & returned_15 == 1 & occLF00 == 1 & hrsperwk_15 > 9 [aw=weight_15]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    ptnow_15 |     242  415.506517    .0236858   .1523837          0          1
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    ptnow_15 |     131   226.89661     .255908   .4380455          0          1
+
+
+. by female: sum ptnow_15 if returned_5 == 1 & returned_15 == 1 & out_5 == 1 & out_15 == 0 & hrsperwk_15 > 9  [aw=weight_15]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    ptnow_15 |       4  7.83309639           0          0          0          0
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    ptnow_15 |       8  13.7717032    .6108591   .5212186          0          1
+
+
+. 
+. *separating out partners by year 15
+. 
+. by female: sum ptnow_15 if returned_5 == 1 & returned_15 == 1 & occLF11 == 1 & partner_15 == 1 & hrsperwk_15 > 9 [aw=weight_
+> 15]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    ptnow_15 |     367  606.373066     .006804   .0823174          0          1
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    ptnow_15 |      82  132.113064    .1250531   .3328147          0          1
+
+
+. by female: sum ptnow_15 if returned_5 == 1 & returned_15 == 1 & occLF11 == 1 & partner_15 == 0 & hrsperwk_15 > 9 [aw=weight_
+> 15]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    ptnow_15 |     123  214.370049    .0592383   .2370356          0          1
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    ptnow_15 |      59  98.4130518    .4043357   .4949757          0          1
+
+
+. by female: sum ptnow_15 if returned_5 == 1 & returned_15 == 1 & occLF01 == 1 & partner_15 == 1 & hrsperwk_15 > 9 [aw=weight_
+> 15]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    ptnow_15 |      22  35.9142866           0          0          0          0
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    ptnow_15 |      11  17.1952519    .1673782   .3915342          0          1
+
+
+. 
+. *By presence of children
+. 
+. by female: sum ptnow_15 if returned_5 == 1 & returned_15 == 1 & occLF11 == 1 & hrsperwk_15 > 9 & ch_15 == 1 [aw=weight_15]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    ptnow_15 |     416  695.588582    .0144493   .1194775          0          1
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    ptnow_15 |     106  173.303889    .2798665   .4510661          0          1
+
+
+. by female: sum ptnow_15 if returned_5 == 1 & returned_15 == 1 & occLF10 == 1 & hrsperwk_15 > 9 & ch_15 == 1 [aw=weight_15]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    ptnow_15 |     180  301.070017    .0220549   .1472718          0          1
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    ptnow_15 |      82  138.629879     .247448   .4341849          0          1
+
+
+. by female: sum ptnow_15 if returned_5 == 1 & returned_15 == 1 & occLF01 == 1 & hrsperwk_15 > 9 & ch_15 == 1 [aw=weight_15]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    ptnow_15 |      43  73.6988806           0          0          0          0
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    ptnow_15 |      20  33.6802704    .3394992   .4858411          0          1
+
+
+. by female: sum ptnow_15 if returned_5 == 1 & returned_15 == 1 & occLF00 == 1 & hrsperwk_15 > 9 & ch_15 == 1 [aw=weight_15]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    ptnow_15 |     184  311.776534    .0254821   .1580141          0          1
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    ptnow_15 |      81   137.84817    .3713264   .4861699          0          1
+
+
+. by female: sum ptnow_15 if returned_5 == 1 & returned_15 == 1 & out_5 == 1 & out_15 == 0 & hrsperwk_15 > 9 & ch_15 == 1 [aw=
+> weight_15]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    ptnow_15 |       1  1.55511975           0          .          0          0
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    ptnow_15 |       6  10.0192621    .8396397   .4019625          0          1
+
+
+. 
+. by female: sum ptnow_15 if returned_5 == 1 & returned_15 == 1 & occLF11 == 1 & hrsperwk_15 > 9 & ch06_15 == 1 [aw=weight_15]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    ptnow_15 |     211  352.899454     .023296   .1512007          0          1
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    ptnow_15 |      55  90.0584909    .2135686   .4136029          0          1
+
+
+. by female: sum ptnow_15 if returned_5 == 1 & returned_15 == 1 & occLF10 == 1 & hrsperwk_15 > 9 & ch06_15 == 1 [aw=weight_15]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    ptnow_15 |     100  166.426006    .0284937   .1672168          0          1
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    ptnow_15 |      42  72.2737846    .2345795   .4288721          0          1
+
+
+. by female: sum ptnow_15 if returned_5 == 1 & returned_15 == 1 & occLF01 == 1 & hrsperwk_15 > 9 & ch06_15 == 1 [aw=weight_15]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    ptnow_15 |      16  27.6881616           0          0          0          0
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    ptnow_15 |      12  21.0500443    .4064749   .5130157          0          1
+
+
+. by female: sum ptnow_15 if returned_5 == 1 & returned_15 == 1 & occLF00 == 1 & hrsperwk_15 > 9 & ch06_15 == 1 [aw=weight_15]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    ptnow_15 |     107  181.262744     .026402   .1610819          0          1
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    ptnow_15 |      46  77.8536946    .3182789   .4709556          0          1
+
+
+. by female: sum ptnow_15 if returned_5 == 1 & returned_15 == 1 & out_5 == 1 & out_15 == 0 & hrsperwk_15 > 9 & ch06_15 == 1 [a
+> w=weight_15]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    ptnow_15 |       1  1.55511975           0          .          0          0
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    ptnow_15 |       3  5.01766753     .679793    .571412          0          1
+
+
+. 
+. ***Earnings
+. *Earnings to compute changes
+. by female: sum logincadj_5 if returned_5 == 1 & returned_15 == 1 & occLF11 == 1 & hrsperwk_5 > 9 [aw=weight_5]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+ logincadj_5 |     471  700.313468    11.59291   .3845759   9.322776   13.60398
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+ logincadj_5 |     138  195.335803    11.53453   .4989325    8.76202   12.38137
+
+
+. by female: sum logincadj_5 if returned_5 == 1 & returned_15 == 1 & occLF10 == 1 & hrsperwk_5 > 9 [aw=weight_5]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+ logincadj_5 |     240  361.026471    11.58526   .4004927   8.878079   12.44419
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+ logincadj_5 |     145  211.588737    11.48662   .5489938   8.314097   12.24802
+
+
+. by female: sum logincadj_5 if returned_5 == 1 & returned_15 == 1 & occLF01 == 1 & hrsperwk_5 > 9 [aw=weight_5]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+ logincadj_5 |      47  71.8342568    11.18619   .4801357   9.990261   12.26944
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+ logincadj_5 |      23  32.9028569    11.26236   .4481829    9.78307   11.94384
+
+
+. by female: sum logincadj_5 if returned_5 == 1 & returned_15 == 1 & occLF00 == 1& hrsperwk_5 > 9 [aw=weight_5]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+ logincadj_5 |     236  357.743645    11.30439   .5069049    9.27369   13.21302
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+ logincadj_5 |     149  217.717417    11.18954   .4454978   9.342684   12.20341
+
+
+. by female: sum logincadj_5 if returned_5 == 1 & returned_15 == 1 & out_5 == 0 & out_15 == 1 & hrsperwk_5 > 9 [aw=weight_5]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+ logincadj_5 |      16  23.6006483    11.50665   .5503812    10.5408   12.17392
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+ logincadj_5 |      66   93.114386    11.38465   .4160672   9.770127   12.09539
+
+
+. 
+. by female: sum logincadj_15 if returned_5 == 1 & returned_15 == 1 & occLF11 == 1 & hrsperwk_15 > 9 [aw=weight_15]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+logincadj_15 |     441  739.265224    12.45233   .6774017   10.15937   14.61708
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+logincadj_15 |     127  207.596018    12.03914   .8526684   9.106423    13.6006
+
+
+. by female: sum logincadj_15 if returned_5 == 1 & returned_15 == 1 & occLF10 == 1 & hrsperwk_15 > 9 [aw=weight_15]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+logincadj_15 |     217   366.60059    12.07635   .7813699   8.773075   15.15454
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+logincadj_15 |     103  175.012314    11.46471   1.065886   8.246696   14.26339
+
+
+. by female: sum logincadj_15 if returned_5 == 1 & returned_15 == 1 & occLF01 == 1 & hrsperwk_15 > 9 [aw=weight_15]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+logincadj_15 |      46  80.2612866    11.84858   .8008672   9.917094   13.47768
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+logincadj_15 |      25  41.7747294    11.72279   .9441249     9.3521   13.25896
+
+
+. by female: sum logincadj_15 if returned_5 == 1 & returned_15 == 1 & occLF00 == 1 & hrsperwk_15 > 9 [aw=weight_15]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+logincadj_15 |     221  377.656602    11.98877   .8005947   8.757627    15.6669
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+logincadj_15 |     119  205.583883    11.43372   .7765206   8.795733   14.37592
+
+
+. by female: sum logincadj_15 if returned_5 == 1 & returned_15 == 1 & out_5 == 1 & out_15 == 0 & hrsperwk_15 > 9  [aw=weight_1
+> 5]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+logincadj_15 |       4  7.83309639    11.35572   1.331973   9.917094   12.32252
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+logincadj_15 |       6  10.0716027    11.23917   .9815783   9.329545    12.1365
+
+
+. 
+. *Earnings changes (average) by person
+. 
+. by female: sum logincch if returned_5 == 1 & returned_15 == 1 & occLF11 == 1 & hrsperwk_5 > 9 & hrsperwk_15 > 9 [aw=weight_5
+> ]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    logincch |     422  628.435131     .870625   .5810177  -1.278222   2.656734
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    logincch |     122  172.789525     .533697   .7410778  -2.366908   3.445032
+
+
+. by female: sum logincch if returned_5 == 1 & returned_15 == 1 & occLF10 == 1 & hrsperwk_5 > 9 & hrsperwk_15 > 9 [aw=weight_5
+> ]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    logincch |     207  311.873253    .4998169   .7391618  -2.217407   3.670369
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    logincch |     100   146.53824    .0101907   .9325562  -3.337614   2.394557
+
+
+. by female: sum logincch if returned_5 == 1 & returned_15 == 1 & occLF01 == 1 & hrsperwk_5 > 9 & hrsperwk_15 > 9 [aw=weight_5
+> ]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    logincch |      44  67.0520705    .7810366   .6135403  -.2824793   2.370084
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    logincch |      23  32.9028569    .5079476    .861281  -1.547876   2.392885
+
+
+. by female: sum logincch if returned_5 == 1 & returned_15 == 1 & occLF00 == 1 & hrsperwk_5 > 9 & hrsperwk_15 > 9 [aw=weight_5
+> ]
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Male
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    logincch |     210   318.07155    .6897945    .722944  -3.316239   3.846314
+
+------------------------------------------------------------------------------------------------------------------------------
+-> female = Female
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+    logincch |     107  158.109447     .290711   .7460739  -2.719639   3.100056
+
+
+. 
+. *Role of children in determining work sector in year 15 and year 5
+. *note that the sample is larger b/c not conditioning on longit
+. *note that it is clear that women have kids much later than men, so ch06 and ch are different
+. 
+. table wksetting_15 female if returned_15 == 1, c(mean ch_15)
+
+-----------------------------------
+               |       female      
+  consolidated |     Male    Female
+---------------+-------------------
+    Unemployed | .5357143  .9366197
+      Law Firm | .8433228  .7131579
+     Corporate | .8346667  .6397059
+ Govt/LS/Other | .6518518  .5853658
+Not Practicing | .7550644  .6923077
+       Missing | .7536232  .6129032
+-----------------------------------
+
+. table wksetting_5 female if returned_5 == 1, c(mean ch_5)
+
+-----------------------------------
+               |       female      
+  consolidated |     Male    Female
+---------------+-------------------
+    Unemployed |       .2  .6521739
+      Law Firm | .3013245  .2264574
+     Corporate | .3254438  .3032787
+ Govt/LS/Other |  .221374  .1205357
+Not Practicing | .2941177  .2590362
+       Missing |      .24  .1142857
+-----------------------------------
+
+. 
+. *Various questions with some answers
+. 
+. *of married women who aren't working in year 15, what were they doing in year 5; same for those of high income hubbies
+. *answer is that about 10 percentage points fewer were in law firms in year 5
+. tab wksetting_5 if returned_5 == 1 & returned_15 == 1 & notempnow_15 == 1 & female == 1 & married_5 == 1 & hrsperwk_5 > 9 [a
+> w=weight_5]
+
+  consolidated |      Freq.     Percent        Cum.
+---------------+-----------------------------------
+      Law Firm | 27.4021034       55.92       55.92
+     Corporate | 8.71796744       17.79       73.71
+ Govt/LS/Other | 7.75086396       15.82       89.53
+Not Practicing | 5.12906524       10.47      100.00
+---------------+-----------------------------------
+         Total |         49      100.00
+
+. tab wksetting_5 if returned_5 == 1 & returned_15 == 1 & notempnow_15 == 0 & missingnotemp_15 ~= 1 & female == 1 & married_5 
+> == 1 & hrsperwk_5 > 9 [aw=weight_5]
+
+  consolidated |      Freq.     Percent        Cum.
+---------------+-----------------------------------
+    Unemployed | 1.11097763        0.51        0.51
+      Law Firm | 151.127241       69.32       69.83
+     Corporate | 15.5340082        7.13       76.96
+ Govt/LS/Other | 21.9981415       10.09       87.05
+Not Practicing | 22.6335755       10.38       97.43
+       Missing | 5.59605606        2.57      100.00
+---------------+-----------------------------------
+         Total |        218      100.00
+
+. tab wksetting_5 if returned_5 == 1 & returned_15 == 1 & notempnow_15 == 1 & female == 1 & married_5 == 1 & spouseincadj_15 >
+>  200000 & hrsperwk_5 > 9 [aw=weight_5]
+
+  consolidated |      Freq.     Percent        Cum.
+---------------+-----------------------------------
+      Law Firm | 21.3370591       60.96       60.96
+     Corporate | 5.75517557       16.44       77.41
+ Govt/LS/Other | 4.81980495       13.77       91.18
+Not Practicing | 3.08796042        8.82      100.00
+---------------+-----------------------------------
+         Total |         35      100.00
+
+. tab wksetting_5 if returned_5 == 1 & returned_15 == 1 & notempnow_15 == 0 & missingnotemp_15 ~= 1 & female == 1 & married_5 
+> == 1 & spouseincadj_15 > 200000 & hrsperwk_5 > 9 [aw=weight_5]
+
+  consolidated |      Freq.     Percent        Cum.
+---------------+-----------------------------------
+      Law Firm | 63.9737111       70.30       70.30
+     Corporate | 8.58839559        9.44       79.74
+ Govt/LS/Other |  6.6080846        7.26       87.00
+Not Practicing | 9.71746714       10.68       97.68
+       Missing | 2.11234163        2.32      100.00
+---------------+-----------------------------------
+         Total |         91      100.00
+
+. 
+. *income and hours before dropping out
+. *those ones who drop out AND had super high earning hubbies are very positively selected on income in year 5 and on hours of
+>  work
+. 
+. sum logincadj_5 if returned_5 == 1 & returned_15 == 1 & notempnow_15 == 1 & female == 1 & married_5 == 1 & hrsperwk_5 > 9 [a
+> w=weight_5]
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+ logincadj_5 |      48  67.4000038    11.40489   .4136308   9.770127   12.09539
+
+. sum logincadj_5 if returned_5 == 1 & returned_15 == 1 & notempnow_15 == 0 & missingnotemp_15 ~= 1 & female == 1 & married_5 
+> == 1 & hrsperwk_5 > 9 [aw=weight_5]
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+ logincadj_5 |     209  298.983712       11.36   .5726938   8.314097   12.38137
+
+. sum logincadj_5 if returned_5 == 1 & returned_15 == 1 & notempnow_15 == 1 & female == 1 & married_5 == 1 & spouseincadj_15 >
+>  200000 & hrsperwk_5 > 9 [aw=weight_5]
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+ logincadj_5 |      35  49.5464988    11.47581   .3401434   10.63593   12.09539
+
+. sum logincadj_5 if returned_5 == 1 & returned_15 == 1 & notempnow_15 == 0 & missingnotemp_15 ~= 1 & female == 1 & married_5 
+> == 1 & spouseincadj_15 > 200000 & hrsperwk_5 > 9 [aw=weight_5]
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+ logincadj_5 |      86   122.82234    11.54899   .4539618   9.906533   12.38137
+
+. 
+. sum hrsperwk_5 if returned_5 == 1 & returned_15 == 1 & notempnow_15 == 1 & female == 1 & married_5 == 1 & hrsperwk_5 > 9 [aw
+> =weight_5]
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+  hrsperwk_5 |      49  68.8857033    46.95081   9.747243         16         68
+
+. sum hrsperwk_5 if returned_5 == 1 & returned_15 == 1 & notempnow_15 == 0 & missingnotemp_15 ~= 1 & female == 1 & married_5 =
+> = 1 & hrsperwk_5 > 9 [aw=weight_5]
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+  hrsperwk_5 |     218  312.030177    48.99871   11.67195         10         80
+
+. sum hrsperwk_5 if returned_5 == 1 & returned_15 == 1 & notempnow_15 == 1 & female == 1 & married_5 == 1 & spouseincadj_15 > 
+> 200000 & hrsperwk_5 > 9 [aw=weight_5]
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+  hrsperwk_5 |      35  49.5464988    47.98629   9.578909         22         68
+
+. sum hrsperwk_5 if returned_5 == 1 & returned_15 == 1 & notempnow_15 == 0 & missingnotemp_15 ~= 1 & female == 1 & married_5 =
+> = 1 & spouseincadj_15 > 200000 & hrsperwk_5 > 9 [aw=weight_5]
+
+    Variable |     Obs      Weight        Mean   Std. Dev.       Min        Max
+-------------+-----------------------------------------------------------------
+  hrsperwk_5 |      91  130.216748    50.42587    9.71231         24         80
+
+. 
+. *of those who leave, what was reason given and was it different for those with high income hubbies?
+. *Cannot do that because reason for leaving appears to be reason for going to another job, too few of those not working answe
+> red it
+. 
+. *Among those who were in law firms in year 5 and made partner by year 15, how much did hours in year 5 matter?
+. *they mattered such that an additional 10 hours/week increased prob by 0.054 on a base of 0.32 for women (given lsgpa)
+. 
+. areg partner_15 hrsperwk_5 lsgpa lawreview if female == 1 & returned_5 == 1 & returned_15 == 1 & hrsperwk_5 > 9 & hrsperwk_1
+> 5 > 9 & wksetting_5 == 1 [aw=weight_15], absorb(surveyyear_15)
+(sum of wgt is   4.2203e+02)
+
+Linear regression, absorbing indicators           Number of obs   =        253
+                                                  F(   3,    240) =       1.84
+                                                  Prob > F        =     0.1404
+                                                  R-squared       =     0.1082
+                                                  Adj R-squared   =     0.0636
+                                                  Root MSE        =     0.4479
+
+------------------------------------------------------------------------------
+  partner_15 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+  hrsperwk_5 |   .0053852   .0026231     2.05   0.041     .0002178    .0105525
+       lsgpa |   .0369869    .033202     1.11   0.266    -.0284176    .1023913
+   lawreview |  -.0474504   .0668921    -0.71   0.479     -.179221    .0843203
+       _cons |   .0481898   .1358962     0.35   0.723    -.2195119    .3158915
+-------------+----------------------------------------------------------------
+surveyyea~15 |         F(9, 240) =      2.428   0.012          (10 categories)
+
+. areg partner_15 hrsperwk_5 lsgpa lawreview if female == 0 & returned_5 == 1 & returned_15 == 1 & hrsperwk_5 > 9 & hrsperwk_1
+> 5 > 9 & wksetting_5 == 1 [aw=weight_15], absorb(surveyyear_15)
+(sum of wgt is   1.1872e+03)
+
+Linear regression, absorbing indicators           Number of obs   =        708
+                                                  F(   3,    695) =       4.95
+                                                  Prob > F        =     0.0021
+                                                  R-squared       =     0.0508
+                                                  Adj R-squared   =     0.0344
+                                                  Root MSE        =     0.4917
+
+------------------------------------------------------------------------------
+  partner_15 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+  hrsperwk_5 |   .0054853   .0021065     2.60   0.009     .0013494    .0096212
+       lsgpa |   .0555911   .0215443     2.58   0.010     .0132914    .0978908
+   lawreview |  -.0416427   .0448118    -0.93   0.353    -.1296254    .0463401
+       _cons |   .2150728   .1135578     1.89   0.059    -.0078847    .4380303
+-------------+----------------------------------------------------------------
+surveyyea~15 |         F(9, 695) =      2.199   0.020          (10 categories)
+
+. 
+. ***Nov 20, 2013
+. *Exploring widening earnings gap over time, role of kids
+. *because you don't have hours for year 1, restrict everything to be > 15000, this affects just 1-2% until year 15 when many 
+> work PT
+. *income means
+. 
+. table cohort female if returned_5 == 1 & returned_15 == 1 & incadj_1 > 15000, c(mean incadj_1)
+
+------------------------------
+cohort    |
+year in 5 |
+year      |       female      
+intervals |     Male    Female
+----------+-------------------
+       80 | 68397.67  66870.35
+       85 | 85027.09  82051.25
+       90 | 85151.92   81533.2
+------------------------------
+
+. table cohort female if returned_5 == 1 & returned_15 == 1 & incadj_5 > 15000, c(mean incadj_5)
+
+------------------------------
+cohort    |
+year in 5 |
+year      |       female      
+intervals |     Male    Female
+----------+-------------------
+       80 | 108210.3  100253.4
+       85 | 111567.9  101355.3
+       90 | 105294.4   95735.7
+------------------------------
+
+. table cohort female if returned_5 == 1 & returned_15 == 1 & incadj_15 > 15000, c(mean incadj_15)
+
+------------------------------
+cohort    |
+year in 5 |
+year      |       female      
+intervals |     Male    Female
+----------+-------------------
+       80 | 277427.6  162331.3
+       85 | 271862.8    183757
+       90 | 327014.4    187892
+------------------------------
+
+. *restrict to FT hours currently
+. table cohort female if returned_5 == 1 & returned_15 == 1 & ptnow_5 == 0,  c(mean incadj_5)
+
+------------------------------
+cohort    |
+year in 5 |
+year      |       female      
+intervals |     Male    Female
+----------+-------------------
+       80 | 108726.4  103270.8
+       85 |   111656  103446.5
+       90 | 99548.45  96635.78
+------------------------------
+
+. table cohort female if returned_5 == 1 & returned_15 == 1 & ptnow_15 == 0, c(mean incadj_15)
+
+------------------------------
+cohort    |
+year in 5 |
+year      |       female      
+intervals |     Male    Female
+----------+-------------------
+       80 | 274342.6  174123.8
+       85 | 273328.5  198659.6
+       90 |   338234    199698
+------------------------------
+
+. 
+. *income medians
+. 
+. table cohort female if returned_5 == 1 & returned_15 == 1 & incadj_1 > 15000, c(median incadj_1)
+
+--------------------------
+cohort    |
+year in 5 |
+year      |     female    
+intervals |   Male  Female
+----------+---------------
+       80 |  68742   68742
+       85 |  84613   82117
+       90 |  88820  85472.5
+--------------------------
+
+. table cohort female if returned_5 == 1 & returned_15 == 1 & incadj_5 > 15000, c(median incadj_5)
+
+----------------------------
+cohort    |
+year in 5 |
+year      |      female     
+intervals |    Male   Female
+----------+-----------------
+       80 |  104028  95474.5
+       85 |  107595    98932
+       90 |   97915  90221.5
+----------------------------
+
+. table cohort female if returned_5 == 1 & returned_15 == 1 & incadj_15 > 15000, c(median incadj_15)
+
+--------------------------
+cohort    |
+year in 5 |
+year      |     female    
+intervals |   Male  Female
+----------+---------------
+       80 | 199190  122701
+       85 | 209043  129407
+       90 | 197533  132184.5
+--------------------------
+
+. *restrict to FT hours currently
+. table cohort female if returned_5 == 1 & returned_15 == 1 & ptnow_5 == 0,  c(median incadj_5)
+
+------------------------------
+cohort    |
+year in 5 |
+year      |       female      
+intervals |     Male    Female
+----------+-------------------
+       80 | 104583.5     96716
+       85 |   107595     98932
+       90 |    97915     90921
+------------------------------
+
+. table cohort female if returned_5 == 1 & returned_15 == 1 & ptnow_15 == 0, c(median incadj_15)
+
+--------------------------
+cohort    |
+year in 5 |
+year      |     female    
+intervals |   Male  Female
+----------+---------------
+       80 | 198184  130801
+       85 | 210695  150479
+       90 | 208507  137087
+--------------------------
+
+. 
+. 
+. ***
+. *note that exp, exp_ft, etc. are only valid for certain years, ptnow is ok b/c it is derived from hours, also control for mi
+> ssing values
+. ***
+. 
+. *all years of exp
+. table cohort female if returned_5 == 1 & returned_15 == 1 & jdyr >= 1986 & missingexp_5 ~= 1, c(mean exp_5)
+
+------------------------------
+cohort    |
+year in 5 |
+year      |       female      
+intervals |     Male    Female
+----------+-------------------
+       85 | 4.995901  4.986865
+       90 | 4.993318  4.994152
+------------------------------
+
+. table cohort female if returned_5 == 1 & returned_15 == 1 & jdyr >= 1976 & missingexp_15 ~= 1, c(mean exp_15)
+
+------------------------------
+cohort    |
+year in 5 |
+year      |       female      
+intervals |     Male    Female
+----------+-------------------
+       80 | 14.98961   14.8771
+       85 | 14.98905  14.89599
+       90 | 14.98909   14.8946
+------------------------------
+
+. *only full time years
+. table cohort female if returned_5 == 1 & returned_15 == 1 & jdyr >= 1986 & missingexp_ft_5 ~= 1, c(mean exp_ft_5)
+
+------------------------------
+cohort    |
+year in 5 |
+year      |       female      
+intervals |     Male    Female
+----------+-------------------
+       85 | 59.91667  59.68227
+       90 | 59.84054  59.88246
+------------------------------
+
+. table cohort female if returned_5 == 1 & returned_15 == 1 & jdyr >= 1976 & missingexp_ft_15 ~= 1, c(mean exp_ft_15)
+
+------------------------------
+cohort    |
+year in 5 |
+year      |       female      
+intervals |     Male    Female
+----------+-------------------
+       80 | 179.7289  176.8104
+       85 | 179.7547  176.9994
+       90 | 179.6188  177.3073
+------------------------------
+
+. 
+. *out of the labor force currently
+. table cohort female if returned_5 == 1 & returned_15 == 1 & missingnotemp_5 ~= 1, c(mean notempnow_5)
+
+------------------------------
+cohort    |
+year in 5 |
+year      |       female      
+intervals |     Male    Female
+----------+-------------------
+       80 |        0       .24
+       85 | .0102564  .0506912
+       90 | .0112994  .0430108
+------------------------------
+
+. table cohort female if returned_5 == 1 & returned_15 == 1 & missingnotemp_15 ~= 1, c(mean notempnow_15)
+
+------------------------------
+cohort    |
+year in 5 |
+year      |       female      
+intervals |     Male    Female
+----------+-------------------
+       80 | .0208955  .1603053
+       85 | .0215686  .1395349
+       90 |  .005618  .1938775
+------------------------------
+
+. 
+. *hours of work (without zeros)
+. table cohort female if returned_5 == 1 & returned_15 == 1 & hrsperwk_5 ~= 0, c(mean hrsperwk_5)
+
+------------------------------
+cohort    |
+year in 5 |
+year      |       female      
+intervals |     Male    Female
+----------+-------------------
+       80 | 53.39359  48.88889
+       85 |  52.3996  49.55285
+       90 | 51.23164  50.47917
+------------------------------
+
+. table cohort female if returned_5 == 1 & returned_15 == 1 & hrsperwk_15 ~= 0, c(mean hrsperwk_15)
+
+------------------------------
+cohort    |
+year in 5 |
+year      |       female      
+intervals |     Male    Female
+----------+-------------------
+       80 | 51.21856   41.0431
+       85 | 49.95079  41.47787
+       90 | 49.59218  40.59524
+------------------------------
+
+. 
+. *in labor force by presence of children
+. table cohort ch_5 if returned_5 == 1 & returned_15 == 1 & female == 1 & missingnotemp_5 ~= 1, c(mean notempnow_5)
+
+------------------------------
+cohort    |
+year in 5 |
+year      |    if children    
+intervals |        0         1
+----------+-------------------
+       80 |                .24
+       85 | .0254777  .1186441
+       90 | .0253165  .1428571
+------------------------------
+
+. table cohort ch_15 if returned_5 == 1 & returned_15 == 1 & female == 1 & missingnotemp_15 ~= 1, c(mean notempnow_15)
+
+------------------------------
+cohort    |
+year in 5 |
+year      |    if children    
+intervals |        0         1
+----------+-------------------
+       80 |     .075  .1978022
+       85 |  .016129  .1794872
+       90 | .0416667  .2432432
+------------------------------
+
+. 
+. *annual income differences at year 15 for men and women with no work disruptions and no children
+. *use fuller sample because of small sample size
+. *note that it isn't kids as much as currently married that matters
+. areg logincadj_15 female if  returned_15 == 1 [aw=weight_15], absorb(surveyyear_15)
+(sum of wgt is   6.0400e+03)
+
+Linear regression, absorbing indicators           Number of obs   =       3760
+                                                  F(   1,   3739) =     314.99
+                                                  Prob > F        =     0.0000
+                                                  R-squared       =     0.0849
+                                                  Adj R-squared   =     0.0800
+                                                  Root MSE        =     0.8033
+
+------------------------------------------------------------------------------
+logincadj_15 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      female |  -.5689709   .0320582   -17.75   0.000    -.6318241   -.5061177
+       _cons |   12.15433   .0149598   812.46   0.000       12.125    12.18366
+-------------+----------------------------------------------------------------
+surveyyea~15 |       F(19, 3739) =      1.257   0.202          (20 categories)
+
+. areg logincadj_15 female if  returned_15 == 1 &  exp_15 == 15 [aw=weight_15], absorb(surveyyear_15)
+(sum of wgt is   3.9374e+03)
+
+Linear regression, absorbing indicators           Number of obs   =       2403
+                                                  F(   1,   2386) =     150.93
+                                                  Prob > F        =     0.0000
+                                                  R-squared       =     0.0663
+                                                  Adj R-squared   =     0.0600
+                                                  Root MSE        =     0.7702
+
+------------------------------------------------------------------------------
+logincadj_15 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      female |  -.4764652   .0387834   -12.29   0.000    -.5525179   -.4004125
+       _cons |   12.20961    .017715   689.22   0.000     12.17487    12.24435
+-------------+----------------------------------------------------------------
+surveyyea~15 |       F(15, 2386) =      1.588   0.069          (16 categories)
+
+. areg logincadj_15 female if  returned_15 == 1 &  exp_15 == 15 & ch_15 == 0  [aw=weight_15], absorb(surveyyear_15)
+(sum of wgt is   9.1938e+02)
+
+Linear regression, absorbing indicators           Number of obs   =        547
+                                                  F(   1,    530) =       5.41
+                                                  Prob > F        =     0.0204
+                                                  R-squared       =     0.0343
+                                                  Adj R-squared   =     0.0051
+                                                  Root MSE        =     0.7835
+
+------------------------------------------------------------------------------
+logincadj_15 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      female |  -.1642581   .0706407    -2.33   0.020    -.3030283   -.0254879
+       _cons |   11.92679   .0423409   281.69   0.000     11.84361    12.00997
+-------------+----------------------------------------------------------------
+surveyyea~15 |        F(15, 530) =      0.868   0.601          (16 categories)
+
+. areg logincadj_15 female lsgpa lawreview if  returned_15 == 1 &  exp_15 == 15 & ch_15 == 0  [aw=weight_15], absorb(surveyyea
+> r_15)
+(sum of wgt is   9.1938e+02)
+
+Linear regression, absorbing indicators           Number of obs   =        547
+                                                  F(   3,    528) =      16.89
+                                                  Prob > F        =     0.0000
+                                                  R-squared       =     0.1099
+                                                  Adj R-squared   =     0.0795
+                                                  Root MSE        =     0.7536
+
+------------------------------------------------------------------------------
+logincadj_15 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      female |  -.1261463   .0681936    -1.85   0.065    -.2601104    .0078179
+       lsgpa |   .1974943   .0311118     6.35   0.000     .1363761    .2586124
+   lawreview |  -.0015905   .0009666    -1.65   0.100    -.0034894    .0003085
+       _cons |   11.97357   .0431777   277.31   0.000     11.88875    12.05839
+-------------+----------------------------------------------------------------
+surveyyea~15 |        F(15, 528) =      0.826   0.649          (16 categories)
+
+. areg logincadj_15 female lsgpa lawreview married_15 if returned_15 == 1 &  exp_15 == 15 & ch_15 == 0  [aw=weight_15], absorb
+> (surveyyear_15)
+(sum of wgt is   9.1938e+02)
+
+Linear regression, absorbing indicators           Number of obs   =        547
+                                                  F(   4,    527) =      12.70
+                                                  Prob > F        =     0.0000
+                                                  R-squared       =     0.1102
+                                                  Adj R-squared   =     0.0781
+                                                  Root MSE        =     0.7542
+
+------------------------------------------------------------------------------
+logincadj_15 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      female |  -.1257674   .0682519    -1.84   0.066    -.2598467    .0083119
+       lsgpa |   .1958456     .03137     6.24   0.000       .13422    .2574711
+   lawreview |   -.001558   .0009703    -1.61   0.109    -.0034641    .0003482
+  married_15 |   .0011038   .0025612     0.43   0.667    -.0039276    .0061352
+       _cons |   11.97021   .0439101   272.61   0.000     11.88395    12.05647
+-------------+----------------------------------------------------------------
+surveyyea~15 |        F(15, 527) =      0.774   0.707          (16 categories)
+
+. areg logincadj_15 female lsgpa lawreview married_15 if returned_15 == 1 &  exp_15 == 15 [aw=weight_15], absorb(surveyyear_15
+> )
+(sum of wgt is   3.9374e+03)
+
+Linear regression, absorbing indicators           Number of obs   =       2403
+                                                  F(   4,   2383) =      72.52
+                                                  Prob > F        =     0.0000
+                                                  R-squared       =     0.1150
+                                                  Adj R-squared   =     0.1079
+                                                  Root MSE        =     0.7503
+
+------------------------------------------------------------------------------
+logincadj_15 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      female |  -.4412498   .0379092   -11.64   0.000    -.5155882   -.3669114
+       lsgpa |   .1799327   .0158008    11.39   0.000     .1489479    .2109174
+   lawreview |  -.0003235   .0005076    -0.64   0.524    -.0013188    .0006718
+  married_15 |  -.0005938   .0021143    -0.28   0.779    -.0047398    .0035523
+       _cons |   12.19863   .0185473   657.70   0.000     12.16226      12.235
+-------------+----------------------------------------------------------------
+surveyyea~15 |       F(15, 2383) =      1.582   0.071          (16 categories)
+
+. 
+. *who is out of the labor force at year 15?
+. areg notempnow_15 lsgpa married_15 lawfirm_5 ch_15 if female == 1 & returned_15 == 1 & returned_5 == 1, absorb(surveyyear_15
+> )
+
+Linear regression, absorbing indicators           Number of obs   =        496
+                                                  F(   4,    482) =       9.96
+                                                  Prob > F        =     0.0000
+                                                  R-squared       =     0.0856
+                                                  Adj R-squared   =     0.0609
+                                                  Root MSE        =     0.3603
+
+------------------------------------------------------------------------------
+notempnow_15 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+       lsgpa |   .0039229   .0187179     0.21   0.834    -.0328559    .0407018
+  married_15 |   .0035429   .0016846     2.10   0.036     .0002329     .006853
+   lawfirm_5 |  -.1199117   .0334782    -3.58   0.000     -.185693   -.0541303
+       ch_15 |    .190232   .0376297     5.06   0.000     .1162934    .2641706
+       _cons |    .089724   .0373759     2.40   0.017     .0162842    .1631638
+-------------+----------------------------------------------------------------
+surveyyea~15 |         F(9, 482) =      0.658   0.747          (10 categories)
+
+. areg notempnow_15 lsgpa married_15 lawfirm_5 ch_15 notempnow_5  if female == 1 & returned_15 == 1 & returned_5 == 1, absorb(
+> surveyyear_15)
+
+Linear regression, absorbing indicators           Number of obs   =        478
+                                                  F(   5,    463) =       9.82
+                                                  Prob > F        =     0.0000
+                                                  R-squared       =     0.1042
+                                                  Adj R-squared   =     0.0771
+                                                  Root MSE        =     0.3535
+
+------------------------------------------------------------------------------
+notempnow_15 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+       lsgpa |   .0003876   .0186276     0.02   0.983    -.0362175    .0369927
+  married_15 |   .0018112   .0018399     0.98   0.325    -.0018044    .0054269
+   lawfirm_5 |  -.1031837   .0345969    -2.98   0.003    -.1711701   -.0351973
+       ch_15 |    .180451   .0379547     4.75   0.000     .1058663    .2550358
+ notempnow_5 |   .2622062   .0847165     3.10   0.002     .0957298    .4286826
+       _cons |   .0743134   .0379185     1.96   0.051    -.0002003    .1488271
+-------------+----------------------------------------------------------------
+surveyyea~15 |         F(9, 463) =      0.622   0.778          (10 categories)
+
+. 
+. *hubby income matters but only if there are kids
+. 
+. gen spinc300K_15 = spouseincadj_15 > 300000
+
+. tab spinc300K_15 if female == 1 & returned_15 == 1 & returned_5 == 1 & married_15 == 1
+
+spinc300K_1 |
+          5 |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |        249       64.68       64.68
+          1 |        136       35.32      100.00
+------------+-----------------------------------
+      Total |        385      100.00
+
+. gen spinc300Kch = spinc300K_15 * ch_15
+(5813 missing values generated)
+
+. 
+. areg notempnow_15 lawfirm_5 notempnow_5 ch_15   if female == 1 & returned_15 == 1 & returned_5 == 1, absorb(surveyyear_15)
+
+Linear regression, absorbing indicators           Number of obs   =        478
+                                                  F(   3,    465) =      16.08
+                                                  Prob > F        =     0.0000
+                                                  R-squared       =     0.1023
+                                                  Adj R-squared   =     0.0792
+                                                  Root MSE        =     0.3531
+
+------------------------------------------------------------------------------
+notempnow_15 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+   lawfirm_5 |   -.103667   .0344064    -3.01   0.003    -.1712783   -.0360557
+ notempnow_5 |   .2615543   .0845801     3.09   0.002     .0953477    .4277609
+       ch_15 |   .1781696   .0376426     4.73   0.000      .104199    .2521402
+       _cons |   .0792586   .0374321     2.12   0.035     .0057017    .1528156
+-------------+----------------------------------------------------------------
+surveyyea~15 |         F(9, 465) =      0.639   0.764          (10 categories)
+
+. areg notempnow_15 lawfirm_5 notempnow_5 ch_15  spinc300K_15 if female == 1 & returned_15 == 1 & returned_5 == 1, absorb(surv
+> eyyear_15)
+
+Linear regression, absorbing indicators           Number of obs   =        478
+                                                  F(   4,    464) =      18.85
+                                                  Prob > F        =     0.0000
+                                                  R-squared       =     0.1477
+                                                  Adj R-squared   =     0.1238
+                                                  Root MSE        =     0.3445
+
+------------------------------------------------------------------------------
+notempnow_15 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+   lawfirm_5 |   -.100359   .0335685    -2.99   0.003    -.1663242   -.0343938
+ notempnow_5 |   .2475242   .0825525     3.00   0.003     .0853011    .4097473
+       ch_15 |   .2297725   .0381588     6.02   0.000      .154787     .304758
+spinc300K_15 |   .1643998   .0330828     4.97   0.000     .0993892    .2294104
+       _cons |  -.0348484   .0431333    -0.81   0.420    -.1196093    .0499125
+-------------+----------------------------------------------------------------
+surveyyea~15 |         F(9, 464) =      0.541   0.845          (10 categories)
+
+. areg notempnow_15 lawfirm_5 notempnow_5 ch_15  spinc300K_15 spinc300Kch if female == 1 & returned_15 == 1 & returned_5 == 1,
+>  absorb(surveyyear_15)
+
+Linear regression, absorbing indicators           Number of obs   =        478
+                                                  F(   5,    463) =      18.75
+                                                  Prob > F        =     0.0000
+                                                  R-squared       =     0.1760
+                                                  Adj R-squared   =     0.1511
+                                                  Root MSE        =     0.3391
+
+------------------------------------------------------------------------------
+notempnow_15 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+   lawfirm_5 |  -.0956232   .0330624    -2.89   0.004    -.1605943   -.0306522
+ notempnow_5 |   .2589333   .0813058     3.18   0.002     .0991592    .4187074
+       ch_15 |   .0389279   .0608025     0.64   0.522    -.0805551    .1584109
+spinc300K_15 |  -.0706244   .0672876    -1.05   0.294    -.2028513    .0616025
+ spinc300Kch |   .3106191   .0778232     3.99   0.000     .1576886    .4635497
+       _cons |   .1244116   .0582632     2.14   0.033     .0099185    .2389047
+-------------+----------------------------------------------------------------
+surveyyea~15 |         F(9, 463) =      0.432   0.918          (10 categories)
+
+. areg notempnow_15 lawfirm_5 notempnow_5 ch_15  spinc300K_15 spinc300Kch if female == 1 & returned_15 == 1 & returned_5 == 1 
+> & married_15 == 1, absorb(surveyyear_15)
+
+Linear regression, absorbing indicators           Number of obs   =        366
+                                                  F(   5,    351) =      12.08
+                                                  Prob > F        =     0.0000
+                                                  R-squared       =     0.1602
+                                                  Adj R-squared   =     0.1267
+                                                  Root MSE        =     0.3700
+
+------------------------------------------------------------------------------
+notempnow_15 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+   lawfirm_5 |  -.0986072   .0417839    -2.36   0.019    -.1807854   -.0164289
+ notempnow_5 |   .2407445    .099567     2.42   0.016     .0449215    .4365674
+       ch_15 |   .0059726   .0795725     0.08   0.940    -.1505262    .1624714
+spinc300K_15 |  -.0898115   .1214429    -0.74   0.460    -.3286588    .1490357
+ spinc300Kch |   .3571887   .1301677     2.74   0.006     .1011819    .6131955
+       _cons |   .1625553   .0758022     2.14   0.033     .0134717    .3116389
+-------------+----------------------------------------------------------------
+surveyyea~15 |         F(9, 351) =      0.465   0.898          (10 categories)
+
+. 
+. tab notempnow_15 if female == 1 & returned_15 == 1  & married_15 == 1 & spinc300Kch == 0 & ch_15 == 1
+
+     not in |
+labor force |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |        383       88.25       88.25
+          1 |         51       11.75      100.00
+------------+-----------------------------------
+      Total |        434      100.00
+
+. tab notempnow_15 if female == 1 & returned_15 == 1  & married_15 == 1 & spinc300Kch == 1 & ch_15 == 1
+
+     not in |
+labor force |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |        130       61.61       61.61
+          1 |         81       38.39      100.00
+------------+-----------------------------------
+      Total |        211      100.00
+
+. 
+. *note that women with kids and super-rich husband who stay IN the labor force earn lots of money (35 log points more), but m
+> any leave
+. areg logincadj_15 lsgpa lawreview loghourswk_15 logwksyr_15 exp_15  yrspt_15 missingexp_15 timeoff ch_15 spinc300K_15 spinc3
+> 00Kch  if returned_15 == 1 & returned_5 == 1 & hrsperwk_15 > 9 & female == 1 [aw=weight_15], absorb(surveyyear_15)
+(sum of wgt is   6.2997e+02)
+
+Linear regression, absorbing indicators           Number of obs   =        374
+                                                  F(  11,    353) =      32.13
+                                                  Prob > F        =     0.0000
+                                                  R-squared       =     0.5176
+                                                  Adj R-squared   =     0.4903
+                                                  Root MSE        =     0.6695
+
+-------------------------------------------------------------------------------
+ logincadj_15 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+--------------+----------------------------------------------------------------
+        lsgpa |   .1587774   .0412173     3.85   0.000     .0777151    .2398397
+    lawreview |   .0327228   .0843274     0.39   0.698    -.1331246    .1985701
+loghourswk_15 |   1.378812   .1177132    11.71   0.000     1.147304    1.610319
+  logwksyr_15 |   .1144672   .0665026     1.72   0.086     -.016324    .2452584
+       exp_15 |   .9507603   .4052943     2.35   0.020     .1536651    1.747855
+     yrspt_15 |  -.0399141   .0134521    -2.97   0.003    -.0663704   -.0134578
+missingexp_15 |   13.46113   6.067835     2.22   0.027      1.52748    25.39479
+      timeoff |  -.0641308   .0257589    -2.49   0.013     -.114791   -.0134706
+        ch_15 |   .2313001    .124209     1.86   0.063    -.0129825    .4755828
+ spinc300K_15 |   .0156255   .1371159     0.11   0.909    -.2540413    .2852923
+  spinc300Kch |   .3152062   .1723005     1.83   0.068    -.0236584    .6540708
+        _cons |  -8.175776   6.024314    -1.36   0.176    -20.02384    3.672285
+--------------+----------------------------------------------------------------
+surveyyear_15 |         F(9, 353) =      2.193   0.022          (10 categories)
+
+. 
+. ***Hourly Fee regressions***
+. 
+. gen loghrlyfee_15 = log(hourlyfee_15)
+(7917 missing values generated)
+
+. 
+. areg loghrlyfee_15 female lsgpa lawreview loghourswk_15  if returned_15 == 1  & returned_5 == 1 & hrsperwk_15 > 9 [aw=weight
+> _15], absorb(surveyyear_15)
+(sum of wgt is   1.1617e+03)
+
+Linear regression, absorbing indicators           Number of obs   =        695
+                                                  F(   4,    681) =      45.35
+                                                  Prob > F        =     0.0000
+                                                  R-squared       =     0.2357
+                                                  Adj R-squared   =     0.2211
+                                                  Root MSE        =     0.3686
+
+-------------------------------------------------------------------------------
+loghrlyfee_15 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+--------------+----------------------------------------------------------------
+       female |  -.0034537   .0365501    -0.09   0.925    -.0752182    .0683108
+        lsgpa |   .1429726   .0156117     9.16   0.000     .1123198    .1736255
+    lawreview |   .0619981   .0339028     1.83   0.068    -.0045684    .1285646
+loghourswk_15 |   .4416011   .0541292     8.16   0.000      .335321    .5478812
+        _cons |   3.939961   .2126932    18.52   0.000     3.522348    4.357574
+--------------+----------------------------------------------------------------
+surveyyear_15 |         F(9, 681) =      3.386   0.000          (10 categories)
+
+. areg loghrlyfee_15 female lsgpa lawreview loghourswk_15  yrscurrjob_15 yrsnotemp_15 yrspt_15 missingexp_15 timeoff if return
+> ed_15 == 1  & returned_5 == 1 & hrsperwk_15 > 9  [aw=weight_15], absorb(surveyyear_15)
+(sum of wgt is   1.1599e+03)
+
+Linear regression, absorbing indicators           Number of obs   =        694
+                                                  F(   9,    675) =      26.82
+                                                  Prob > F        =     0.0000
+                                                  R-squared       =     0.2871
+                                                  Adj R-squared   =     0.2681
+                                                  Root MSE        =     0.3564
+
+-------------------------------------------------------------------------------
+loghrlyfee_15 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+--------------+----------------------------------------------------------------
+       female |   .0301755   .0367842     0.82   0.412    -.0420497    .1024008
+        lsgpa |   .1332908   .0154293     8.64   0.000     .1029957    .1635859
+    lawreview |   .0647543   .0329141     1.97   0.050     .0001279    .1293807
+loghourswk_15 |   .3117464   .0588895     5.29   0.000     .1961178    .4273751
+yrscurrjob_15 |   .0087593   .0027967     3.13   0.002      .003268    .0142505
+ yrsnotemp_15 |  -.0682884   .0253205    -2.70   0.007    -.1180048    -.018572
+     yrspt_15 |  -.0262799   .0085433    -3.08   0.002    -.0430545   -.0095053
+missingexp_15 |  -.5795332   .1660488    -3.49   0.001    -.9055675   -.2534988
+      timeoff |  -.0257112   .0106817    -2.41   0.016    -.0466845   -.0047379
+        _cons |   4.405395   .2312911    19.05   0.000     3.951258    4.859531
+--------------+----------------------------------------------------------------
+surveyyear_15 |         F(9, 675) =      3.466   0.000          (10 categories)
+
+. 
+. ***Figure 5 data on hours***
+. 
+. *for longitudinal group, graduating 1982-1991, > 9 hours/week at year 15
+. 
+. gen hoursbin_15 = 1 if hrsperwk_15 > 9 & hrsperwk_15 < 35
+(10172 missing values generated)
+
+. replace hoursbin_15 = 2 if hrsperwk_15 >= 35 & hrsperwk_15 < 45
+(721 real changes made)
+
+. replace hoursbin_15 = 3 if hrsperwk_15 >= 45 & hrsperwk_15 < 55
+(1998 real changes made)
+
+. replace hoursbin_15 = 4 if hrsperwk_15 >= 55 & hrsperwk_15 ~= .
+(1362 real changes made)
+
+. tab hoursbin_15 if female == 0 & incadj_15 ~= 0 & returned_15 == 1 & returned_5 == 1
+
+hoursbin_15 |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |         21        2.07        2.07
+          2 |        168       16.54       18.60
+          3 |        494       48.62       67.22
+          4 |        333       32.78      100.00
+------------+-----------------------------------
+      Total |      1,016      100.00
+
+. tab hoursbin_15 if female == 1 & incadj_15 ~= 0 & returned_15 == 1 & returned_5 == 1
+
+hoursbin_15 |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |        100       24.27       24.27
+          2 |         90       21.84       46.12
+          3 |        148       35.92       82.04
+          4 |         74       17.96      100.00
+------------+-----------------------------------
+      Total |        412      100.00
+
+. sort hoursbin_15
+
+. by hoursbin_15: sum incadj_15 if returned_15 == 1 & returned_5 == 1 & incadj_15 ~= 0
+
+------------------------------------------------------------------------------------------------------------------------------
+-> hoursbin_15 = 1
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+   incadj_15 |       106    82002.41    94443.42       3815     792734
+
+------------------------------------------------------------------------------------------------------------------------------
+-> hoursbin_15 = 2
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+   incadj_15 |       238    172231.2    161295.5       6606    1613230
+
+------------------------------------------------------------------------------------------------------------------------------
+-> hoursbin_15 = 3
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+   incadj_15 |       582    244043.6    218118.3      11523    2229032
+
+------------------------------------------------------------------------------------------------------------------------------
+-> hoursbin_15 = 4
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+   incadj_15 |       373    362951.5    464439.4      20274    6368664
+
+------------------------------------------------------------------------------------------------------------------------------
+-> hoursbin_15 = .
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+   incadj_15 |        44    179036.8    211248.6       1061    1239294
+
+
+. by hoursbin_15: sum incadj_15 if returned_15 == 1 & returned_5 == 1 & incadj_15 ~= 0 & female == 1
+
+------------------------------------------------------------------------------------------------------------------------------
+-> hoursbin_15 = 1
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+   incadj_15 |        88     67732.3    58219.87       3815     300958
+
+------------------------------------------------------------------------------------------------------------------------------
+-> hoursbin_15 = 2
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+   incadj_15 |        84    162478.4    124651.8       6606     680392
+
+------------------------------------------------------------------------------------------------------------------------------
+-> hoursbin_15 = 3
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+   incadj_15 |       133    192393.5    167929.8      11523    1564983
+
+------------------------------------------------------------------------------------------------------------------------------
+-> hoursbin_15 = 4
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+   incadj_15 |        69    281177.5    261907.9      31107    1751383
+
+------------------------------------------------------------------------------------------------------------------------------
+-> hoursbin_15 = .
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+   incadj_15 |        14    51448.36    71081.96       1061     263377
+
+
+. by hoursbin_15: sum incadj_15 if returned_15 == 1 & returned_5 == 1 & incadj_15 ~= 0 & female == 0
+
+------------------------------------------------------------------------------------------------------------------------------
+-> hoursbin_15 = 1
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+   incadj_15 |        18    151767.4    177587.4       6359     792734
+
+------------------------------------------------------------------------------------------------------------------------------
+-> hoursbin_15 = 2
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+   incadj_15 |       154    177550.9      178297      15499    1613230
+
+------------------------------------------------------------------------------------------------------------------------------
+-> hoursbin_15 = 3
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+   incadj_15 |       449    259343.1    228831.8      34569    2229032
+
+------------------------------------------------------------------------------------------------------------------------------
+-> hoursbin_15 = 4
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+   incadj_15 |       304      381512    497555.8      20274    6368664
+
+------------------------------------------------------------------------------------------------------------------------------
+-> hoursbin_15 = .
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+   incadj_15 |        30    238578.1    228863.3       3815    1239294
+
+
+. *to obtain mean hours in each hoursbin for graph
+. by hoursbin_15: sum hrsperwk_15 if returned_15 == 1 & returned_5 == 1 & incadj_15 ~= 0 & incadj_15 ~= .
+
+------------------------------------------------------------------------------------------------------------------------------
+-> hoursbin_15 = 1
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+ hrsperwk_15 |       106    23.79245    7.177633         10         34
+
+------------------------------------------------------------------------------------------------------------------------------
+-> hoursbin_15 = 2
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+ hrsperwk_15 |       238    39.44958    2.127671         35         44
+
+------------------------------------------------------------------------------------------------------------------------------
+-> hoursbin_15 = 3
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+ hrsperwk_15 |       582    48.37973    2.485442         45         54
+
+------------------------------------------------------------------------------------------------------------------------------
+-> hoursbin_15 = 4
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+ hrsperwk_15 |       373    59.90349    5.694868         55         95
+
+------------------------------------------------------------------------------------------------------------------------------
+-> hoursbin_15 = .
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+ hrsperwk_15 |        44    .7272727    2.128037          0          9
+
+
+. *to obtain mean for hourly fee in year 15
+. by hoursbin_15: sum hourlyfee_15 if returned_15 == 1 & returned_5 == 1 & incadj_15 ~= 0 & incadj_15 ~= .
+
+------------------------------------------------------------------------------------------------------------------------------
+-> hoursbin_15 = 1
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+hourlyfee_15 |        49    244.2449    99.17756         42        468
+
+------------------------------------------------------------------------------------------------------------------------------
+-> hoursbin_15 = 2
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+hourlyfee_15 |        97    289.4742    131.1483         79        722
+
+------------------------------------------------------------------------------------------------------------------------------
+-> hoursbin_15 = 3
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+hourlyfee_15 |       296    322.5777    115.5566         90        789
+
+------------------------------------------------------------------------------------------------------------------------------
+-> hoursbin_15 = 4
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+hourlyfee_15 |       197     343.802    113.6426         45        757
+
+------------------------------------------------------------------------------------------------------------------------------
+-> hoursbin_15 = .
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+hourlyfee_15 |        23    288.6087     103.831        106        530
+
+
+. *to obtain the various job-hours features
+. table hoursbin_15 if returned_15 == 1 & returned_5 == 1 & incadj_15 ~= 0 & incadj_15 ~= ., c(mean female)
+
+------------------------
+hoursbin_ |
+15        | mean(female)
+----------+-------------
+        1 |     .8301887
+        2 |     .3529412
+        3 |     .2285223
+        4 |     .1849866
+------------------------
+
+. table hoursbin_15 if returned_15 == 1 & returned_5 == 1 & incadj_15 ~= 0 & incadj_15 ~= . & female == 1, c(mean ch_15)
+
+-----------------------
+hoursbin_ |
+15        | mean(ch_15)
+----------+------------
+        1 |    .8522727
+        2 |     .797619
+        3 |    .6165413
+        4 |    .5362319
+-----------------------
+
+. sum female if returned_15 == 1 & returned_5 == 1 & incadj_15 ~= 0 & incadj_15 ~= .
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+      female |      1343    .2889054    .4534227          0          1
+
+. sum ch_15 if returned_15 == 1 & returned_5 == 1 & incadj_15 ~= 0 & incadj_15 ~= . & female == 1
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+       ch_15 |       388    .6984536    .4595219          0          1
+
+. 
+. tab wksetting_15 if returned_15 == 1 & returned_5 == 1 & incadj_15 ~= 0 & incadj_15 ~= .
+
+  consolidated |      Freq.     Percent        Cum.
+---------------+-----------------------------------
+    Unemployed |         25        1.86        1.86
+      Law Firm |        654       48.70       50.56
+     Corporate |        202       15.04       65.60
+ Govt/LS/Other |        139       10.35       75.95
+Not Practicing |        282       21.00       96.95
+       Missing |         41        3.05      100.00
+---------------+-----------------------------------
+         Total |      1,343      100.00
+
+. 
+. tab wksetting_15 if returned_15 == 1 & returned_5 == 1 & incadj_15 ~= 0 & incadj_15 ~= . & hoursbin_15 == 1
+
+  consolidated |      Freq.     Percent        Cum.
+---------------+-----------------------------------
+    Unemployed |          8        7.55        7.55
+      Law Firm |         45       42.45       50.00
+     Corporate |          8        7.55       57.55
+ Govt/LS/Other |         10        9.43       66.98
+Not Practicing |         30       28.30       95.28
+       Missing |          5        4.72      100.00
+---------------+-----------------------------------
+         Total |        106      100.00
+
+. tab wksetting_15 if returned_15 == 1 & returned_5 == 1 & incadj_15 ~= 0 & incadj_15 ~= . & hoursbin_15 == 2
+
+  consolidated |      Freq.     Percent        Cum.
+---------------+-----------------------------------
+    Unemployed |          3        1.26        1.26
+      Law Firm |         96       40.34       41.60
+     Corporate |         32       13.45       55.04
+ Govt/LS/Other |         38       15.97       71.01
+Not Practicing |         63       26.47       97.48
+       Missing |          6        2.52      100.00
+---------------+-----------------------------------
+         Total |        238      100.00
+
+. tab wksetting_15 if returned_15 == 1 & returned_5 == 1 & incadj_15 ~= 0 & incadj_15 ~= . & hoursbin_15 == 3
+
+  consolidated |      Freq.     Percent        Cum.
+---------------+-----------------------------------
+    Unemployed |          3        0.52        0.52
+      Law Firm |        299       51.37       51.89
+     Corporate |        107       18.38       70.27
+ Govt/LS/Other |         74       12.71       82.99
+Not Practicing |         90       15.46       98.45
+       Missing |          9        1.55      100.00
+---------------+-----------------------------------
+         Total |        582      100.00
+
+. tab wksetting_15 if returned_15 == 1 & returned_5 == 1 & incadj_15 ~= 0 & incadj_15 ~= . & hoursbin_15 == 4
+
+  consolidated |      Freq.     Percent        Cum.
+---------------+-----------------------------------
+    Unemployed |          4        1.07        1.07
+      Law Firm |        199       53.35       54.42
+     Corporate |         55       14.75       69.17
+ Govt/LS/Other |         17        4.56       73.73
+Not Practicing |         90       24.13       97.86
+       Missing |          8        2.14      100.00
+---------------+-----------------------------------
+         Total |        373      100.00
+
+. 
+. table hoursbin_15 if returned_15 == 1 & returned_5 == 1 & incadj_15 ~= 0 & incadj_15 ~= . & wksetting_15 == 1, c(mean partne
+> r_15)
+
+--------------------------
+hoursbin_ |
+15        | mean(partn~15)
+----------+---------------
+        1 |       .3111111
+        2 |       .4895833
+        3 |       .7391304
+        4 |       .8090453
+--------------------------
+
+. table hoursbin_15 if returned_15 == 1 & returned_5 == 1 & incadj_15 ~= 0 & incadj_15 ~= . & wksetting_15 == 1 & solopractice
+> _15 ~= 99, c(mean solopractice_15)
+
+--------------------------
+hoursbin_ |
+15        | mean(solop~15)
+----------+---------------
+        1 |       .2325581
+        2 |       .1770833
+        3 |       .0646259
+        4 |       .0659898
+--------------------------
+
+. 
+. sum partner_15 if returned_15 == 1 & returned_5 == 1 & incadj_15 ~= 0 & incadj_15 ~= . & wksetting_15 == 1
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+  partner_15 |       654    .6896024    .4630105          0          1
+
+. sum solopractice_15 if returned_15 == 1 & returned_5 == 1 & incadj_15 ~= 0 & incadj_15 ~= . & wksetting_15 == 1 & solopracti
+> ce_15 ~= 99
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+solopract~15 |       644    .0947205    .2930561          0          1
+
+. 
+. table hoursbin_15 if returned_15 == 1 & returned_5 == 1 & incadj_15 ~= 0 & incadj_15 ~= . & wksetting_15 == 1 & firmsize_15 
+> ~= 0, c(mean firmsize_15 median firmsize_15)
+
+------------------------------------------
+hoursbin_ |
+15        | mean(firms~15)   med(firms~15)
+----------+-------------------------------
+        1 |       187.7576              30
+        2 |       252.1519              50
+        3 |       249.0364             140
+        4 |       277.5544             135
+------------------------------------------
+
+. 
+. sum firmsize_15 if returned_15 == 1 & returned_5 == 1 & incadj_15 ~= 0 & incadj_15 ~= . & wksetting_15 == 1 & firmsize_15 ~=
+>  0, detail
+
+       firm size                                     
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%            1              1
+ 5%            2              1
+10%            4              1       Obs                 583
+25%           15              1       Sum of Wgt.         583
+
+50%          125                      Mean           252.3448
+                        Largest       Std. Dev.      319.4009
+75%          375           1300
+90%          750           1360       Variance       102016.9
+95%         1000           1500       Skewness       1.620703
+99%         1300           1500       Kurtosis       5.068598
+
+. 
+. table hoursbin_15 if returned_15 == 1 & returned_5 == 1 & incadj_15 ~= 0 & incadj_15 ~= . & wksetting_15 == 1 & firmsize_15 
+> ~= 0, c(mean client_rich_15  mean client_f500_15)
+
+------------------------------------------
+hoursbin_ |
+15        | mean(clien~15)  mean(clien~15)
+----------+-------------------------------
+        1 |       .0240909        .1816162
+        2 |       .0900306        .2267577
+        3 |        .096261        .2336093
+        4 |       .0974474        .2934972
+------------------------------------------
+
+. sum client_f500_15 client_rich_15 if returned_15 == 1 & returned_5 == 1 & incadj_15 ~= 0 & incadj_15 ~= . & wksetting_15 == 
+> 1 & firmsize_15 ~= 0
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+client_f5~15 |       583    .2479472    .2979099          0          1
+client_ri~15 |       583    .0904108    .1538294          0          1
+
+. 
+. 
+. log close
+      name:  <unnamed>
+       log:  C:\MichiganLawSchoolAlumniData\Longitudinal_New\CGlawyerLog.log
+  log type:  text
+ closed on:  10 Jan 2014, 20:17:04
+------------------------------------------------------------------------------------------------------------------------------

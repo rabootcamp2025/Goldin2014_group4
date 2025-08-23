@@ -1,0 +1,2290 @@
+{smcl}
+{com}{sf}{ul off}{txt}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}/disk/homedirs/nber/abulafi/abulk/IPUMS/Output/gender_wage_gap_full_census_2000.smcl
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res}27 Sep 2013, 18:19:17
+{txt}
+{com}. 
+. *-------------------------------------------------------------------*
+. 
+. /*Female Wage Analysis using Census 2000 - Last updated 9/26/13*/
+. /*Amira Abulafi's revision of Fritzi Reuter's (CX & RS) Revision*/
+. /*Regressions for College Grads & Non College Grads - Fulltime/ Full 
+> Year and All Emploment Status */        
+.         
+. *-------------------------------------------------------------------*
+. 
+. /*Step 1: Creating variables for sample*/
+.         
+. *--------------------------------------------------------------------*  
+. 
+. use perwt race bpl wkswork1 uhrswork occ1950 incbus00 incwage age sex educ educd nchild nchlt5 using ./full_datasets/IPUMS2000full.dta
+{txt}
+{com}. 
+. /* Gen demographic controls */ 
+.         gen female = 1 if sex == 2 
+{txt}(6869756 missing values generated)
+
+{com}.         replace female = 0 if sex == 1
+{txt}(6869756 real changes made)
+
+{com}.         
+.         gen male = 1 if sex == 1 
+{txt}(7211710 missing values generated)
+
+{com}.         replace male = 0 if sex == 2
+{txt}(7211710 real changes made)
+
+{com}.         
+.         gen white = -99 
+{txt}
+{com}.         replace white = 1 if race == 1 
+{txt}(10772654 real changes made)
+
+{com}.         replace white = 0 if race != 1  
+{txt}(3308812 real changes made)
+
+{com}.         
+.         gen chldu5=.
+{txt}(14081466 missing values generated)
+
+{com}.         replace chldu5=1 if nchlt5>0
+{txt}(1232104 real changes made)
+
+{com}.         replace chldu5=0 if nchlt5==0
+{txt}(12849362 real changes made)
+
+{com}.         
+.         gen nchldo5=nchild-nchlt5
+{txt}
+{com}.         
+.         gen chldo5=.
+{txt}(14081466 missing values generated)
+
+{com}.         replace chldo5=1 if nchldo5>0
+{txt}(3536003 real changes made)
+
+{com}.         replace chldo5=0 if nchldo5==0
+{txt}(10545463 real changes made)
+
+{com}.         
+.         gen fchldu5=female*chldu5
+{txt}
+{com}.         gen fchldo5=female*chldo5
+{txt}
+{com}.         
+.         
+. /* The highest educational attainment in the "educ" variable is "5+ years of college".  This corresponds to a person either achieving a Master's degree, Professional degree beyond a bachelor's degree, or Doctoral degree as entered in "educd" */
+. 
+.         gen yrsch = -99 
+{txt}
+{com}.         replace yrsch = 0 if educ == 0 
+{txt}(1226794 real changes made)
+
+{com}.         replace yrsch = 2.5 if educ == 1 
+{txt}(1243973 real changes made)
+
+{com}.         replace yrsch = 6.5 if educ == 2 
+{txt}(1429549 real changes made)
+
+{com}.         replace yrsch = 9 if educ == 3 
+{txt}(474288 real changes made)
+
+{com}.         replace yrsch = 10 if educ == 4 
+{txt}(521569 real changes made)
+
+{com}.         replace yrsch = 11 if educ == 5 
+{txt}(492480 real changes made)
+
+{com}.         replace yrsch = 12 if educ == 6 
+{txt}(4320909 real changes made)
+
+{com}.         replace yrsch = 13 if educ == 7 
+{txt}(1546876 real changes made)
+
+{com}.         replace yrsch = 14 if educ == 8 
+{txt}(622376 real changes made)
+
+{com}.         replace yrsch = 15 if educ == 9 
+{txt}(0 real changes made)
+
+{com}.         replace yrsch = 16 if educ == 10 
+{txt}(1426102 real changes made)
+
+{com}.         replace yrsch = 17.6 if educd == 114 
+{txt}(518403 real changes made)
+
+{com}.         replace yrsch = 19 if educd == 115 
+{txt}(174400 real changes made)
+
+{com}.         replace yrsch = 20 if educd == 116 
+{txt}(83747 real changes made)
+
+{com}.         replace yrsch = . if yrsch == -99 
+{txt}(0 real changes made)
+
+{com}. 
+.         gen yrschpstcol = .
+{txt}(14081466 missing values generated)
+
+{com}.         replace yrschpstcol = 0 if educd== 101
+{txt}(1426102 real changes made)
+
+{com}.         replace yrschpstcol = 1.6 if educd== 114
+{txt}(518403 real changes made)
+
+{com}.         replace yrschpstcol = 3 if educd== 115
+{txt}(174400 real changes made)
+
+{com}.         replace yrschpstcol = 4 if educd== 116
+{txt}(83747 real changes made)
+
+{com}. 
+. /* Creating dummy variable for years of education. Note: 2000 census only has 1,2 and 4 years of college */
+. 
+.         gen yrsch08=.
+{txt}(14081466 missing values generated)
+
+{com}.         replace yrsch08=1 if educ>=0 & educ<=2
+{txt}(3900316 real changes made)
+
+{com}.         replace yrsch08=0 if educ>2
+{txt}(10181150 real changes made)
+
+{com}.         
+.         gen yrsch911=.
+{txt}(14081466 missing values generated)
+
+{com}.         replace yrsch911=1 if educ>=3 & educ<=5
+{txt}(1488337 real changes made)
+
+{com}.         replace yrsch911=0 if educ<3  | educ>5
+{txt}(12593129 real changes made)
+
+{com}.         
+.         gen yrsch12=.
+{txt}(14081466 missing values generated)
+
+{com}.         replace yrsch12=1 if educ==6
+{txt}(4320909 real changes made)
+
+{com}.         replace yrsch12=0 if educ~=6
+{txt}(9760557 real changes made)
+
+{com}.         
+.         gen yrsch1315=.
+{txt}(14081466 missing values generated)
+
+{com}.         replace yrsch1315=1 if educ>=7 & educ<=8
+{txt}(2169252 real changes made)
+
+{com}.         replace yrsch1315=0 if educ<7 | educ>8
+{txt}(11912214 real changes made)
+
+{com}.         
+.                 
+. /* incbus00 is business and farm income*/
+.         replace incwage = . if incwage == 999999 | incwage < 0 
+{txt}(3038341 real changes made, 3038341 to missing)
+
+{com}.         replace incbus00 = . if incbus00 == 999999 | incbus00 < 0
+{txt}(3111967 real changes made, 3111967 to missing)
+
+{com}.                 
+.         drop if incwage==. & incbus00==.
+{txt}(3038341 observations deleted)
+
+{com}.         
+.         replace incwage = 0 if incwage == . 
+{txt}(0 real changes made)
+
+{com}.         replace incbus00 = 0 if incbus00 == . 
+{txt}(73626 real changes made)
+
+{com}.         gen incwbf = incwage + incbus00
+{txt}
+{com}.         
+.         sum incwage incbus00 incwbf 
+
+{txt}    Variable {c |}       Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 56}
+{space 5}incwage {c |}{res}  11043125    19696.83    33481.13          0     385000
+{txt}{space 4}incbus00 {c |}{res}  11043125    1670.374    13303.42          0     355000
+{txt}{space 6}incwbf {c |}{res}  11043125    21367.21    35934.24          0     680000
+{txt}
+{com}.         
+. /* In the 2000 dataset, the continuous version of weeksworked last year is available. This is used in the regressions*/
+.         
+.         gen lnweeks1= log(wkswork1)
+{txt}(3610549 missing values generated)
+
+{com}.         
+. /* In the 2000 dataset, the usual hours worked per week is available. This is used in the regressions*/
+.         
+.         gen lnuhrs = log(uhrswork)
+{txt}(3610549 missing values generated)
+
+{com}.         
+. /*Dropping individuals not in the labor force*/
+. 
+.         drop if wkswork1==0 | uhrswork==0
+{txt}(3610549 observations deleted)
+
+{com}.         drop if wkswork1==.
+{txt}(0 observations deleted)
+
+{com}.         drop if uhrswork==.
+{txt}(0 observations deleted)
+
+{com}.         
+. /* Expressing income in 2009 US Dollars: Here I follow Fritzi and create a 2009 CPI adjusted measure of income and its log */
+.         
+.         
+.         gen incwbf09 = incwbf
+{txt}
+{com}.         replace incwbf09 = incwbf * (315/252.9) 
+{txt}(7403443 real changes made)
+
+{com}.                 
+.         gen lnincwbf09 = log(incwbf09)
+{txt}(29133 missing values generated)
+
+{com}.         gen m_lnincwbf09= lnincwbf09 if male == 1
+{txt}(3510554 missing values generated)
+
+{com}.         gen f_lnincwbf09 = lnincwbf09 if female == 1
+{txt}(3951155 missing values generated)
+
+{com}.         gen m_incwbf09= incwbf09 if male == 1
+{txt}(3494656 missing values generated)
+
+{com}.         gen f_incwbf09 = incwbf09 if female == 1
+{txt}(3937920 missing values generated)
+
+{com}. 
+. /*Annual Minimum Wage: $2009 values (1/2 * 2009 minwage*full time/ full year hours) */
+.         
+.         gen min09 = 0.5 * 7.25 * 35 * 40
+{txt}
+{com}.                 
+. /*Hourly Minimum Wage : $2009 values (1/2*Minimum Wage)*/
+.                         
+.         gen hourlymin09= 0.5 * 7.25 
+{txt}
+{com}. 
+. /*Generating Hourly wage Rate*/
+. 
+.         gen hourlywbf09=incwbf09/(wkswork1*uhrswork)
+{txt}
+{com}.         
+. /* Create dummy variable for income<min income or hourlyincome>500*/
+. 
+.         gen low1 = 1 if incwbf09<min09
+{txt}(6588931 missing values generated)
+
+{com}.         replace low1 = 0 if low1~= 1
+{txt}(6588931 real changes made)
+
+{com}.         
+.         gen low2 =1 if hourlywbf09<hourlymin09
+{txt}(7181765 missing values generated)
+
+{com}.         replace low2 = 0 if low2~= 1
+{txt}(7181765 real changes made)
+
+{com}.         
+.         gen high1=1 if hourlywbf09>500
+{txt}(7422720 missing values generated)
+
+{com}.         replace high1 =0 if high1~=1
+{txt}(7422720 real changes made)
+
+{com}.         
+. /* Dropping Members of the Armed Forces  */
+.         drop if occ1950 == 595 
+{txt}(56818 observations deleted)
+
+{com}. 
+. /* Variable for full time work*/
+. 
+.         gen fulltime = 1 if (uhrswork >= 35 & wkswork1 >=40)
+{txt}(2415395 missing values generated)
+
+{com}.         replace fulltime=0 if fulltime~=1
+{txt}(2415395 real changes made)
+
+{com}.         
+. /* Raw numbers: groups of 25-29, 30-34, etc.*/
+. 
+.         gen agegroup=.
+{txt}(7375758 missing values generated)
+
+{com}.         replace agegroup=1 if (age>=25 & age<30)
+{txt}(767605 real changes made)
+
+{com}.         replace agegroup=2 if (age>=30 & age<35)
+{txt}(833439 real changes made)
+
+{com}.         replace agegroup=3 if (age>=35 & age<40)
+{txt}(942098 real changes made)
+
+{com}.         replace agegroup=4 if (age>=40 & age<45)
+{txt}(947732 real changes made)
+
+{com}.         replace agegroup=5 if (age>=45 & age<50)
+{txt}(853134 real changes made)
+
+{com}.         replace agegroup=6 if (age>=50 & age<55)
+{txt}(725023 real changes made)
+
+{com}.         replace agegroup=7 if (age>=55 & age<60)
+{txt}(503579 real changes made)
+
+{com}.         replace agegroup=8 if (age>=60 & age<65)
+{txt}(313870 real changes made)
+
+{com}.         replace agegroup=9 if (age>=65 & age<70)
+{txt}(151640 real changes made)
+
+{com}.         
+.         xi i.agegroup
+{txt}i.agegroup{col 19}_Iagegroup_1-9{col 39}(naturally coded; _Iagegroup_1 omitted)
+
+{com}. 
+.         gen fage2=female*_Iagegroup_2
+{txt}(1337638 missing values generated)
+
+{com}.         gen fage3=female*_Iagegroup_3
+{txt}(1337638 missing values generated)
+
+{com}.         gen fage4=female*_Iagegroup_4
+{txt}(1337638 missing values generated)
+
+{com}.         gen fage5=female*_Iagegroup_5
+{txt}(1337638 missing values generated)
+
+{com}.         gen fage6=female*_Iagegroup_6
+{txt}(1337638 missing values generated)
+
+{com}.         gen fage7=female*_Iagegroup_7
+{txt}(1337638 missing values generated)
+
+{com}.         gen fage8=female*_Iagegroup_8
+{txt}(1337638 missing values generated)
+
+{com}.         gen fage9=female*_Iagegroup_9
+{txt}(1337638 missing values generated)
+
+{com}. 
+. /* Save coded data set*/
+. 
+. save ./coded_datasets/IPUMS_2000_coded.dta, replace
+{txt}file ./coded_datasets/IPUMS_2000_coded.dta saved
+
+{com}. 
+. *---------------------------------------------------------------------------------------------------*
+. /* Create sample: College graduates white, US-born*/
+. 
+. *---------------------------------------------------------------------------------------------------*
+. 
+. /* Run analysis only for full time full year workers */ 
+. 
+.         drop if fulltime == 0
+{txt}(2415395 observations deleted)
+
+{com}.         drop if incwbf09 < min09
+{txt}(37068 observations deleted)
+
+{com}. 
+. /*Create sample: white, us born, college educated*/
+.         
+.         drop if white ~=1
+{txt}(1001125 observations deleted)
+
+{com}.         drop if bpl > 99
+{txt}(286196 observations deleted)
+
+{com}.         drop if educd < 101
+{txt}(2583829 observations deleted)
+
+{com}. 
+. 
+. *-----------------------------------------------------------------------------------*
+. /*Regressions*/
+. *-----------------------------------------------------------------------------------*
+. 
+. /*1. Generating the log income means by age group*/
+. 
+. reg lnincwbf09 female _Iagegroup_2 _Iagegroup_3 _Iagegroup_4 _Iagegroup_5 _Iagegroup_6 _Iagegroup_7 _Iagegroup_8 _Iagegroup_9 fage2 fage3 fage4 fage5 fage6 fage7 fage8 fage9 [aw=perwt], r
+{txt}(sum of wgt is   2.1387e+07)
+
+Linear regression                                      Number of obs ={res} 1013914
+                                                       {txt}F( 17,1013896) ={res} 8311.92
+                                                       {txt}Prob > F      = {res} 0.0000
+                                                       {txt}R-squared     = {res} 0.1268
+                                                       {txt}Root MSE      = {res} .65118
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}  lnincwbf09{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 6}female {c |}{col 14}{res}{space 2}-.1860455{col 26}{space 2} .0030702{col 37}{space 1}  -60.60{col 46}{space 3}0.000{col 54}{space 4}-.1920629{col 67}{space 3} -.180028
+{txt}_Iagegroup_2 {c |}{col 14}{res}{space 2} .2617229{col 26}{space 2} .0033435{col 37}{space 1}   78.28{col 46}{space 3}0.000{col 54}{space 4} .2551698{col 67}{space 3}  .268276
+{txt}_Iagegroup_3 {c |}{col 14}{res}{space 2} .4831469{col 26}{space 2} .0034614{col 37}{space 1}  139.58{col 46}{space 3}0.000{col 54}{space 4} .4763626{col 67}{space 3} .4899312
+{txt}_Iagegroup_4 {c |}{col 14}{res}{space 2} .5555973{col 26}{space 2} .0035417{col 37}{space 1}  156.87{col 46}{space 3}0.000{col 54}{space 4} .5486556{col 67}{space 3} .5625389
+{txt}_Iagegroup_5 {c |}{col 14}{res}{space 2} .5465742{col 26}{space 2} .0035281{col 37}{space 1}  154.92{col 46}{space 3}0.000{col 54}{space 4} .5396593{col 67}{space 3} .5534891
+{txt}_Iagegroup_6 {c |}{col 14}{res}{space 2} .5541604{col 26}{space 2} .0035752{col 37}{space 1}  155.00{col 46}{space 3}0.000{col 54}{space 4} .5471531{col 67}{space 3} .5611677
+{txt}_Iagegroup_7 {c |}{col 14}{res}{space 2} .5760315{col 26}{space 2} .0043222{col 37}{space 1}  133.27{col 46}{space 3}0.000{col 54}{space 4} .5675602{col 67}{space 3} .5845028
+{txt}_Iagegroup_8 {c |}{col 14}{res}{space 2} .5210014{col 26}{space 2} .0060634{col 37}{space 1}   85.93{col 46}{space 3}0.000{col 54}{space 4} .5091174{col 67}{space 3} .5328854
+{txt}_Iagegroup_9 {c |}{col 14}{res}{space 2} .4119817{col 26}{space 2} .0109734{col 37}{space 1}   37.54{col 46}{space 3}0.000{col 54}{space 4} .3904743{col 67}{space 3} .4334891
+{txt}{space 7}fage2 {c |}{col 14}{res}{space 2}-.0735002{col 26}{space 2} .0044747{col 37}{space 1}  -16.43{col 46}{space 3}0.000{col 54}{space 4}-.0822705{col 67}{space 3}-.0647299
+{txt}{space 7}fage3 {c |}{col 14}{res}{space 2}-.1713315{col 26}{space 2} .0047667{col 37}{space 1}  -35.94{col 46}{space 3}0.000{col 54}{space 4}-.1806741{col 67}{space 3}-.1619889
+{txt}{space 7}fage4 {c |}{col 14}{res}{space 2}-.2310716{col 26}{space 2} .0048379{col 37}{space 1}  -47.76{col 46}{space 3}0.000{col 54}{space 4}-.2405538{col 67}{space 3}-.2215894
+{txt}{space 7}fage5 {c |}{col 14}{res}{space 2}-.2355185{col 26}{space 2} .0047334{col 37}{space 1}  -49.76{col 46}{space 3}0.000{col 54}{space 4}-.2447958{col 67}{space 3}-.2262412
+{txt}{space 7}fage6 {c |}{col 14}{res}{space 2}-.2404883{col 26}{space 2} .0048443{col 37}{space 1}  -49.64{col 46}{space 3}0.000{col 54}{space 4} -.249983{col 67}{space 3}-.2309936
+{txt}{space 7}fage7 {c |}{col 14}{res}{space 2}-.2823209{col 26}{space 2} .0060192{col 37}{space 1}  -46.90{col 46}{space 3}0.000{col 54}{space 4}-.2941183{col 67}{space 3}-.2705235
+{txt}{space 7}fage8 {c |}{col 14}{res}{space 2}-.2943522{col 26}{space 2} .0089129{col 37}{space 1}  -33.03{col 46}{space 3}0.000{col 54}{space 4}-.3118212{col 67}{space 3}-.2768833
+{txt}{space 7}fage9 {c |}{col 14}{res}{space 2}-.2801791{col 26}{space 2} .0181616{col 37}{space 1}  -15.43{col 46}{space 3}0.000{col 54}{space 4}-.3157752{col 67}{space 3} -.244583
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 10.76915{col 26}{space 2}   .00239{col 37}{space 1} 4505.99{col 46}{space 3}0.000{col 54}{space 4} 10.76447{col 67}{space 3} 10.77384
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. /*2. Including controls- education, weeks worked, hours worked */
+. reg lnincwbf09 female _Iagegroup_2 _Iagegroup_3 _Iagegroup_4 _Iagegroup_5 _Iagegroup_6 _Iagegroup_7 _Iagegroup_8 _Iagegroup_9 fage2 fage3 fage4 fage5 fage6 fage7 fage8 fage9 yrschpstcol lnuhrs lnweeks1 [aw=perwt], r
+{txt}(sum of wgt is   2.1387e+07)
+
+Linear regression                                      Number of obs ={res} 1013914
+                                                       {txt}F( 20,1013893) ={res}10104.42
+                                                       {txt}Prob > F      = {res} 0.0000
+                                                       {txt}R-squared     = {res} 0.1954
+                                                       {txt}Root MSE      = {res} .62508
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}  lnincwbf09{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 6}female {c |}{col 14}{res}{space 2}-.1342597{col 26}{space 2}  .002964{col 37}{space 1}  -45.30{col 46}{space 3}0.000{col 54}{space 4}-.1400691{col 67}{space 3}-.1284504
+{txt}_Iagegroup_2 {c |}{col 14}{res}{space 2} .2148758{col 26}{space 2} .0032217{col 37}{space 1}   66.70{col 46}{space 3}0.000{col 54}{space 4} .2085615{col 67}{space 3} .2211902
+{txt}_Iagegroup_3 {c |}{col 14}{res}{space 2} .4196991{col 26}{space 2} .0033299{col 37}{space 1}  126.04{col 46}{space 3}0.000{col 54}{space 4} .4131727{col 67}{space 3} .4262256
+{txt}_Iagegroup_4 {c |}{col 14}{res}{space 2} .4823443{col 26}{space 2} .0034062{col 37}{space 1}  141.61{col 46}{space 3}0.000{col 54}{space 4} .4756683{col 67}{space 3} .4890203
+{txt}_Iagegroup_5 {c |}{col 14}{res}{space 2} .4694719{col 26}{space 2} .0033972{col 37}{space 1}  138.20{col 46}{space 3}0.000{col 54}{space 4} .4628136{col 67}{space 3} .4761302
+{txt}_Iagegroup_6 {c |}{col 14}{res}{space 2} .4751745{col 26}{space 2} .0034657{col 37}{space 1}  137.11{col 46}{space 3}0.000{col 54}{space 4} .4683818{col 67}{space 3} .4819672
+{txt}_Iagegroup_7 {c |}{col 14}{res}{space 2}  .488525{col 26}{space 2} .0042277{col 37}{space 1}  115.55{col 46}{space 3}0.000{col 54}{space 4} .4802388{col 67}{space 3} .4968112
+{txt}_Iagegroup_8 {c |}{col 14}{res}{space 2} .4369027{col 26}{space 2} .0059307{col 37}{space 1}   73.67{col 46}{space 3}0.000{col 54}{space 4} .4252787{col 67}{space 3} .4485267
+{txt}_Iagegroup_9 {c |}{col 14}{res}{space 2} .3353294{col 26}{space 2} .0107772{col 37}{space 1}   31.11{col 46}{space 3}0.000{col 54}{space 4} .3142064{col 67}{space 3} .3564523
+{txt}{space 7}fage2 {c |}{col 14}{res}{space 2}-.0566427{col 26}{space 2} .0042898{col 37}{space 1}  -13.20{col 46}{space 3}0.000{col 54}{space 4}-.0650506{col 67}{space 3}-.0482348
+{txt}{space 7}fage3 {c |}{col 14}{res}{space 2}-.1446204{col 26}{space 2} .0045565{col 37}{space 1}  -31.74{col 46}{space 3}0.000{col 54}{space 4} -.153551{col 67}{space 3}-.1356899
+{txt}{space 7}fage4 {c |}{col 14}{res}{space 2}-.1982241{col 26}{space 2}  .004619{col 37}{space 1}  -42.91{col 46}{space 3}0.000{col 54}{space 4}-.2072773{col 67}{space 3} -.189171
+{txt}{space 7}fage5 {c |}{col 14}{res}{space 2}-.2003566{col 26}{space 2} .0045297{col 37}{space 1}  -44.23{col 46}{space 3}0.000{col 54}{space 4}-.2092348{col 67}{space 3}-.1914785
+{txt}{space 7}fage6 {c |}{col 14}{res}{space 2}-.2084842{col 26}{space 2} .0046718{col 37}{space 1}  -44.63{col 46}{space 3}0.000{col 54}{space 4}-.2176407{col 67}{space 3}-.1993276
+{txt}{space 7}fage7 {c |}{col 14}{res}{space 2}-.2458883{col 26}{space 2}  .005857{col 37}{space 1}  -41.98{col 46}{space 3}0.000{col 54}{space 4}-.2573678{col 67}{space 3}-.2344087
+{txt}{space 7}fage8 {c |}{col 14}{res}{space 2}-.2524945{col 26}{space 2} .0087002{col 37}{space 1}  -29.02{col 46}{space 3}0.000{col 54}{space 4}-.2695467{col 67}{space 3}-.2354424
+{txt}{space 7}fage9 {c |}{col 14}{res}{space 2}-.2422853{col 26}{space 2} .0178139{col 37}{space 1}  -13.60{col 46}{space 3}0.000{col 54}{space 4}-.2771999{col 67}{space 3}-.2073707
+{txt}{space 1}yrschpstcol {c |}{col 14}{res}{space 2} .0919764{col 26}{space 2} .0006658{col 37}{space 1}  138.15{col 46}{space 3}0.000{col 54}{space 4} .0906715{col 67}{space 3} .0932813
+{txt}{space 6}lnuhrs {c |}{col 14}{res}{space 2} .7213683{col 26}{space 2} .0047508{col 37}{space 1}  151.84{col 46}{space 3}0.000{col 54}{space 4} .7120569{col 67}{space 3} .7306797
+{txt}{space 4}lnweeks1 {c |}{col 14}{res}{space 2}  1.11388{col 26}{space 2} .0098662{col 37}{space 1}  112.90{col 46}{space 3}0.000{col 54}{space 4} 1.094542{col 67}{space 3} 1.133217
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 3.600792{col 26}{space 2} .0426208{col 37}{space 1}   84.48{col 46}{space 3}0.000{col 54}{space 4} 3.517257{col 67}{space 3} 3.684328
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. /*3. Including controls- education, weeks worked, children, hours worked, female*children */
+. reg lnincwbf09 female _Iagegroup_2 _Iagegroup_3 _Iagegroup_4 _Iagegroup_5 _Iagegroup_6 _Iagegroup_7 _Iagegroup_8 _Iagegroup_9 fage2 fage3 fage4 fage5 fage6 fage7 fage8 fage9 yrschpstcol lnuhrs lnweeks1 chldo5 chldu5 fchldo5 fchldu5 [aw=perwt], r
+{txt}(sum of wgt is   2.1387e+07)
+
+Linear regression                                      Number of obs ={res} 1013914
+                                                       {txt}F( 24,1013889) ={res} 8776.80
+                                                       {txt}Prob > F      = {res} 0.0000
+                                                       {txt}R-squared     = {res} 0.2029
+                                                       {txt}Root MSE      = {res} .62216
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}  lnincwbf09{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 6}female {c |}{col 14}{res}{space 2}-.1178507{col 26}{space 2} .0030276{col 37}{space 1}  -38.93{col 46}{space 3}0.000{col 54}{space 4}-.1237847{col 67}{space 3}-.1119168
+{txt}_Iagegroup_2 {c |}{col 14}{res}{space 2} .1697911{col 26}{space 2} .0032691{col 37}{space 1}   51.94{col 46}{space 3}0.000{col 54}{space 4} .1633837{col 67}{space 3} .1761984
+{txt}_Iagegroup_3 {c |}{col 14}{res}{space 2}  .337795{col 26}{space 2} .0034673{col 37}{space 1}   97.42{col 46}{space 3}0.000{col 54}{space 4} .3309992{col 67}{space 3} .3445909
+{txt}_Iagegroup_4 {c |}{col 14}{res}{space 2} .4057764{col 26}{space 2} .0036195{col 37}{space 1}  112.11{col 46}{space 3}0.000{col 54}{space 4} .3986824{col 67}{space 3} .4128704
+{txt}_Iagegroup_5 {c |}{col 14}{res}{space 2} .4105346{col 26}{space 2} .0036357{col 37}{space 1}  112.92{col 46}{space 3}0.000{col 54}{space 4} .4034087{col 67}{space 3} .4176605
+{txt}_Iagegroup_6 {c |}{col 14}{res}{space 2} .4420927{col 26}{space 2} .0036237{col 37}{space 1}  122.00{col 46}{space 3}0.000{col 54}{space 4} .4349904{col 67}{space 3}  .449195
+{txt}_Iagegroup_7 {c |}{col 14}{res}{space 2} .4791563{col 26}{space 2} .0042971{col 37}{space 1}  111.51{col 46}{space 3}0.000{col 54}{space 4} .4707341{col 67}{space 3} .4875785
+{txt}_Iagegroup_8 {c |}{col 14}{res}{space 2} .4414617{col 26}{space 2}  .005964{col 37}{space 1}   74.02{col 46}{space 3}0.000{col 54}{space 4} .4297725{col 67}{space 3} .4531508
+{txt}_Iagegroup_9 {c |}{col 14}{res}{space 2} .3445028{col 26}{space 2} .0107869{col 37}{space 1}   31.94{col 46}{space 3}0.000{col 54}{space 4} .3233609{col 67}{space 3} .3656448
+{txt}{space 7}fage2 {c |}{col 14}{res}{space 2}-.0153543{col 26}{space 2} .0043571{col 37}{space 1}   -3.52{col 46}{space 3}0.000{col 54}{space 4}-.0238941{col 67}{space 3}-.0068145
+{txt}{space 7}fage3 {c |}{col 14}{res}{space 2} -.049692{col 26}{space 2} .0047315{col 37}{space 1}  -10.50{col 46}{space 3}0.000{col 54}{space 4}-.0589656{col 67}{space 3}-.0404183
+{txt}{space 7}fage4 {c |}{col 14}{res}{space 2}-.0895488{col 26}{space 2} .0049177{col 37}{space 1}  -18.21{col 46}{space 3}0.000{col 54}{space 4}-.0991873{col 67}{space 3}-.0799102
+{txt}{space 7}fage5 {c |}{col 14}{res}{space 2}-.1052367{col 26}{space 2} .0048522{col 37}{space 1}  -21.69{col 46}{space 3}0.000{col 54}{space 4}-.1147469{col 67}{space 3}-.0957266
+{txt}{space 7}fage6 {c |}{col 14}{res}{space 2}-.1478101{col 26}{space 2}   .00486{col 37}{space 1}  -30.41{col 46}{space 3}0.000{col 54}{space 4}-.1573356{col 67}{space 3}-.1382847
+{txt}{space 7}fage7 {c |}{col 14}{res}{space 2}-.2167861{col 26}{space 2} .0059335{col 37}{space 1}  -36.54{col 46}{space 3}0.000{col 54}{space 4}-.2284157{col 67}{space 3}-.2051566
+{txt}{space 7}fage8 {c |}{col 14}{res}{space 2}-.2405407{col 26}{space 2} .0087359{col 37}{space 1}  -27.53{col 46}{space 3}0.000{col 54}{space 4}-.2576627{col 67}{space 3}-.2234187
+{txt}{space 7}fage9 {c |}{col 14}{res}{space 2}-.2357505{col 26}{space 2}  .017815{col 37}{space 1}  -13.23{col 46}{space 3}0.000{col 54}{space 4}-.2706673{col 67}{space 3}-.2008338
+{txt}{space 1}yrschpstcol {c |}{col 14}{res}{space 2} .0906311{col 26}{space 2}  .000662{col 37}{space 1}  136.90{col 46}{space 3}0.000{col 54}{space 4} .0893335{col 67}{space 3} .0919287
+{txt}{space 6}lnuhrs {c |}{col 14}{res}{space 2} .7098034{col 26}{space 2} .0047341{col 37}{space 1}  149.93{col 46}{space 3}0.000{col 54}{space 4} .7005246{col 67}{space 3} .7190821
+{txt}{space 4}lnweeks1 {c |}{col 14}{res}{space 2} 1.088464{col 26}{space 2} .0098298{col 37}{space 1}  110.73{col 46}{space 3}0.000{col 54}{space 4} 1.069198{col 67}{space 3}  1.10773
+{txt}{space 6}chldo5 {c |}{col 14}{res}{space 2} .1238215{col 26}{space 2} .0021674{col 37}{space 1}   57.13{col 46}{space 3}0.000{col 54}{space 4} .1195735{col 67}{space 3} .1280695
+{txt}{space 6}chldu5 {c |}{col 14}{res}{space 2} .1252472{col 26}{space 2} .0026177{col 37}{space 1}   47.85{col 46}{space 3}0.000{col 54}{space 4} .1201166{col 67}{space 3} .1303779
+{txt}{space 5}fchldo5 {c |}{col 14}{res}{space 2}-.1767872{col 26}{space 2} .0030761{col 37}{space 1}  -57.47{col 46}{space 3}0.000{col 54}{space 4}-.1828163{col 67}{space 3} -.170758
+{txt}{space 5}fchldu5 {c |}{col 14}{res}{space 2}-.0489087{col 26}{space 2} .0039596{col 37}{space 1}  -12.35{col 46}{space 3}0.000{col 54}{space 4}-.0566694{col 67}{space 3}-.0411479
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 3.719241{col 26}{space 2}   .04254{col 37}{space 1}   87.43{col 46}{space 3}0.000{col 54}{space 4} 3.635864{col 67}{space 3} 3.802618
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. *------------------------------------------------------------*
+. /*Displaying Means and Medians for age groups*/
+. *------------------------------------------------------------*
+. 
+. sum f_incwbf09 m_incwbf09 if age>=25 & age<30 [aw=perwt], d
+
+                         {txt}f_incwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 12455.52       5231.317
+{txt} 5%    {res} 18683.27       5231.317
+{txt}10%    {res} 23665.48       5231.317       {txt}Obs         {res}      64181
+{txt}25%    {res} 31138.79       5231.317       {txt}Sum of Wgt. {res}    1413170
+
+{txt}50%    {res} 39234.88                      {txt}Mean          {res} 43756.39
+                        {txt}Largest       Std. Dev.     {res}  24274.3
+{txt}75%    {res} 49822.06       432206.4
+{txt}90%    {res} 67259.79       442170.8       {txt}Variance      {res} 5.89e+08
+{txt}95%    {res} 80960.85       491992.9       {txt}Skewness      {res} 5.689427
+{txt}99%    {res} 124555.2       717437.8       {txt}Kurtosis      {res} 77.20548
+
+                         {txt}m_incwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 12455.52       5106.762
+{txt} 5%    {res} 19928.83       5106.762
+{txt}10%    {res} 24911.03       5231.317       {txt}Obs         {res}      59793
+{txt}25%    {res} 35249.11       5231.317       {txt}Sum of Wgt. {res}    1355788
+
+{txt}50%    {res} 47330.96                      {txt}Mean          {res} 55586.56
+                        {txt}Largest       Std. Dev.     {res}  42150.6
+{txt}75%    {res} 63398.58       717437.8
+{txt}90%    {res} 87188.61       722419.9       {txt}Variance      {res} 1.78e+09
+{txt}95%    {res} 110854.1       728647.7       {txt}Skewness      {res} 5.358324
+{txt}99%    {res} 199288.3       732384.3       {txt}Kurtosis      {res} 45.63125
+{txt}
+{com}. sum f_incwbf09 m_incwbf09 if age>=30 & age<35 [aw=perwt], d
+
+                         {txt}f_incwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 12455.52       5106.762
+{txt} 5%    {res}  21672.6       5106.762
+{txt}10%    {res} 27153.03       5106.762       {txt}Obs         {res}      62183
+{txt}25%    {res}    36121       5106.762       {txt}Sum of Wgt. {res}    1311114
+
+{txt}50%    {res} 46708.18                      {txt}Mean          {res} 55173.94
+                        {txt}Largest       Std. Dev.     {res} 39756.35
+{txt}75%    {res} 62277.58       498220.6
+{txt}90%    {res} 87188.61       525622.8       {txt}Variance      {res} 1.58e+09
+{txt}95%    {res} 112099.6       529359.4       {txt}Skewness      {res} 5.152005
+{txt}99%    {res} 186832.7       719928.8       {txt}Kurtosis      {res} 43.43692
+
+                         {txt}m_incwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 12455.52       5231.317
+{txt} 5%    {res} 24911.03       5231.317
+{txt}10%    {res} 31138.79       5231.317       {txt}Obs         {res}      79845
+{txt}25%    {res}  43594.3       5231.317       {txt}Sum of Wgt. {res}    1739157
+
+{txt}50%    {res} 61032.03                      {txt}Mean          {res} 75900.87
+                        {txt}Largest       Std. Dev.     {res} 64743.79
+{txt}75%    {res} 85943.06       768505.3
+{txt}90%    {res} 124555.2       780960.9       {txt}Variance      {res} 4.19e+09
+{txt}95%    {res} 161921.7       780960.9       {txt}Skewness      {res} 3.751111
+{txt}99%    {res} 404804.3       780960.9       {txt}Kurtosis      {res} 20.55841
+{txt}
+{com}. sum f_incwbf09 m_incwbf09 if age>=35 & age<40 [aw=perwt], d
+
+                         {txt}f_incwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 11583.63       5106.762
+{txt} 5%    {res} 22170.82       5106.762
+{txt}10%    {res} 28024.91       5231.317       {txt}Obs         {res}      59293
+{txt}25%    {res} 37989.32       5231.317       {txt}Sum of Wgt. {res}    1246777
+
+{txt}50%    {res} 52313.17                      {txt}Mean          {res} 65476.81
+                        {txt}Largest       Std. Dev.     {res} 54683.09
+{txt}75%    {res} 74733.09       717437.8
+{txt}90%    {res} 107117.4       717437.8       {txt}Variance      {res} 2.99e+09
+{txt}95%    {res} 137010.7       717437.8       {txt}Skewness      {res} 4.268342
+{txt}99%    {res} 394839.8       732384.3       {txt}Kurtosis      {res} 27.39294
+
+                         {txt}m_incwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 12953.74       5106.762
+{txt} 5%    {res} 27402.13       5106.762
+{txt}10%    {res} 37366.55       5106.762       {txt}Obs         {res}      88638
+{txt}25%    {res} 49946.62       5106.762       {txt}Sum of Wgt. {res}    1931619
+
+{txt}50%    {res} 74733.09                      {txt}Mean          {res} 99640.36
+                        {txt}Largest       Std. Dev.     {res} 88561.11
+{txt}75%    {res} 110854.1       780960.9
+{txt}90%    {res} 173131.7       780960.9       {txt}Variance      {res} 7.84e+09
+{txt}95%    {res}   386121       780960.9       {txt}Skewness      {res}  2.65147
+{txt}99%    {res} 430338.1       780960.9       {txt}Kurtosis      {res} 10.55861
+{txt}
+{com}. sum f_incwbf09 m_incwbf09 if age>=40 & age<45 [aw=perwt], d
+
+                         {txt}f_incwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 11708.18       5106.762
+{txt} 5%    {res} 21423.49       5106.762
+{txt}10%    {res} 27402.13       5231.317       {txt}Obs         {res}      61175
+{txt}25%    {res}  38612.1       5231.317       {txt}Sum of Wgt. {res}    1268946
+
+{txt}50%    {res} 52686.83                      {txt}Mean          {res} 67109.86
+                        {txt}Largest       Std. Dev.     {res} 58258.74
+{txt}75%    {res} 74733.09       732384.3
+{txt}90%    {res} 110854.1       732384.3       {txt}Variance      {res} 3.39e+09
+{txt}95%    {res} 146975.1       780960.9       {txt}Skewness      {res} 4.093862
+{txt}99%    {res} 399822.1       780960.9       {txt}Kurtosis      {res} 24.32836
+
+                         {txt}m_incwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 12455.52       5106.762
+{txt} 5%    {res} 27402.13       5106.762
+{txt}10%    {res} 37366.55       5131.672       {txt}Obs         {res}      91963
+{txt}25%    {res} 53558.72       5231.317       {txt}Sum of Wgt. {res}    1987182
+
+{txt}50%    {res} 80960.85                      {txt}Mean          {res} 109690.4
+                        {txt}Largest       Std. Dev.     {res} 98251.17
+{txt}75%    {res} 120818.5       780960.9
+{txt}90%    {res} 199288.3       780960.9       {txt}Variance      {res} 9.65e+09
+{txt}95%    {res} 393594.3       780960.9       {txt}Skewness      {res} 2.319957
+{txt}99%    {res} 432206.4       846975.1       {txt}Kurtosis      {res} 8.441584
+{txt}
+{com}. sum f_incwbf09 m_incwbf09 if age>=45 & age<50 [aw=perwt], d
+
+                         {txt}f_incwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 11209.96       5106.762
+{txt} 5%    {res} 21174.38       5231.317
+{txt}10%    {res} 27402.13       5231.317       {txt}Obs         {res}      65759
+{txt}25%    {res} 38861.21       5231.317       {txt}Sum of Wgt. {res}    1349148
+
+{txt}50%    {res} 53558.72                      {txt}Mean          {res} 65049.64
+                        {txt}Largest       Std. Dev.     {res}  53614.8
+{txt}75%    {res} 74733.09       722419.9
+{txt}90%    {res} 102135.2       723665.5       {txt}Variance      {res} 2.87e+09
+{txt}95%    {res} 132028.5       732384.3       {txt}Skewness      {res} 4.347736
+{txt}99%    {res} 393594.3       732384.3       {txt}Kurtosis      {res} 27.87726
+
+                         {txt}m_incwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 12455.52       5106.762
+{txt} 5%    {res} 25409.25       5106.762
+{txt}10%    {res}    36121       5106.762       {txt}Obs         {res}      97053
+{txt}25%    {res} 52935.94       5231.317       {txt}Sum of Wgt. {res}    2023581
+
+{txt}50%    {res} 78967.97                      {txt}Mean          {res} 109434.2
+                        {txt}Largest       Std. Dev.     {res}  98427.2
+{txt}75%    {res}   119573       780960.9
+{txt}90%    {res} 200533.8       780960.9       {txt}Variance      {res} 9.69e+09
+{txt}95%    {res} 393594.3       780960.9       {txt}Skewness      {res} 2.246715
+{txt}99%    {res} 432206.4       846975.1       {txt}Kurtosis      {res} 7.883148
+{txt}
+{com}. sum f_incwbf09 m_incwbf09 if age>=50 & age<55 [aw=perwt], d
+
+                         {txt}f_incwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 11209.96       5231.317
+{txt} 5%    {res} 21174.38       5231.317
+{txt}10%    {res} 27526.69       5231.317       {txt}Obs         {res}      55324
+{txt}25%    {res} 39857.65       5231.317       {txt}Sum of Wgt. {res}    1110642
+
+{txt}50%    {res} 54804.27                      {txt}Mean          {res}  64296.3
+                        {txt}Largest       Std. Dev.     {res} 50293.28
+{txt}75%    {res} 74733.09       717437.8
+{txt}90%    {res} 99644.13       728647.7       {txt}Variance      {res} 2.53e+09
+{txt}95%    {res} 124555.2       732384.3       {txt}Skewness      {res} 4.629347
+{txt}99%    {res}   386121       732384.3       {txt}Kurtosis      {res} 33.14608
+
+                         {txt}m_incwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 12455.52       5106.762
+{txt} 5%    {res} 24911.03       5106.762
+{txt}10%    {res}    36121       5106.762       {txt}Obs         {res}      93986
+{txt}25%    {res} 54804.27       5106.762       {txt}Sum of Wgt. {res}    1920011
+
+{txt}50%    {res} 80960.85                      {txt}Mean          {res} 110466.9
+                        {txt}Largest       Std. Dev.     {res} 99410.21
+{txt}75%    {res} 122064.1       780960.9
+{txt}90%    {res} 201779.4       827046.3       {txt}Variance      {res} 9.88e+09
+{txt}95%    {res} 393594.3       846975.1       {txt}Skewness      {res} 2.285645
+{txt}99%    {res} 432206.4       846975.1       {txt}Kurtosis      {res} 8.272675
+{txt}
+{com}. sum f_incwbf09 m_incwbf09 if age>=55 & age<60 [aw=perwt], d
+
+                         {txt}f_incwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 9964.413       5106.762
+{txt} 5%    {res} 19928.83       5231.317
+{txt}10%    {res} 26156.58       5231.317       {txt}Obs         {res}      29015
+{txt}25%    {res}  38612.1       5231.317       {txt}Sum of Wgt. {res}     587494
+
+{txt}50%    {res} 54804.27                      {txt}Mean          {res}  63248.2
+                        {txt}Largest       Std. Dev.     {res} 48948.06
+{txt}75%    {res} 74733.09         555516
+{txt}90%    {res} 99644.13       709964.4       {txt}Variance      {res} 2.40e+09
+{txt}95%    {res} 124555.2       717437.8       {txt}Skewness      {res} 4.542262
+{txt}99%    {res} 375035.6       732384.3       {txt}Kurtosis      {res} 32.44282
+
+                         {txt}m_incwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 11209.96       5106.762
+{txt} 5%    {res} 24039.15       5106.762
+{txt}10%    {res} 33629.89       5231.317       {txt}Obs         {res}      55357
+{txt}25%    {res} 55427.05       5231.317       {txt}Sum of Wgt. {res}    1130605
+
+{txt}50%    {res} 83451.96                      {txt}Mean          {res} 115125.8
+                        {txt}Largest       Std. Dev.     {res} 104548.6
+{txt}75%    {res} 124555.2       780960.9
+{txt}90%    {res} 287722.4       780960.9       {txt}Variance      {res} 1.09e+10
+{txt}95%    {res} 396085.4       780960.9       {txt}Skewness      {res} 2.162363
+{txt}99%    {res} 432206.4       846975.1       {txt}Kurtosis      {res}  7.65919
+{txt}
+{com}. sum f_incwbf09 m_incwbf09 if age>=60 & age<65 [aw=perwt], d
+
+                         {txt}f_incwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 8096.085       5231.317
+{txt} 5%    {res} 16814.95       5231.317
+{txt}10%    {res} 23665.48       5231.317       {txt}Obs         {res}      11461
+{txt}25%    {res}    36121       5231.317       {txt}Sum of Wgt. {res}     228551
+
+{txt}50%    {res} 51316.73                      {txt}Mean          {res} 60172.61
+                        {txt}Largest       Std. Dev.     {res}    49388
+{txt}75%    {res} 69750.89         494484
+{txt}90%    {res} 93416.37       728647.7       {txt}Variance      {res} 2.44e+09
+{txt}95%    {res}   119573       780960.9       {txt}Skewness      {res} 4.957813
+{txt}99%    {res} 340035.6       780960.9       {txt}Kurtosis      {res} 39.80697
+
+                         {txt}m_incwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 9341.637       5106.762
+{txt} 5%    {res} 18683.27       5106.762
+{txt}10%    {res}  28896.8       5106.762       {txt}Obs         {res}      26417
+{txt}25%    {res} 49822.06       5106.762       {txt}Sum of Wgt. {res}     534989
+
+{txt}50%    {res}  79715.3                      {txt}Mean          {res} 112566.8
+                        {txt}Largest       Std. Dev.     {res} 105642.2
+{txt}75%    {res} 124555.2       780960.9
+{txt}90%    {res} 291459.1       780960.9       {txt}Variance      {res} 1.12e+10
+{txt}95%    {res} 398576.5       780960.9       {txt}Skewness      {res} 2.100196
+{txt}99%    {res} 432206.4       780960.9       {txt}Kurtosis      {res} 7.284296
+{txt}
+{com}. sum f_incwbf09 m_incwbf09 if age>=65 & age<70 [aw=perwt], d
+
+                         {txt}f_incwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 7224.199       5231.317
+{txt} 5%    {res} 12455.52       5231.317
+{txt}10%    {res} 17437.72       5355.872       {txt}Obs         {res}       2981
+{txt}25%    {res} 29893.24       5480.427       {txt}Sum of Wgt. {res}      58503
+
+{txt}50%    {res} 49199.29                      {txt}Mean          {res} 58248.08
+                        {txt}Largest       Std. Dev.     {res} 53215.24
+{txt}75%    {res} 68505.34       440925.3
+{txt}90%    {res} 100142.4       443416.4       {txt}Variance      {res} 2.83e+09
+{txt}95%    {res} 124555.2       496975.1       {txt}Skewness      {res} 4.447603
+{txt}99%    {res} 379893.3       780960.9       {txt}Kurtosis      {res} 33.33511
+
+                         {txt}m_incwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 7224.199       5106.762
+{txt} 5%    {res} 13701.07       5106.762
+{txt}10%    {res} 18683.27       5231.317       {txt}Obs         {res}       9490
+{txt}25%    {res}  38612.1       5231.317       {txt}Sum of Wgt. {res}     190030
+
+{txt}50%    {res} 74733.09                      {txt}Mean          {res} 111365.9
+                        {txt}Largest       Std. Dev.     {res} 114248.5
+{txt}75%    {res} 124555.2       768505.3
+{txt}90%    {res} 327580.1       768505.3       {txt}Variance      {res} 1.31e+10
+{txt}95%    {res} 399822.1       768505.3       {txt}Skewness      {res}  2.01131
+{txt}99%    {res} 440925.3       780960.9       {txt}Kurtosis      {res} 6.932024
+{txt}
+{com}. sum f_incwbf09 m_incwbf09 if agegroup~=. [aw=perwt], d
+
+                         {txt}f_incwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 11209.96       5106.762
+{txt} 5%    {res}  20551.6       5106.762
+{txt}10%    {res} 26156.58       5106.762       {txt}Obs         {res}     411372
+{txt}25%    {res} 36743.77       5106.762       {txt}Sum of Wgt. {res}    8574345
+
+{txt}50%    {res} 49822.06                      {txt}Mean          {res} 59999.71
+                        {txt}Largest       Std. Dev.     {res} 48686.13
+{txt}75%    {res} 68505.34       780960.9
+{txt}90%    {res} 95907.48       780960.9       {txt}Variance      {res} 2.37e+09
+{txt}95%    {res} 124555.2       780960.9       {txt}Skewness      {res} 4.718383
+{txt}99%    {res} 379893.3       780960.9       {txt}Kurtosis      {res} 33.98594
+
+                         {txt}m_incwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 12455.52       5106.762
+{txt} 5%    {res} 24911.03       5106.762
+{txt}10%    {res} 32384.34       5106.762       {txt}Obs         {res}     602542
+{txt}25%    {res} 47953.74       5106.762       {txt}Sum of Wgt. {res}   12812962
+
+{txt}50%    {res} 72241.99                      {txt}Mean          {res} 98564.44
+                        {txt}Largest       Std. Dev.     {res} 91818.21
+{txt}75%    {res}   108363       846975.1
+{txt}90%    {res} 174377.2       846975.1       {txt}Variance      {res} 8.43e+09
+{txt}95%    {res}   386121       846975.1       {txt}Skewness      {res} 2.583761
+{txt}99%    {res} 432206.4       846975.1       {txt}Kurtosis      {res}   10.103
+{txt}
+{com}. 
+. sum f_lnincwbf09 m_lnincwbf09 if age>=25 & age<30 [aw=perwt], d
+
+                        {txt}f_lnincwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 9.429919       8.562418
+{txt} 5%    {res} 9.835384       8.562418
+{txt}10%    {res} 10.07177       8.562418       {txt}Obs         {res}      64181
+{txt}25%    {res} 10.34621       8.562418       {txt}Sum of Wgt. {res}    1413170
+
+{txt}50%    {res} 10.57732                      {txt}Mean          {res} 10.58311
+                        {txt}Largest       Std. Dev.     {res} .4459206
+{txt}75%    {res} 10.81621       12.97666
+{txt}90%    {res} 11.11632       12.99945       {txt}Variance      {res} .1988452
+{txt}95%    {res} 11.30172       13.10622       {txt}Skewness      {res} .0011357
+{txt}99%    {res}  11.7325       13.48344       {txt}Kurtosis      {res} 5.041228
+
+                        {txt}m_lnincwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 9.429919       8.538321
+{txt} 5%    {res} 9.899922       8.538321
+{txt}10%    {res} 10.12307       8.562418       {txt}Obs         {res}      59793
+{txt}25%    {res}  10.4702       8.562418       {txt}Sum of Wgt. {res}    1355788
+
+{txt}50%    {res} 10.76492                      {txt}Mean          {res} 10.76915
+                        {txt}Largest       Std. Dev.     {res} .5329837
+{txt}75%    {res}  11.0572       13.48344
+{txt}90%    {res} 11.37583       13.49036       {txt}Variance      {res} .2840716
+{txt}95%    {res} 11.61597       13.49895       {txt}Skewness      {res} .2258605
+{txt}99%    {res} 12.20251       13.50406       {txt}Kurtosis      {res} 5.256213
+{txt}
+{com}. sum f_lnincwbf09 m_lnincwbf09 if age>=30 & age<35 [aw=perwt], d
+
+                        {txt}f_lnincwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 9.429919       8.538321
+{txt} 5%    {res} 9.983804       8.538321
+{txt}10%    {res} 10.20924       8.538321       {txt}Obs         {res}      62183
+{txt}25%    {res} 10.49463       8.538321       {txt}Sum of Wgt. {res}    1311114
+
+{txt}50%    {res} 10.75167                      {txt}Mean          {res} 10.77133
+                        {txt}Largest       Std. Dev.     {res} .5176081
+{txt}75%    {res} 11.03936        13.1188
+{txt}90%    {res} 11.37583       13.17234       {txt}Variance      {res} .2679182
+{txt}95%    {res} 11.62714       13.17942       {txt}Skewness      {res} .2208245
+{txt}99%    {res} 12.13797       13.48691       {txt}Kurtosis      {res} 5.359419
+
+                        {txt}m_lnincwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 9.429919       8.562418
+{txt} 5%    {res} 10.12307       8.562418
+{txt}10%    {res} 10.34621       8.562418       {txt}Obs         {res}      79845
+{txt}25%    {res} 10.68268       8.562418       {txt}Sum of Wgt. {res}    1739157
+
+{txt}50%    {res} 11.01915                      {txt}Mean          {res} 11.03088
+                        {txt}Largest       Std. Dev.     {res} .6059017
+{txt}75%    {res} 11.36144        13.5522
+{txt}90%    {res}  11.7325       13.56828       {txt}Variance      {res} .3671169
+{txt}95%    {res} 11.99487       13.56828       {txt}Skewness      {res} .3481863
+{txt}99%    {res} 12.91116       13.56828       {txt}Kurtosis      {res} 4.821141
+{txt}
+{com}. sum f_lnincwbf09 m_lnincwbf09 if age>=35 & age<40 [aw=perwt], d
+
+                        {txt}f_lnincwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 9.357348       8.538321
+{txt} 5%    {res} 10.00653       8.538321
+{txt}10%    {res} 10.24085       8.562418       {txt}Obs         {res}      59293
+{txt}25%    {res} 10.54506       8.562418       {txt}Sum of Wgt. {res}    1246777
+
+{txt}50%    {res}   10.865                      {txt}Mean          {res} 10.89492
+                        {txt}Largest       Std. Dev.     {res} .5920295
+{txt}75%    {res} 11.22168       13.48344
+{txt}90%    {res} 11.58168       13.48344       {txt}Variance      {res} .3504989
+{txt}95%    {res} 11.82781       13.48344       {txt}Skewness      {res} .2632696
+{txt}99%    {res} 12.88624       13.50406       {txt}Kurtosis      {res}  4.92782
+
+                        {txt}m_lnincwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 9.469139       8.538321
+{txt} 5%    {res} 10.21838       8.538321
+{txt}10%    {res} 10.52853       8.538321       {txt}Obs         {res}      88638
+{txt}25%    {res} 10.81871       8.538321       {txt}Sum of Wgt. {res}    1931619
+
+{txt}50%    {res} 11.22168                      {txt}Mean          {res}  11.2523
+                        {txt}Largest       Std. Dev.     {res} .6870796
+{txt}75%    {res} 11.61597       13.56828
+{txt}90%    {res} 12.06181       13.56828       {txt}Variance      {res} .4720784
+{txt}95%    {res} 12.86391       13.56828       {txt}Skewness      {res} .2605861
+{txt}99%    {res} 12.97233       13.56828       {txt}Kurtosis      {res} 4.087507
+{txt}
+{com}. sum f_lnincwbf09 m_lnincwbf09 if age>=40 & age<45 [aw=perwt], d
+
+                        {txt}f_lnincwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 9.368043       8.538321
+{txt} 5%    {res} 9.972243       8.538321
+{txt}10%    {res} 10.21838       8.562418       {txt}Obs         {res}      61175
+{txt}25%    {res} 10.56132       8.562418       {txt}Sum of Wgt. {res}    1268946
+
+{txt}50%    {res} 10.87212                      {txt}Mean          {res} 10.90763
+                        {txt}Largest       Std. Dev.     {res} .6061113
+{txt}75%    {res} 11.22168       13.50406
+{txt}90%    {res} 11.61597       13.50406       {txt}Variance      {res} .3673709
+{txt}95%    {res} 11.89802       13.56828       {txt}Skewness      {res} .3181812
+{txt}99%    {res} 12.89878       13.56828       {txt}Kurtosis      {res} 4.927559
+
+                        {txt}m_lnincwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 9.429919       8.538321
+{txt} 5%    {res} 10.21838       8.538321
+{txt}10%    {res} 10.52853       8.543187       {txt}Obs         {res}      91963
+{txt}25%    {res} 10.88853       8.562418       {txt}Sum of Wgt. {res}    1987182
+
+{txt}50%    {res} 11.30172                      {txt}Mean          {res} 11.32475
+                        {txt}Largest       Std. Dev.     {res} .7276905
+{txt}75%    {res} 11.70204       13.56828
+{txt}90%    {res} 12.20251       13.56828       {txt}Variance      {res} .5295335
+{txt}95%    {res} 12.88308       13.56828       {txt}Skewness      {res} .1723052
+{txt}99%    {res} 12.97666       13.64943       {txt}Kurtosis      {res} 3.778982
+{txt}
+{com}. sum f_lnincwbf09 m_lnincwbf09 if age>=45 & age<50 [aw=perwt], d
+
+                        {txt}f_lnincwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 9.324558       8.538321
+{txt} 5%    {res} 9.960547       8.562418
+{txt}10%    {res} 10.21838       8.562418       {txt}Obs         {res}      65759
+{txt}25%    {res} 10.56775       8.562418       {txt}Sum of Wgt. {res}    1349148
+
+{txt}50%    {res} 10.88853                      {txt}Mean          {res} 10.89416
+                        {txt}Largest       Std. Dev.     {res} .5860199
+{txt}75%    {res} 11.22168       13.49036
+{txt}90%    {res} 11.53405       13.49208       {txt}Variance      {res} .3434193
+{txt}95%    {res} 11.79077       13.50406       {txt}Skewness      {res} .1743937
+{txt}99%    {res} 12.88308       13.50406       {txt}Kurtosis      {res} 5.185561
+
+                        {txt}m_lnincwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 9.429919       8.538321
+{txt} 5%    {res} 10.14287       8.538321
+{txt}10%    {res} 10.49463       8.538321       {txt}Obs         {res}      97053
+{txt}25%    {res} 10.87684       8.562418       {txt}Sum of Wgt. {res}    2023581
+
+{txt}50%    {res}  11.2768                      {txt}Mean          {res} 11.31573
+                        {txt}Largest       Std. Dev.     {res} .7389724
+{txt}75%    {res} 11.69168       13.56828
+{txt}90%    {res} 12.20874       13.56828       {txt}Variance      {res} .5460802
+{txt}95%    {res} 12.88308       13.56828       {txt}Skewness      {res} .1440331
+{txt}99%    {res} 12.97666       13.64943       {txt}Kurtosis      {res} 3.735691
+{txt}
+{com}. sum f_lnincwbf09 m_lnincwbf09 if age>=50 & age<55 [aw=perwt], d
+
+                        {txt}f_lnincwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 9.324558       8.562418
+{txt} 5%    {res} 9.960547       8.562418
+{txt}10%    {res} 10.22291       8.562418       {txt}Obs         {res}      55324
+{txt}25%    {res} 10.59307       8.562418       {txt}Sum of Wgt. {res}    1110642
+
+{txt}50%    {res} 10.91152                      {txt}Mean          {res} 10.89678
+                        {txt}Largest       Std. Dev.     {res} .5701029
+{txt}75%    {res} 11.22168       13.48344
+{txt}90%    {res} 11.50936       13.49895       {txt}Variance      {res} .3250173
+{txt}95%    {res}  11.7325       13.50406       {txt}Skewness      {res} .0419896
+{txt}99%    {res} 12.86391       13.50406       {txt}Kurtosis      {res} 5.280888
+
+                        {txt}m_lnincwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 9.429919       8.538321
+{txt} 5%    {res} 10.12307       8.538321
+{txt}10%    {res} 10.49463       8.538321       {txt}Obs         {res}      93986
+{txt}25%    {res} 10.91152       8.538321       {txt}Sum of Wgt. {res}    1920011
+
+{txt}50%    {res} 11.30172                      {txt}Mean          {res} 11.32331
+                        {txt}Largest       Std. Dev.     {res} .7456255
+{txt}75%    {res}  11.7123       13.56828
+{txt}90%    {res} 12.21493       13.62562       {txt}Variance      {res} .5559574
+{txt}95%    {res} 12.88308       13.64943       {txt}Skewness      {res} .0751691
+{txt}99%    {res} 12.97666       13.64943       {txt}Kurtosis      {res} 3.815598
+{txt}
+{com}. sum f_lnincwbf09 m_lnincwbf09 if age>=55 & age<60 [aw=perwt], d
+
+                        {txt}f_lnincwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 9.206776       8.538321
+{txt} 5%    {res} 9.899922       8.562418
+{txt}10%    {res} 10.17186       8.562418       {txt}Obs         {res}      29015
+{txt}25%    {res} 10.56132       8.562418       {txt}Sum of Wgt. {res}     587494
+
+{txt}50%    {res} 10.91152                      {txt}Mean          {res} 10.87682
+                        {txt}Largest       Std. Dev.     {res} .5832935
+{txt}75%    {res} 11.22168       13.22765
+{txt}90%    {res} 11.50936       13.47297       {txt}Variance      {res} .3402313
+{txt}95%    {res}  11.7325       13.48344       {txt}Skewness      {res}-.0856377
+{txt}99%    {res} 12.83478       13.50406       {txt}Kurtosis      {res} 5.099945
+
+                        {txt}m_lnincwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 9.324558       8.538321
+{txt} 5%    {res} 10.08744       8.538321
+{txt}10%    {res} 10.42317       8.562418       {txt}Obs         {res}      55357
+{txt}25%    {res} 10.92282       8.562418       {txt}Sum of Wgt. {res}    1130605
+
+{txt}50%    {res} 11.33203                      {txt}Mean          {res} 11.34519
+                        {txt}Largest       Std. Dev.     {res} .7803893
+{txt}75%    {res}  11.7325       13.56828
+{txt}90%    {res} 12.56975       13.56828       {txt}Variance      {res} .6090075
+{txt}95%    {res} 12.88939       13.56828       {txt}Skewness      {res}-.0144378
+{txt}99%    {res} 12.97666       13.64943       {txt}Kurtosis      {res} 3.638103
+{txt}
+{com}. sum f_lnincwbf09 m_lnincwbf09 if age>=60 & age<65 [aw=perwt], d
+
+                        {txt}f_lnincwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 8.999136       8.562418
+{txt} 5%    {res} 9.730023       8.562418
+{txt}10%    {res} 10.07177       8.562418       {txt}Obs         {res}      11461
+{txt}25%    {res} 10.49463       8.562418       {txt}Sum of Wgt. {res}     228551
+
+{txt}50%    {res} 10.84577                      {txt}Mean          {res} 10.80976
+                        {txt}Largest       Std. Dev.     {res} .6148662
+{txt}75%    {res} 11.15269       13.11127
+{txt}90%    {res} 11.44482       13.49895       {txt}Variance      {res} .3780604
+{txt}95%    {res} 11.69168       13.56828       {txt}Skewness      {res}-.1639071
+{txt}99%    {res} 12.73681       13.56828       {txt}Kurtosis      {res} 4.925199
+
+                        {txt}m_lnincwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 9.142237       8.538321
+{txt} 5%    {res} 9.835384       8.538321
+{txt}10%    {res} 10.27149       8.538321       {txt}Obs         {res}      26417
+{txt}25%    {res} 10.81621       8.538321       {txt}Sum of Wgt. {res}     534989
+
+{txt}50%    {res} 11.28622                      {txt}Mean          {res} 11.29015
+                        {txt}Largest       Std. Dev.     {res} .8300032
+{txt}75%    {res}  11.7325       13.56828
+{txt}90%    {res} 12.58265       13.56828       {txt}Variance      {res} .6889053
+{txt}95%    {res} 12.89565       13.56828       {txt}Skewness      {res}-.0731268
+{txt}99%    {res} 12.97666       13.56828       {txt}Kurtosis      {res} 3.392974
+{txt}
+{com}. sum f_lnincwbf09 m_lnincwbf09 if age>=65 & age<70 [aw=perwt], d
+
+                        {txt}f_lnincwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 8.885192       8.562418
+{txt} 5%    {res} 9.429919       8.562418
+{txt}10%    {res} 9.766391       8.585949       {txt}Obs         {res}       2981
+{txt}25%    {res} 10.30539       8.608938       {txt}Sum of Wgt. {res}      58503
+
+{txt}50%    {res} 10.80363                      {txt}Mean          {res} 10.71491
+                        {txt}Largest       Std. Dev.     {res} .7131869
+{txt}75%    {res} 11.13467       12.99663
+{txt}90%    {res} 11.51435       13.00226       {txt}Variance      {res} .5086355
+{txt}95%    {res}  11.7325       13.11629       {txt}Skewness      {res} -.107108
+{txt}99%    {res} 12.84765       13.56828       {txt}Kurtosis      {res} 3.713833
+
+                        {txt}m_lnincwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 8.885192       8.538321
+{txt} 5%    {res} 9.525229       8.538321
+{txt}10%    {res} 9.835384       8.562418       {txt}Obs         {res}       9490
+{txt}25%    {res} 10.56132       8.562418       {txt}Sum of Wgt. {res}     190030
+
+{txt}50%    {res} 11.22168                      {txt}Mean          {res} 11.18114
+                        {txt}Largest       Std. Dev.     {res} .9617689
+{txt}75%    {res}  11.7325        13.5522
+{txt}90%    {res} 12.69949        13.5522       {txt}Variance      {res} .9249993
+{txt}95%    {res} 12.89878        13.5522       {txt}Skewness      {res}-.1039627
+{txt}99%    {res} 12.99663       13.56828       {txt}Kurtosis      {res} 2.794798
+{txt}
+{com}. sum f_lnincwbf09 m_lnincwbf09 if agegroup~=. [aw=perwt], d
+
+                        {txt}f_lnincwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 9.324558       8.538321
+{txt} 5%    {res} 9.930695       8.538321
+{txt}10%    {res} 10.17186       8.538321       {txt}Obs         {res}     411372
+{txt}25%    {res} 10.51172       8.538321       {txt}Sum of Wgt. {res}    8574345
+
+{txt}50%    {res} 10.81621                      {txt}Mean          {res}  10.8219
+                        {txt}Largest       Std. Dev.     {res} .5705712
+{txt}75%    {res} 11.13467       13.56828
+{txt}90%    {res} 11.47114       13.56828       {txt}Variance      {res} .3255514
+{txt}95%    {res}  11.7325       13.56828       {txt}Skewness      {res} .2379896
+{txt}99%    {res} 12.84765       13.56828       {txt}Kurtosis      {res} 5.088738
+
+                        {txt}m_lnincwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 9.429919       8.538321
+{txt} 5%    {res} 10.12307       8.538321
+{txt}10%    {res} 10.38543       8.538321       {txt}Obs         {res}     602542
+{txt}25%    {res} 10.77799       8.538321       {txt}Sum of Wgt. {res}   12812962
+
+{txt}50%    {res} 11.18778                      {txt}Mean          {res} 11.21174
+                        {txt}Largest       Std. Dev.     {res} .7292202
+{txt}75%    {res} 11.59324       13.64943
+{txt}90%    {res} 12.06898       13.64943       {txt}Variance      {res} .5317622
+{txt}95%    {res} 12.86391       13.64943       {txt}Skewness      {res}  .230901
+{txt}99%    {res} 12.97666       13.64943       {txt}Kurtosis      {res} 3.826975
+{txt}
+{com}. 
+. 
+. 
+. *---------------------------------------------------------------------------------------------------*
+. /* Create sample: College Graduates, white, US-born, ALL employment status (not only fulltime)*/
+. 
+. *---------------------------------------------------------------------------------------------------*
+. clear 
+{txt}
+{com}.         
+. use ./coded_datasets/IPUMS_2000_coded.dta
+{txt}
+{com}. 
+. 
+. /*Create sample: white, us born, college educated*/
+.         
+.         drop if white ~=1
+{txt}(1546309 observations deleted)
+
+{com}.         drop if bpl > 99
+{txt}(419232 observations deleted)
+
+{com}.         drop if educd < 101
+{txt}(4003661 observations deleted)
+
+{com}.         
+.         drop if fulltime==1 & low1==1
+{txt}(5831 observations deleted)
+
+{com}.         drop if fulltime==0 & low2==1
+{txt}(12304 observations deleted)
+
+{com}.         drop if fulltime==0 & high1==1
+{txt}(3255 observations deleted)
+
+{com}.         
+. /*1. Generating the log income means by age group*/
+. 
+. reg lnincwbf09 female _Iagegroup_2 _Iagegroup_3 _Iagegroup_4 _Iagegroup_5 _Iagegroup_6 _Iagegroup_7 _Iagegroup_8 _Iagegroup_9 fage2 fage3 fage4 fage5 fage6 fage7 fage8 fage9 [aw=perwt], r
+{txt}(sum of wgt is   2.7175e+07)
+
+Linear regression                                      Number of obs ={res} 1295706
+                                                       {txt}F( 17,1295688) ={res}10352.39
+                                                       {txt}Prob > F      = {res} 0.0000
+                                                       {txt}R-squared     = {res} 0.1357
+                                                       {txt}Root MSE      = {res} .90775
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}  lnincwbf09{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 6}female {c |}{col 14}{res}{space 2}-.2527786{col 26}{space 2} .0041173{col 37}{space 1}  -61.39{col 46}{space 3}0.000{col 54}{space 4}-.2608485{col 67}{space 3}-.2447088
+{txt}_Iagegroup_2 {c |}{col 14}{res}{space 2}  .338635{col 26}{space 2} .0040219{col 37}{space 1}   84.20{col 46}{space 3}0.000{col 54}{space 4} .3307522{col 67}{space 3} .3465178
+{txt}_Iagegroup_3 {c |}{col 14}{res}{space 2} .5794588{col 26}{space 2} .0040688{col 37}{space 1}  142.41{col 46}{space 3}0.000{col 54}{space 4}  .571484{col 67}{space 3} .5874335
+{txt}_Iagegroup_4 {c |}{col 14}{res}{space 2}   .65343{col 26}{space 2} .0041194{col 37}{space 1}  158.62{col 46}{space 3}0.000{col 54}{space 4}  .645356{col 67}{space 3}  .661504
+{txt}_Iagegroup_5 {c |}{col 14}{res}{space 2} .6360754{col 26}{space 2} .0041215{col 37}{space 1}  154.33{col 46}{space 3}0.000{col 54}{space 4} .6279974{col 67}{space 3} .6441534
+{txt}_Iagegroup_6 {c |}{col 14}{res}{space 2} .6296246{col 26}{space 2} .0041787{col 37}{space 1}  150.68{col 46}{space 3}0.000{col 54}{space 4} .6214346{col 67}{space 3} .6378147
+{txt}_Iagegroup_7 {c |}{col 14}{res}{space 2} .5620185{col 26}{space 2} .0051025{col 37}{space 1}  110.15{col 46}{space 3}0.000{col 54}{space 4} .5520178{col 67}{space 3} .5720192
+{txt}_Iagegroup_8 {c |}{col 14}{res}{space 2}  .283098{col 26}{space 2} .0074063{col 37}{space 1}   38.22{col 46}{space 3}0.000{col 54}{space 4} .2685818{col 67}{space 3} .2976142
+{txt}_Iagegroup_9 {c |}{col 14}{res}{space 2}-.2803239{col 26}{space 2} .0115144{col 37}{space 1}  -24.35{col 46}{space 3}0.000{col 54}{space 4}-.3028917{col 67}{space 3}-.2577561
+{txt}{space 7}fage2 {c |}{col 14}{res}{space 2} -.235233{col 26}{space 2} .0059803{col 37}{space 1}  -39.33{col 46}{space 3}0.000{col 54}{space 4}-.2469543{col 67}{space 3}-.2235118
+{txt}{space 7}fage3 {c |}{col 14}{res}{space 2}-.4276075{col 26}{space 2} .0062318{col 37}{space 1}  -68.62{col 46}{space 3}0.000{col 54}{space 4}-.4398216{col 67}{space 3}-.4153934
+{txt}{space 7}fage4 {c |}{col 14}{res}{space 2}-.4777001{col 26}{space 2} .0062043{col 37}{space 1}  -77.00{col 46}{space 3}0.000{col 54}{space 4}-.4898602{col 67}{space 3}-.4655399
+{txt}{space 7}fage5 {c |}{col 14}{res}{space 2}-.4076408{col 26}{space 2}  .006026{col 37}{space 1}  -67.65{col 46}{space 3}0.000{col 54}{space 4}-.4194515{col 67}{space 3}  -.39583
+{txt}{space 7}fage6 {c |}{col 14}{res}{space 2}-.3665694{col 26}{space 2} .0061509{col 37}{space 1}  -59.60{col 46}{space 3}0.000{col 54}{space 4}-.3786249{col 67}{space 3}-.3545139
+{txt}{space 7}fage7 {c |}{col 14}{res}{space 2}-.4055783{col 26}{space 2} .0077266{col 37}{space 1}  -52.49{col 46}{space 3}0.000{col 54}{space 4}-.4207221{col 67}{space 3}-.3904345
+{txt}{space 7}fage8 {c |}{col 14}{res}{space 2}-.4412724{col 26}{space 2} .0118789{col 37}{space 1}  -37.15{col 46}{space 3}0.000{col 54}{space 4}-.4645546{col 67}{space 3}-.4179902
+{txt}{space 7}fage9 {c |}{col 14}{res}{space 2}-.4721495{col 26}{space 2} .0201187{col 37}{space 1}  -23.47{col 46}{space 3}0.000{col 54}{space 4}-.5115814{col 67}{space 3}-.4327176
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 10.59672{col 26}{space 2} .0030103{col 37}{space 1} 3520.19{col 46}{space 3}0.000{col 54}{space 4} 10.59082{col 67}{space 3} 10.60262
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. /*2. Including controls- education, weeks worked, hours worked*/
+. reg lnincwbf09 female _Iagegroup_2 _Iagegroup_3 _Iagegroup_4 _Iagegroup_5 _Iagegroup_6 _Iagegroup_7 _Iagegroup_8 _Iagegroup_9 fage2 fage3 fage4 fage5 fage6 fage7 fage8 fage9 yrschpstcol lnuhrs lnweeks1 [aw=perwt], r
+{txt}(sum of wgt is   2.7175e+07)
+
+Linear regression                                      Number of obs ={res} 1295706
+                                                       {txt}F( 20,1295685) ={res}33846.31
+                                                       {txt}Prob > F      = {res} 0.0000
+                                                       {txt}R-squared     = {res} 0.5292
+                                                       {txt}Root MSE      = {res} .66999
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}  lnincwbf09{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 6}female {c |}{col 14}{res}{space 2}-.1042841{col 26}{space 2} .0030094{col 37}{space 1}  -34.65{col 46}{space 3}0.000{col 54}{space 4}-.1101825{col 67}{space 3}-.0983857
+{txt}_Iagegroup_2 {c |}{col 14}{res}{space 2} .2145405{col 26}{space 2} .0032414{col 37}{space 1}   66.19{col 46}{space 3}0.000{col 54}{space 4} .2081874{col 67}{space 3} .2208936
+{txt}_Iagegroup_3 {c |}{col 14}{res}{space 2} .4198602{col 26}{space 2} .0033405{col 37}{space 1}  125.69{col 46}{space 3}0.000{col 54}{space 4}  .413313{col 67}{space 3} .4264075
+{txt}_Iagegroup_4 {c |}{col 14}{res}{space 2} .4839072{col 26}{space 2} .0034105{col 37}{space 1}  141.89{col 46}{space 3}0.000{col 54}{space 4} .4772228{col 67}{space 3} .4905916
+{txt}_Iagegroup_5 {c |}{col 14}{res}{space 2} .4724198{col 26}{space 2} .0033957{col 37}{space 1}  139.12{col 46}{space 3}0.000{col 54}{space 4} .4657644{col 67}{space 3} .4790752
+{txt}_Iagegroup_6 {c |}{col 14}{res}{space 2} .4826188{col 26}{space 2}  .003449{col 37}{space 1}  139.93{col 46}{space 3}0.000{col 54}{space 4} .4758589{col 67}{space 3} .4893788
+{txt}_Iagegroup_7 {c |}{col 14}{res}{space 2} .5034737{col 26}{space 2} .0041366{col 37}{space 1}  121.71{col 46}{space 3}0.000{col 54}{space 4} .4953662{col 67}{space 3} .5115812
+{txt}_Iagegroup_8 {c |}{col 14}{res}{space 2} .4347222{col 26}{space 2} .0054953{col 37}{space 1}   79.11{col 46}{space 3}0.000{col 54}{space 4} .4239516{col 67}{space 3} .4454928
+{txt}_Iagegroup_9 {c |}{col 14}{res}{space 2} .2938339{col 26}{space 2} .0079155{col 37}{space 1}   37.12{col 46}{space 3}0.000{col 54}{space 4} .2783197{col 67}{space 3}  .309348
+{txt}{space 7}fage2 {c |}{col 14}{res}{space 2}-.0632394{col 26}{space 2} .0043041{col 37}{space 1}  -14.69{col 46}{space 3}0.000{col 54}{space 4}-.0716754{col 67}{space 3}-.0548034
+{txt}{space 7}fage3 {c |}{col 14}{res}{space 2}-.1742257{col 26}{space 2} .0044859{col 37}{space 1}  -38.84{col 46}{space 3}0.000{col 54}{space 4} -.183018{col 67}{space 3}-.1654335
+{txt}{space 7}fage4 {c |}{col 14}{res}{space 2}-.2383414{col 26}{space 2}  .004537{col 37}{space 1}  -52.53{col 46}{space 3}0.000{col 54}{space 4}-.2472337{col 67}{space 3} -.229449
+{txt}{space 7}fage5 {c |}{col 14}{res}{space 2}-.2350449{col 26}{space 2} .0044632{col 37}{space 1}  -52.66{col 46}{space 3}0.000{col 54}{space 4}-.2437926{col 67}{space 3}-.2262972
+{txt}{space 7}fage6 {c |}{col 14}{res}{space 2}-.2357497{col 26}{space 2}  .004595{col 37}{space 1}  -51.31{col 46}{space 3}0.000{col 54}{space 4}-.2447558{col 67}{space 3}-.2267436
+{txt}{space 7}fage7 {c |}{col 14}{res}{space 2}-.2732041{col 26}{space 2} .0056198{col 37}{space 1}  -48.61{col 46}{space 3}0.000{col 54}{space 4}-.2842187{col 67}{space 3}-.2621895
+{txt}{space 7}fage8 {c |}{col 14}{res}{space 2}-.2700088{col 26}{space 2}  .007774{col 37}{space 1}  -34.73{col 46}{space 3}0.000{col 54}{space 4}-.2852456{col 67}{space 3}-.2547721
+{txt}{space 7}fage9 {c |}{col 14}{res}{space 2}-.2482269{col 26}{space 2} .0122388{col 37}{space 1}  -20.28{col 46}{space 3}0.000{col 54}{space 4}-.2722146{col 67}{space 3}-.2242393
+{txt}{space 1}yrschpstcol {c |}{col 14}{res}{space 2} .0919041{col 26}{space 2} .0006256{col 37}{space 1}  146.91{col 46}{space 3}0.000{col 54}{space 4}  .090678{col 67}{space 3} .0931303
+{txt}{space 6}lnuhrs {c |}{col 14}{res}{space 2} .9977898{col 26}{space 2} .0024558{col 37}{space 1}  406.30{col 46}{space 3}0.000{col 54}{space 4} .9929765{col 67}{space 3} 1.002603
+{txt}{space 4}lnweeks1 {c |}{col 14}{res}{space 2} .9368166{col 26}{space 2} .0027131{col 37}{space 1}  345.29{col 46}{space 3}0.000{col 54}{space 4}  .931499{col 67}{space 3} .9421342
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 3.225222{col 26}{space 2} .0119803{col 37}{space 1}  269.21{col 46}{space 3}0.000{col 54}{space 4} 3.201741{col 67}{space 3} 3.248703
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}.         
+. /*3. Including controls- education, weeks worked, children, hours worked, female*children */
+. reg lnincwbf09 female _Iagegroup_2 _Iagegroup_3 _Iagegroup_4 _Iagegroup_5 _Iagegroup_6 _Iagegroup_7 _Iagegroup_8 _Iagegroup_9 fage2 fage3 fage4 fage5 fage6 fage7 fage8 fage9 yrschpstcol lnuhrs lnweeks1 chldo5 chldu5 fchldo5 fchldu5 [aw=perwt], r
+{txt}(sum of wgt is   2.7175e+07)
+
+Linear regression                                      Number of obs ={res} 1295706
+                                                       {txt}F( 24,1295681) ={res}28961.89
+                                                       {txt}Prob > F      = {res} 0.0000
+                                                       {txt}R-squared     = {res} 0.5330
+                                                       {txt}Root MSE      = {res} .66721
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}  lnincwbf09{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 6}female {c |}{col 14}{res}{space 2}-.0934334{col 26}{space 2} .0030681{col 37}{space 1}  -30.45{col 46}{space 3}0.000{col 54}{space 4}-.0994466{col 67}{space 3}-.0874201
+{txt}_Iagegroup_2 {c |}{col 14}{res}{space 2} .1690569{col 26}{space 2} .0032882{col 37}{space 1}   51.41{col 46}{space 3}0.000{col 54}{space 4} .1626122{col 67}{space 3} .1755017
+{txt}_Iagegroup_3 {c |}{col 14}{res}{space 2} .3368874{col 26}{space 2} .0034727{col 37}{space 1}   97.01{col 46}{space 3}0.000{col 54}{space 4}  .330081{col 67}{space 3} .3436938
+{txt}_Iagegroup_4 {c |}{col 14}{res}{space 2}  .405596{col 26}{space 2} .0036153{col 37}{space 1}  112.19{col 46}{space 3}0.000{col 54}{space 4} .3985102{col 67}{space 3} .4126817
+{txt}_Iagegroup_5 {c |}{col 14}{res}{space 2} .4116571{col 26}{space 2} .0036275{col 37}{space 1}  113.48{col 46}{space 3}0.000{col 54}{space 4} .4045473{col 67}{space 3} .4187669
+{txt}_Iagegroup_6 {c |}{col 14}{res}{space 2} .4478626{col 26}{space 2} .0035971{col 37}{space 1}  124.51{col 46}{space 3}0.000{col 54}{space 4} .4408124{col 67}{space 3} .4549129
+{txt}_Iagegroup_7 {c |}{col 14}{res}{space 2} .4928603{col 26}{space 2} .0042014{col 37}{space 1}  117.31{col 46}{space 3}0.000{col 54}{space 4} .4846257{col 67}{space 3} .5010949
+{txt}_Iagegroup_8 {c |}{col 14}{res}{space 2} .4378876{col 26}{space 2} .0055296{col 37}{space 1}   79.19{col 46}{space 3}0.000{col 54}{space 4} .4270497{col 67}{space 3} .4487254
+{txt}_Iagegroup_9 {c |}{col 14}{res}{space 2} .3013934{col 26}{space 2} .0079367{col 37}{space 1}   37.97{col 46}{space 3}0.000{col 54}{space 4} .2858377{col 67}{space 3}  .316949
+{txt}{space 7}fage2 {c |}{col 14}{res}{space 2}-.0233281{col 26}{space 2} .0043697{col 37}{space 1}   -5.34{col 46}{space 3}0.000{col 54}{space 4}-.0318925{col 67}{space 3}-.0147636
+{txt}{space 7}fage3 {c |}{col 14}{res}{space 2}-.0710577{col 26}{space 2} .0046609{col 37}{space 1}  -15.25{col 46}{space 3}0.000{col 54}{space 4}-.0801928{col 67}{space 3}-.0619226
+{txt}{space 7}fage4 {c |}{col 14}{res}{space 2}-.1132198{col 26}{space 2} .0048292{col 37}{space 1}  -23.44{col 46}{space 3}0.000{col 54}{space 4}-.1226848{col 67}{space 3}-.1037547
+{txt}{space 7}fage5 {c |}{col 14}{res}{space 2} -.122515{col 26}{space 2} .0047783{col 37}{space 1}  -25.64{col 46}{space 3}0.000{col 54}{space 4}-.1318804{col 67}{space 3}-.1131496
+{txt}{space 7}fage6 {c |}{col 14}{res}{space 2}-.1620283{col 26}{space 2} .0047741{col 37}{space 1}  -33.94{col 46}{space 3}0.000{col 54}{space 4}-.1713854{col 67}{space 3}-.1526712
+{txt}{space 7}fage7 {c |}{col 14}{res}{space 2}-.2356507{col 26}{space 2}  .005695{col 37}{space 1}  -41.38{col 46}{space 3}0.000{col 54}{space 4}-.2468127{col 67}{space 3}-.2244888
+{txt}{space 7}fage8 {c |}{col 14}{res}{space 2}-.2515147{col 26}{space 2} .0078146{col 37}{space 1}  -32.19{col 46}{space 3}0.000{col 54}{space 4}-.2668311{col 67}{space 3}-.2361982
+{txt}{space 7}fage9 {c |}{col 14}{res}{space 2}-.2368614{col 26}{space 2} .0122561{col 37}{space 1}  -19.33{col 46}{space 3}0.000{col 54}{space 4}-.2608829{col 67}{space 3}-.2128399
+{txt}{space 1}yrschpstcol {c |}{col 14}{res}{space 2} .0903407{col 26}{space 2} .0006228{col 37}{space 1}  145.06{col 46}{space 3}0.000{col 54}{space 4}   .08912{col 67}{space 3} .0915613
+{txt}{space 6}lnuhrs {c |}{col 14}{res}{space 2} .9941644{col 26}{space 2} .0024772{col 37}{space 1}  401.32{col 46}{space 3}0.000{col 54}{space 4} .9893091{col 67}{space 3} .9990197
+{txt}{space 4}lnweeks1 {c |}{col 14}{res}{space 2} .9343068{col 26}{space 2} .0027113{col 37}{space 1}  344.60{col 46}{space 3}0.000{col 54}{space 4} .9289929{col 67}{space 3} .9396208
+{txt}{space 6}chldo5 {c |}{col 14}{res}{space 2} .1269694{col 26}{space 2} .0021501{col 37}{space 1}   59.05{col 46}{space 3}0.000{col 54}{space 4} .1227552{col 67}{space 3} .1311835
+{txt}{space 6}chldu5 {c |}{col 14}{res}{space 2} .1276178{col 26}{space 2}  .002613{col 37}{space 1}   48.84{col 46}{space 3}0.000{col 54}{space 4} .1224964{col 67}{space 3} .1327392
+{txt}{space 5}fchldo5 {c |}{col 14}{res}{space 2}-.1958286{col 26}{space 2} .0029579{col 37}{space 1}  -66.21{col 46}{space 3}0.000{col 54}{space 4}-.2016259{col 67}{space 3}-.1900312
+{txt}{space 5}fchldu5 {c |}{col 14}{res}{space 2}-.0399961{col 26}{space 2} .0037482{col 37}{space 1}  -10.67{col 46}{space 3}0.000{col 54}{space 4}-.0473425{col 67}{space 3}-.0326497
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 3.224489{col 26}{space 2} .0121047{col 37}{space 1}  266.38{col 46}{space 3}0.000{col 54}{space 4} 3.200764{col 67}{space 3} 3.248214
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}.         
+. *---------------------------------------------------------------------------------------------------*
+. /* Create sample: Non-College graduates, white, US-born, full time*/
+. 
+. *---------------------------------------------------------------------------------------------------*
+. 
+. clear
+{txt}
+{com}. 
+. use ./coded_datasets/IPUMS_2000_coded.dta
+{txt}
+{com}. 
+. 
+. /* Run analysis only for full time full year workers */ 
+. 
+.         drop if fulltime == 0
+{txt}(2415395 observations deleted)
+
+{com}.         drop if incwbf09 < min09
+{txt}(37068 observations deleted)
+
+{com}. 
+. /*Create sample: white, us born, non-college educated*/
+.         
+.         drop if white~=1
+{txt}(1001125 observations deleted)
+
+{com}.         drop if bpl > 99
+{txt}(286196 observations deleted)
+
+{com}.         drop if educd >= 101
+{txt}(1052145 observations deleted)
+
+{com}.         
+. /*1. Generating the log income means by age group*/
+. 
+. reg lnincwbf09 female _Iagegroup_2 _Iagegroup_3 _Iagegroup_4 _Iagegroup_5 _Iagegroup_6 _Iagegroup_7 _Iagegroup_8 _Iagegroup_9 fage2 fage3 fage4 fage5 fage6 fage7 fage8 fage9 [aw=perwt], r
+{txt}(sum of wgt is   4.4720e+07)
+
+Linear regression                                      Number of obs ={res} 2316787
+                                                       {txt}F( 17,2316769) ={res}14233.07
+                                                       {txt}Prob > F      = {res} 0.0000
+                                                       {txt}R-squared     = {res} 0.1141
+                                                       {txt}Root MSE      = {res} .55328
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}  lnincwbf09{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 6}female {c |}{col 14}{res}{space 2}-.2585098{col 26}{space 2} .0021812{col 37}{space 1} -118.52{col 46}{space 3}0.000{col 54}{space 4}-.2627848{col 67}{space 3}-.2542348
+{txt}_Iagegroup_2 {c |}{col 14}{res}{space 2}  .142698{col 26}{space 2} .0019826{col 37}{space 1}   71.97{col 46}{space 3}0.000{col 54}{space 4} .1388122{col 67}{space 3} .1465839
+{txt}_Iagegroup_3 {c |}{col 14}{res}{space 2} .2538172{col 26}{space 2} .0019323{col 37}{space 1}  131.35{col 46}{space 3}0.000{col 54}{space 4}   .25003{col 67}{space 3} .2576045
+{txt}_Iagegroup_4 {c |}{col 14}{res}{space 2} .3040046{col 26}{space 2}  .001943{col 37}{space 1}  156.46{col 46}{space 3}0.000{col 54}{space 4} .3001964{col 67}{space 3} .3078128
+{txt}_Iagegroup_5 {c |}{col 14}{res}{space 2} .3353765{col 26}{space 2} .0020464{col 37}{space 1}  163.88{col 46}{space 3}0.000{col 54}{space 4} .3313656{col 67}{space 3} .3393874
+{txt}_Iagegroup_6 {c |}{col 14}{res}{space 2} .3554158{col 26}{space 2}  .002184{col 37}{space 1}  162.74{col 46}{space 3}0.000{col 54}{space 4} .3511353{col 67}{space 3} .3596963
+{txt}_Iagegroup_7 {c |}{col 14}{res}{space 2} .3395368{col 26}{space 2}  .002466{col 37}{space 1}  137.69{col 46}{space 3}0.000{col 54}{space 4} .3347035{col 67}{space 3} .3443701
+{txt}_Iagegroup_8 {c |}{col 14}{res}{space 2} .2757105{col 26}{space 2} .0031644{col 37}{space 1}   87.13{col 46}{space 3}0.000{col 54}{space 4} .2695084{col 67}{space 3} .2819127
+{txt}_Iagegroup_9 {c |}{col 14}{res}{space 2} .0575489{col 26}{space 2}  .006909{col 37}{space 1}    8.33{col 46}{space 3}0.000{col 54}{space 4} .0440075{col 67}{space 3} .0710903
+{txt}{space 7}fage2 {c |}{col 14}{res}{space 2}-.0516248{col 26}{space 2} .0030751{col 37}{space 1}  -16.79{col 46}{space 3}0.000{col 54}{space 4} -.057652{col 67}{space 3}-.0455977
+{txt}{space 7}fage3 {c |}{col 14}{res}{space 2}-.0996049{col 26}{space 2} .0029818{col 37}{space 1}  -33.40{col 46}{space 3}0.000{col 54}{space 4}-.1054491{col 67}{space 3}-.0937607
+{txt}{space 7}fage4 {c |}{col 14}{res}{space 2} -.117533{col 26}{space 2} .0029633{col 37}{space 1}  -39.66{col 46}{space 3}0.000{col 54}{space 4} -.123341{col 67}{space 3}-.1117251
+{txt}{space 7}fage5 {c |}{col 14}{res}{space 2}-.1205649{col 26}{space 2} .0030745{col 37}{space 1}  -39.21{col 46}{space 3}0.000{col 54}{space 4}-.1265909{col 67}{space 3}-.1145389
+{txt}{space 7}fage6 {c |}{col 14}{res}{space 2}-.1389374{col 26}{space 2} .0032226{col 37}{space 1}  -43.11{col 46}{space 3}0.000{col 54}{space 4}-.1452536{col 67}{space 3}-.1326211
+{txt}{space 7}fage7 {c |}{col 14}{res}{space 2}-.1582253{col 26}{space 2} .0035903{col 37}{space 1}  -44.07{col 46}{space 3}0.000{col 54}{space 4}-.1652622{col 67}{space 3}-.1511884
+{txt}{space 7}fage8 {c |}{col 14}{res}{space 2}-.1291272{col 26}{space 2} .0045715{col 37}{space 1}  -28.25{col 46}{space 3}0.000{col 54}{space 4}-.1380872{col 67}{space 3}-.1201673
+{txt}{space 7}fage9 {c |}{col 14}{res}{space 2}-.0259981{col 26}{space 2} .0094979{col 37}{space 1}   -2.74{col 46}{space 3}0.006{col 54}{space 4}-.0446137{col 67}{space 3}-.0073825
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2}   10.434{col 26}{space 2} .0014152{col 37}{space 1} 7372.72{col 46}{space 3}0.000{col 54}{space 4} 10.43123{col 67}{space 3} 10.43678
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. /*2. Including controls- education, weeks worked, hours worked */
+. reg lnincwbf09 female _Iagegroup_2 _Iagegroup_3 _Iagegroup_4 _Iagegroup_5 _Iagegroup_6 _Iagegroup_7 _Iagegroup_8 _Iagegroup_9 fage2 fage3 fage4 fage5 fage6 fage7 fage8 fage9 yrsch911 yrsch12 yrsch1315 lnuhrs lnweeks1 [aw=perwt], r
+{txt}(sum of wgt is   4.4720e+07)
+
+Linear regression                                      Number of obs ={res} 2316787
+                                                       {txt}F( 22,2316764) ={res}18703.06
+                                                       {txt}Prob > F      = {res} 0.0000
+                                                       {txt}R-squared     = {res} 0.1953
+                                                       {txt}Root MSE      = {res}  .5273
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}  lnincwbf09{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 6}female {c |}{col 14}{res}{space 2}-.2399954{col 26}{space 2} .0020781{col 37}{space 1} -115.49{col 46}{space 3}0.000{col 54}{space 4}-.2440685{col 67}{space 3}-.2359224
+{txt}_Iagegroup_2 {c |}{col 14}{res}{space 2} .1307374{col 26}{space 2} .0018798{col 37}{space 1}   69.55{col 46}{space 3}0.000{col 54}{space 4}  .127053{col 67}{space 3} .1344218
+{txt}_Iagegroup_3 {c |}{col 14}{res}{space 2} .2395699{col 26}{space 2} .0018348{col 37}{space 1}  130.57{col 46}{space 3}0.000{col 54}{space 4} .2359737{col 67}{space 3} .2431661
+{txt}_Iagegroup_4 {c |}{col 14}{res}{space 2} .2855145{col 26}{space 2} .0018507{col 37}{space 1}  154.28{col 46}{space 3}0.000{col 54}{space 4} .2818872{col 67}{space 3} .2891417
+{txt}_Iagegroup_5 {c |}{col 14}{res}{space 2} .3083868{col 26}{space 2} .0019576{col 37}{space 1}  157.54{col 46}{space 3}0.000{col 54}{space 4} .3045501{col 67}{space 3} .3122235
+{txt}_Iagegroup_6 {c |}{col 14}{res}{space 2} .3325119{col 26}{space 2} .0020933{col 37}{space 1}  158.85{col 46}{space 3}0.000{col 54}{space 4} .3284092{col 67}{space 3} .3366146
+{txt}_Iagegroup_7 {c |}{col 14}{res}{space 2} .3451887{col 26}{space 2}  .002376{col 37}{space 1}  145.28{col 46}{space 3}0.000{col 54}{space 4} .3405319{col 67}{space 3} .3498456
+{txt}_Iagegroup_8 {c |}{col 14}{res}{space 2} .3054782{col 26}{space 2} .0030668{col 37}{space 1}   99.61{col 46}{space 3}0.000{col 54}{space 4} .2994675{col 67}{space 3}  .311489
+{txt}_Iagegroup_9 {c |}{col 14}{res}{space 2} .1123791{col 26}{space 2} .0067213{col 37}{space 1}   16.72{col 46}{space 3}0.000{col 54}{space 4} .0992056{col 67}{space 3} .1255526
+{txt}{space 7}fage2 {c |}{col 14}{res}{space 2}-.0412874{col 26}{space 2} .0029039{col 37}{space 1}  -14.22{col 46}{space 3}0.000{col 54}{space 4}-.0469789{col 67}{space 3}-.0355959
+{txt}{space 7}fage3 {c |}{col 14}{res}{space 2}-.0866533{col 26}{space 2} .0028177{col 37}{space 1}  -30.75{col 46}{space 3}0.000{col 54}{space 4}-.0921759{col 67}{space 3}-.0811307
+{txt}{space 7}fage4 {c |}{col 14}{res}{space 2}-.1020632{col 26}{space 2} .0028031{col 37}{space 1}  -36.41{col 46}{space 3}0.000{col 54}{space 4}-.1075571{col 67}{space 3}-.0965693
+{txt}{space 7}fage5 {c |}{col 14}{res}{space 2}-.0990296{col 26}{space 2} .0029198{col 37}{space 1}  -33.92{col 46}{space 3}0.000{col 54}{space 4}-.1047524{col 67}{space 3}-.0933068
+{txt}{space 7}fage6 {c |}{col 14}{res}{space 2}-.1138892{col 26}{space 2} .0030644{col 37}{space 1}  -37.17{col 46}{space 3}0.000{col 54}{space 4}-.1198953{col 67}{space 3}-.1078831
+{txt}{space 7}fage7 {c |}{col 14}{res}{space 2}-.1419828{col 26}{space 2} .0034259{col 37}{space 1}  -41.44{col 46}{space 3}0.000{col 54}{space 4}-.1486975{col 67}{space 3}-.1352682
+{txt}{space 7}fage8 {c |}{col 14}{res}{space 2}-.1182884{col 26}{space 2} .0043853{col 37}{space 1}  -26.97{col 46}{space 3}0.000{col 54}{space 4}-.1268834{col 67}{space 3}-.1096934
+{txt}{space 7}fage9 {c |}{col 14}{res}{space 2}-.0195738{col 26}{space 2} .0092157{col 37}{space 1}   -2.12{col 46}{space 3}0.034{col 54}{space 4}-.0376363{col 67}{space 3}-.0015113
+{txt}{space 4}yrsch911 {c |}{col 14}{res}{space 2} .0773523{col 26}{space 2}  .003615{col 37}{space 1}   21.40{col 46}{space 3}0.000{col 54}{space 4}  .070267{col 67}{space 3} .0844375
+{txt}{space 5}yrsch12 {c |}{col 14}{res}{space 2} .2859025{col 26}{space 2} .0032928{col 37}{space 1}   86.83{col 46}{space 3}0.000{col 54}{space 4} .2794487{col 67}{space 3} .2923562
+{txt}{space 3}yrsch1315 {c |}{col 14}{res}{space 2} .4548902{col 26}{space 2} .0033277{col 37}{space 1}  136.70{col 46}{space 3}0.000{col 54}{space 4}  .448368{col 67}{space 3} .4614123
+{txt}{space 6}lnuhrs {c |}{col 14}{res}{space 2} .5458383{col 26}{space 2} .0029933{col 37}{space 1}  182.36{col 46}{space 3}0.000{col 54}{space 4} .5399716{col 67}{space 3}  .551705
+{txt}{space 4}lnweeks1 {c |}{col 14}{res}{space 2} 1.541002{col 26}{space 2} .0081122{col 37}{space 1}  189.96{col 46}{space 3}0.000{col 54}{space 4} 1.525103{col 67}{space 3} 1.556902
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 1.979699{col 26}{space 2}  .033657{col 37}{space 1}   58.82{col 46}{space 3}0.000{col 54}{space 4} 1.913732{col 67}{space 3} 2.045666
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. /*3. Including controls- education, weeks worked, children, hours worked, female*children */
+. reg lnincwbf09 female _Iagegroup_2 _Iagegroup_3 _Iagegroup_4 _Iagegroup_5 _Iagegroup_6 _Iagegroup_7 _Iagegroup_8 _Iagegroup_9 fage2 fage3 fage4 fage5 fage6 fage7 fage8 fage9 yrsch911 yrsch12 yrsch1315 lnuhrs lnweeks1 chldo5 chldu5 fchldo5 fchldu5 [aw=perwt], r
+{txt}(sum of wgt is   4.4720e+07)
+
+Linear regression                                      Number of obs ={res} 2316787
+                                                       {txt}F( 26,2316760) ={res}16545.08
+                                                       {txt}Prob > F      = {res} 0.0000
+                                                       {txt}R-squared     = {res} 0.2017
+                                                       {txt}Root MSE      = {res} .52519
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}  lnincwbf09{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 6}female {c |}{col 14}{res}{space 2}-.1845278{col 26}{space 2} .0022566{col 37}{space 1}  -81.77{col 46}{space 3}0.000{col 54}{space 4}-.1889505{col 67}{space 3} -.180105
+{txt}_Iagegroup_2 {c |}{col 14}{res}{space 2} .1085218{col 26}{space 2}  .001881{col 37}{space 1}   57.69{col 46}{space 3}0.000{col 54}{space 4} .1048351{col 67}{space 3} .1122084
+{txt}_Iagegroup_3 {c |}{col 14}{res}{space 2} .2110486{col 26}{space 2} .0018772{col 37}{space 1}  112.43{col 46}{space 3}0.000{col 54}{space 4} .2073694{col 67}{space 3} .2147279
+{txt}_Iagegroup_4 {c |}{col 14}{res}{space 2} .2621961{col 26}{space 2} .0019418{col 37}{space 1}  135.03{col 46}{space 3}0.000{col 54}{space 4} .2583903{col 67}{space 3} .2660019
+{txt}_Iagegroup_5 {c |}{col 14}{res}{space 2} .2970682{col 26}{space 2} .0020498{col 37}{space 1}  144.92{col 46}{space 3}0.000{col 54}{space 4} .2930506{col 67}{space 3} .3010858
+{txt}_Iagegroup_6 {c |}{col 14}{res}{space 2} .3372967{col 26}{space 2}  .002163{col 37}{space 1}  155.94{col 46}{space 3}0.000{col 54}{space 4} .3330572{col 67}{space 3} .3415362
+{txt}_Iagegroup_7 {c |}{col 14}{res}{space 2}  .363667{col 26}{space 2} .0024268{col 37}{space 1}  149.86{col 46}{space 3}0.000{col 54}{space 4} .3589106{col 67}{space 3} .3684234
+{txt}_Iagegroup_8 {c |}{col 14}{res}{space 2} .3308078{col 26}{space 2} .0031063{col 37}{space 1}  106.50{col 46}{space 3}0.000{col 54}{space 4} .3247196{col 67}{space 3}  .336896
+{txt}_Iagegroup_9 {c |}{col 14}{res}{space 2} .1400626{col 26}{space 2} .0067427{col 37}{space 1}   20.77{col 46}{space 3}0.000{col 54}{space 4} .1268472{col 67}{space 3} .1532781
+{txt}{space 7}fage2 {c |}{col 14}{res}{space 2}-.0043031{col 26}{space 2} .0029174{col 37}{space 1}   -1.47{col 46}{space 3}0.140{col 54}{space 4} -.010021{col 67}{space 3} .0014148
+{txt}{space 7}fage3 {c |}{col 14}{res}{space 2}-.0330784{col 26}{space 2} .0029121{col 37}{space 1}  -11.36{col 46}{space 3}0.000{col 54}{space 4}-.0387859{col 67}{space 3}-.0273708
+{txt}{space 7}fage4 {c |}{col 14}{res}{space 2}-.0530746{col 26}{space 2} .0029592{col 37}{space 1}  -17.94{col 46}{space 3}0.000{col 54}{space 4}-.0588745{col 67}{space 3}-.0472747
+{txt}{space 7}fage5 {c |}{col 14}{res}{space 2} -.069969{col 26}{space 2} .0030628{col 37}{space 1}  -22.84{col 46}{space 3}0.000{col 54}{space 4}-.0759719{col 67}{space 3} -.063966
+{txt}{space 7}fage6 {c |}{col 14}{res}{space 2}  -.11149{col 26}{space 2} .0031803{col 37}{space 1}  -35.06{col 46}{space 3}0.000{col 54}{space 4}-.1177232{col 67}{space 3}-.1052567
+{txt}{space 7}fage7 {c |}{col 14}{res}{space 2}-.1592335{col 26}{space 2} .0035239{col 37}{space 1}  -45.19{col 46}{space 3}0.000{col 54}{space 4}-.1661402{col 67}{space 3}-.1523268
+{txt}{space 7}fage8 {c |}{col 14}{res}{space 2} -.144274{col 26}{space 2} .0044631{col 37}{space 1}  -32.33{col 46}{space 3}0.000{col 54}{space 4}-.1530215{col 67}{space 3}-.1355266
+{txt}{space 7}fage9 {c |}{col 14}{res}{space 2}-.0474797{col 26}{space 2} .0092499{col 37}{space 1}   -5.13{col 46}{space 3}0.000{col 54}{space 4}-.0656091{col 67}{space 3}-.0293502
+{txt}{space 4}yrsch911 {c |}{col 14}{res}{space 2} .0774634{col 26}{space 2} .0036061{col 37}{space 1}   21.48{col 46}{space 3}0.000{col 54}{space 4} .0703955{col 67}{space 3} .0845313
+{txt}{space 5}yrsch12 {c |}{col 14}{res}{space 2} .2861797{col 26}{space 2} .0032847{col 37}{space 1}   87.13{col 46}{space 3}0.000{col 54}{space 4} .2797418{col 67}{space 3} .2926176
+{txt}{space 3}yrsch1315 {c |}{col 14}{res}{space 2} .4541675{col 26}{space 2} .0033196{col 37}{space 1}  136.81{col 46}{space 3}0.000{col 54}{space 4} .4476612{col 67}{space 3} .4606739
+{txt}{space 6}lnuhrs {c |}{col 14}{res}{space 2} .5326382{col 26}{space 2} .0029828{col 37}{space 1}  178.57{col 46}{space 3}0.000{col 54}{space 4} .5267921{col 67}{space 3} .5384844
+{txt}{space 4}lnweeks1 {c |}{col 14}{res}{space 2} 1.514622{col 26}{space 2} .0080787{col 37}{space 1}  187.48{col 46}{space 3}0.000{col 54}{space 4} 1.498788{col 67}{space 3} 1.530456
+{txt}{space 6}chldo5 {c |}{col 14}{res}{space 2} .0976497{col 26}{space 2} .0011106{col 37}{space 1}   87.92{col 46}{space 3}0.000{col 54}{space 4} .0954729{col 67}{space 3} .0998264
+{txt}{space 6}chldu5 {c |}{col 14}{res}{space 2} .0852949{col 26}{space 2}  .001527{col 37}{space 1}   55.86{col 46}{space 3}0.000{col 54}{space 4}  .082302{col 67}{space 3} .0882879
+{txt}{space 5}fchldo5 {c |}{col 14}{res}{space 2}-.1560328{col 26}{space 2} .0016523{col 37}{space 1}  -94.43{col 46}{space 3}0.000{col 54}{space 4}-.1592713{col 67}{space 3}-.1527943
+{txt}{space 5}fchldu5 {c |}{col 14}{res}{space 2} -.066315{col 26}{space 2} .0026005{col 37}{space 1}  -25.50{col 46}{space 3}0.000{col 54}{space 4} -.071412{col 67}{space 3} -.061218
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 2.088632{col 26}{space 2} .0335241{col 37}{space 1}   62.30{col 46}{space 3}0.000{col 54}{space 4} 2.022925{col 67}{space 3} 2.154338
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. *------------------------------------------------------------*
+. /*Displaying Means and Medians for age groups*/
+. *------------------------------------------------------------*
+. 
+. sum f_incwbf09 m_incwbf09 if age>=25 & age<30 [aw=perwt], d
+
+                         {txt}f_incwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res}  7473.31       5081.851
+{txt} 5%    {res} 12455.52       5106.762
+{txt}10%    {res} 14946.62       5106.762       {txt}Obs         {res}     100659
+{txt}25%    {res} 19928.83       5106.762       {txt}Sum of Wgt. {res}    2006946
+
+{txt}50%    {res} 26405.69                      {txt}Mean          {res} 29369.31
+                        {txt}Largest       Std. Dev.     {res} 17613.57
+{txt}75%    {res} 34875.45       432206.4
+{txt}90%    {res} 44839.86       432206.4       {txt}Variance      {res} 3.10e+08
+{txt}95%    {res} 52935.94       465836.3       {txt}Skewness      {res} 8.353548
+{txt}99%    {res} 80960.85       682562.3       {txt}Kurtosis      {res} 163.3221
+
+                         {txt}m_incwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 9590.747       5081.851
+{txt} 5%    {res} 14946.62       5106.762
+{txt}10%    {res} 18683.27       5106.762       {txt}Obs         {res}     160102
+{txt}25%    {res} 24911.03       5106.762       {txt}Sum of Wgt. {res}    3206600
+
+{txt}50%    {res} 34875.45                      {txt}Mean          {res} 38638.46
+                        {txt}Largest       Std. Dev.     {res} 25474.13
+{txt}75%    {res} 46085.41       667615.7
+{txt}90%    {res} 61156.58       671352.3       {txt}Variance      {res} 6.49e+08
+{txt}95%    {res} 73487.55       681316.8       {txt}Skewness      {res} 7.097182
+{txt}99%    {res} 112099.6       697508.9       {txt}Kurtosis      {res} 98.76413
+{txt}
+{com}. sum f_incwbf09 m_incwbf09 if age>=30 & age<35 [aw=perwt], d
+
+                         {txt}f_incwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res}  7473.31       5106.762
+{txt} 5%    {res} 12455.52       5106.762
+{txt}10%    {res} 14946.62       5106.762       {txt}Obs         {res}     113880
+{txt}25%    {res} 21174.38       5106.762       {txt}Sum of Wgt. {res}    2201843
+
+{txt}50%    {res} 29893.24                      {txt}Mean          {res} 32708.26
+                        {txt}Largest       Std. Dev.     {res} 21013.46
+{txt}75%    {res} 39857.65       440925.3
+{txt}90%    {res} 51067.62       510676.2       {txt}Variance      {res} 4.42e+08
+{txt}95%    {res} 62277.58       526868.3       {txt}Skewness      {res} 7.268538
+{txt}99%    {res} 94661.92       717437.8       {txt}Kurtosis      {res} 115.7552
+
+                         {txt}m_incwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 9964.413       5106.762
+{txt} 5%    {res} 16192.17       5106.762
+{txt}10%    {res} 20800.71       5231.317       {txt}Obs         {res}     185054
+{txt}25%    {res} 29270.46       5231.317       {txt}Sum of Wgt. {res}    3608786
+
+{txt}50%    {res} 39857.65                      {txt}Mean          {res} 45279.36
+                        {txt}Largest       Std. Dev.     {res}    31739
+{txt}75%    {res} 53558.72       732384.3
+{txt}90%    {res} 72241.99       732384.3       {txt}Variance      {res} 1.01e+09
+{txt}95%    {res} 87188.61       732384.3       {txt}Skewness      {res} 6.221927
+{txt}99%    {res} 138256.2       732384.3       {txt}Kurtosis      {res} 71.50454
+{txt}
+{com}. sum f_incwbf09 m_incwbf09 if age>=35 & age<40 [aw=perwt], d
+
+                         {txt}f_incwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res}  7971.53       5106.762
+{txt} 5%    {res} 12455.52       5106.762
+{txt}10%    {res} 15444.84       5106.762       {txt}Obs         {res}     146348
+{txt}25%    {res} 22419.93       5106.762       {txt}Sum of Wgt. {res}    2837576
+
+{txt}50%    {res} 31138.79                      {txt}Mean          {res} 35444.55
+                        {txt}Largest       Std. Dev.     {res} 24602.79
+{txt}75%    {res}  43594.3       440925.3
+{txt}90%    {res} 57046.26       474555.2       {txt}Variance      {res} 6.05e+08
+{txt}95%    {res} 68505.34       536832.8       {txt}Skewness      {res} 6.578854
+{txt}99%    {res} 112099.6       717437.8       {txt}Kurtosis      {res} 87.41709
+
+                         {txt}m_incwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 9964.413       5106.762
+{txt} 5%    {res} 17437.72       5106.762
+{txt}10%    {res} 22419.93       5106.762       {txt}Obs         {res}     225684
+{txt}25%    {res} 31138.79       5106.762       {txt}Sum of Wgt. {res}    4419580
+
+{txt}50%    {res} 43967.97                      {txt}Mean          {res} 51620.66
+                        {txt}Largest       Std. Dev.     {res} 39134.33
+{txt}75%    {res} 62277.58       721174.4
+{txt}90%    {res} 80960.85       728647.7       {txt}Variance      {res} 1.53e+09
+{txt}95%    {res} 99644.13       732384.3       {txt}Skewness      {res} 5.490251
+{txt}99%    {res} 186832.7       732384.3       {txt}Kurtosis      {res} 50.69579
+{txt}
+{com}. sum f_incwbf09 m_incwbf09 if age>=40 & age<45 [aw=perwt], d
+
+                         {txt}f_incwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 8345.195       5106.762
+{txt} 5%    {res} 12829.18       5106.762
+{txt}10%    {res} 16192.17       5106.762       {txt}Obs         {res}     159816
+{txt}25%    {res} 22419.93       5106.762       {txt}Sum of Wgt. {res}    3090956
+
+{txt}50%    {res} 31263.35                      {txt}Mean          {res} 36843.34
+                        {txt}Largest       Std. Dev.     {res} 26856.97
+{txt}75%    {res} 43967.97       690035.6
+{txt}90%    {res} 59786.48       728647.7       {txt}Variance      {res} 7.21e+08
+{txt}95%    {res} 73487.55       732384.3       {txt}Skewness      {res} 6.706757
+{txt}99%    {res} 118327.4       732384.3       {txt}Kurtosis      {res} 84.64152
+
+                         {txt}m_incwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 9964.413       5106.762
+{txt} 5%    {res} 18434.16       5106.762
+{txt}10%    {res} 23665.48       5106.762       {txt}Obs         {res}     233217
+{txt}25%    {res} 33131.67       5106.762       {txt}Sum of Wgt. {res}    4536479
+
+{txt}50%    {res} 47330.96                      {txt}Mean          {res}  54898.7
+                        {txt}Largest       Std. Dev.     {res} 43453.83
+{txt}75%    {res} 63523.13       732384.3
+{txt}90%    {res} 87188.61       732384.3       {txt}Variance      {res} 1.89e+09
+{txt}95%    {res} 109608.5       732384.3       {txt}Skewness      {res} 5.215777
+{txt}99%    {res} 231672.6       737366.6       {txt}Kurtosis      {res} 43.77601
+{txt}
+{com}. sum f_incwbf09 m_incwbf09 if age>=45 & age<50 [aw=perwt], d
+
+                         {txt}f_incwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 8469.751       5106.762
+{txt} 5%    {res} 13701.07       5106.762
+{txt}10%    {res} 16192.17       5106.762       {txt}Obs         {res}     146698
+{txt}25%    {res} 23416.37       5106.762       {txt}Sum of Wgt. {res}    2831950
+
+{txt}50%    {res} 32384.34                      {txt}Mean          {res}    38049
+                        {txt}Largest       Std. Dev.     {res} 28120.99
+{txt}75%    {res} 46085.41       529359.4
+{txt}90%    {res} 62277.58       717437.8       {txt}Variance      {res} 7.91e+08
+{txt}95%    {res} 74733.09       728647.7       {txt}Skewness      {res} 6.510792
+{txt}99%    {res} 124555.2       768505.3       {txt}Kurtosis      {res} 79.41153
+
+                         {txt}m_incwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 9964.413       5106.762
+{txt} 5%    {res} 18434.16       5106.762
+{txt}10%    {res} 23665.48       5106.762       {txt}Obs         {res}     201383
+{txt}25%    {res} 34252.67       5106.762       {txt}Sum of Wgt. {res}    3840851
+
+{txt}50%    {res} 49822.06                      {txt}Mean          {res} 57040.77
+                        {txt}Largest       Std. Dev.     {res} 45749.37
+{txt}75%    {res} 66014.23       732384.3
+{txt}90%    {res} 90925.27       768505.3       {txt}Variance      {res} 2.09e+09
+{txt}95%    {res} 112099.6       768505.3       {txt}Skewness      {res} 5.029607
+{txt}99%    {res} 311387.9       780960.9       {txt}Kurtosis      {res}  40.4915
+{txt}
+{com}. sum f_incwbf09 m_incwbf09 if age>=50 & age<55 [aw=perwt], d
+
+                         {txt}f_incwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 8345.195       5106.762
+{txt} 5%    {res} 13701.07       5106.762
+{txt}10%    {res} 16441.28       5106.762       {txt}Obs         {res}     128603
+{txt}25%    {res} 23665.48       5106.762       {txt}Sum of Wgt. {res}    2460941
+
+{txt}50%    {res} 32384.34                      {txt}Mean          {res} 38287.37
+                        {txt}Largest       Std. Dev.     {res} 29606.33
+{txt}75%    {res} 45462.63       691281.1
+{txt}90%    {res} 62277.58       697508.9       {txt}Variance      {res} 8.77e+08
+{txt}95%    {res} 75978.65       713701.1       {txt}Skewness      {res} 6.766957
+{txt}99%    {res} 124555.2       717437.8       {txt}Kurtosis      {res} 80.02117
+
+                         {txt}m_incwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 9964.413       5106.762
+{txt} 5%    {res} 18309.61       5106.762
+{txt}10%    {res} 23665.48       5106.762       {txt}Obs         {res}     164707
+{txt}25%    {res} 34875.45       5106.762       {txt}Sum of Wgt. {res}    3085867
+
+{txt}50%    {res} 49822.06                      {txt}Mean          {res} 58672.88
+                        {txt}Largest       Std. Dev.     {res} 47914.35
+{txt}75%    {res} 68505.34       732384.3
+{txt}90%    {res} 93416.37       780960.9       {txt}Variance      {res} 2.30e+09
+{txt}95%    {res}   119573       780960.9       {txt}Skewness      {res} 4.829828
+{txt}99%    {res} 337544.5       780960.9       {txt}Kurtosis      {res} 37.07992
+{txt}
+{com}. sum f_incwbf09 m_incwbf09 if age>=55 & age<60 [aw=perwt], d
+
+                         {txt}f_incwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 7846.975       5106.762
+{txt} 5%    {res} 13078.29       5106.762
+{txt}10%    {res} 16192.17       5106.762       {txt}Obs         {res}      88415
+{txt}25%    {res} 22419.93       5106.762       {txt}Sum of Wgt. {res}    1682107
+
+{txt}50%    {res} 31138.79                      {txt}Mean          {res} 36988.53
+                        {txt}Largest       Std. Dev.     {res} 29368.98
+{txt}75%    {res}  43594.3       697508.9
+{txt}90%    {res} 59911.03       728647.7       {txt}Variance      {res} 8.63e+08
+{txt}95%    {res} 74733.09       728647.7       {txt}Skewness      {res} 7.153968
+{txt}99%    {res} 124555.2       728647.7       {txt}Kurtosis      {res}  88.1277
+
+                         {txt}m_incwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 9466.192       5106.762
+{txt} 5%    {res} 17437.72       5106.762
+{txt}10%    {res} 22419.93       5106.762       {txt}Obs         {res}     118970
+{txt}25%    {res} 33007.12       5106.762       {txt}Sum of Wgt. {res}    2227730
+
+{txt}50%    {res} 49199.29                      {txt}Mean          {res} 58950.49
+                        {txt}Largest       Std. Dev.     {res} 52122.89
+{txt}75%    {res} 68505.34       768505.3
+{txt}90%    {res} 94661.92       780960.9       {txt}Variance      {res} 2.72e+09
+{txt}95%    {res} 124555.2       780960.9       {txt}Skewness      {res} 4.833102
+{txt}99%    {res}   386121       846975.1       {txt}Kurtosis      {res} 35.95373
+{txt}
+{com}. sum f_incwbf09 m_incwbf09 if age>=60 & age<65 [aw=perwt], d
+
+                         {txt}f_incwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res}  7473.31       5106.762
+{txt} 5%    {res} 12455.52       5106.762
+{txt}10%    {res} 15195.73       5106.762       {txt}Obs         {res}      46224
+{txt}25%    {res} 22046.26       5106.762       {txt}Sum of Wgt. {res}     879954
+
+{txt}50%    {res} 30516.01                      {txt}Mean          {res} 36120.31
+                        {txt}Largest       Std. Dev.     {res} 31200.64
+{txt}75%    {res} 42099.64       510676.2
+{txt}90%    {res} 58291.82         519395       {txt}Variance      {res} 9.73e+08
+{txt}95%    {res} 72241.99       719928.8       {txt}Skewness      {res} 7.450857
+{txt}99%    {res} 128291.8       780960.9       {txt}Kurtosis      {res} 87.19186
+
+                         {txt}m_incwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 8345.195       5106.762
+{txt} 5%    {res} 14946.62       5106.762
+{txt}10%    {res}  20551.6       5106.762       {txt}Obs         {res}      66855
+{txt}25%    {res} 31138.79       5106.762       {txt}Sum of Wgt. {res}    1242367
+
+{txt}50%    {res} 44839.86                      {txt}Mean          {res} 56610.22
+                        {txt}Largest       Std. Dev.     {res} 53360.14
+{txt}75%    {res} 63523.13       732384.3
+{txt}90%    {res} 93416.37       732384.3       {txt}Variance      {res} 2.85e+09
+{txt}95%    {res} 124555.2       768505.3       {txt}Skewness      {res} 4.705057
+{txt}99%    {res} 391103.2       780960.9       {txt}Kurtosis      {res} 32.80782
+{txt}
+{com}. sum f_incwbf09 m_incwbf09 if age>=65 & age<70 [aw=perwt], d
+
+                         {txt}f_incwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 6227.758       5106.762
+{txt} 5%    {res} 9964.413       5106.762
+{txt}10%    {res} 12455.52       5106.762       {txt}Obs         {res}      12156
+{txt}25%    {res}  18060.5       5106.762       {txt}Sum of Wgt. {res}     229307
+
+{txt}50%    {res} 26903.91                      {txt}Mean          {res} 34239.43
+                        {txt}Largest       Std. Dev.     {res} 36585.85
+{txt}75%    {res} 39857.65       456743.8
+{txt}90%    {res} 57170.82       543060.5       {txt}Variance      {res} 1.34e+09
+{txt}95%    {res} 73487.55       732384.3       {txt}Skewness      {res} 7.267431
+{txt}99%    {res}   158185       732384.3       {txt}Kurtosis      {res} 78.21362
+
+                         {txt}m_incwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 6227.758       5106.762
+{txt} 5%    {res} 9964.413       5106.762
+{txt}10%    {res} 12953.74       5106.762       {txt}Obs         {res}      18016
+{txt}25%    {res} 19679.71       5106.762       {txt}Sum of Wgt. {res}     330579
+
+{txt}50%    {res} 36619.22                      {txt}Mean          {res}  51970.8
+                        {txt}Largest       Std. Dev.     {res}  62356.7
+{txt}75%    {res} 60533.81       728647.7
+{txt}90%    {res} 94661.92       732384.3       {txt}Variance      {res} 3.89e+09
+{txt}95%    {res} 129537.4       732384.3       {txt}Skewness      {res} 4.521917
+{txt}99%    {res} 398576.5       780960.9       {txt}Kurtosis      {res} 30.28658
+{txt}
+{com}. sum f_incwbf09 m_incwbf09 if agegroup~=. [aw=perwt], d
+
+                         {txt}f_incwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 7846.975       5081.851
+{txt} 5%    {res} 12455.52       5106.762
+{txt}10%    {res} 15569.39       5106.762       {txt}Obs         {res}     942799
+{txt}25%    {res} 22419.93       5106.762       {txt}Sum of Wgt. {res}   18221580
+
+{txt}50%    {res} 31138.79                      {txt}Mean          {res} 35630.77
+                        {txt}Largest       Std. Dev.     {res} 26392.68
+{txt}75%    {res} 42722.42       732384.3
+{txt}90%    {res} 57295.38       732384.3       {txt}Variance      {res} 6.97e+08
+{txt}95%    {res} 69750.89       768505.3       {txt}Skewness      {res} 7.084435
+{txt}99%    {res} 115836.3       780960.9       {txt}Kurtosis      {res}  93.1482
+
+                         {txt}m_incwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 9964.413       5081.851
+{txt} 5%    {res} 16441.28       5106.762
+{txt}10%    {res}  21672.6       5106.762       {txt}Obs         {res}    1373988
+{txt}25%    {res} 31138.79       5106.762       {txt}Sum of Wgt. {res}   26498839
+
+{txt}50%    {res}  43594.3                      {txt}Mean          {res} 52208.65
+                        {txt}Largest       Std. Dev.     {res} 42645.15
+{txt}75%    {res} 62277.58       780960.9
+{txt}90%    {res} 84697.51       780960.9       {txt}Variance      {res} 1.82e+09
+{txt}95%    {res} 105871.9       780960.9       {txt}Skewness      {res}  5.38468
+{txt}99%    {res} 208007.1       846975.1       {txt}Kurtosis      {res}  46.8577
+{txt}
+{com}. 
+. sum f_lnincwbf09 m_lnincwbf09 if age>=25 & age<30 [aw=perwt], d
+
+                        {txt}f_lnincwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 8.919093       8.533431
+{txt} 5%    {res} 9.429919       8.538321
+{txt}10%    {res} 9.612241       8.538321       {txt}Obs         {res}     100659
+{txt}25%    {res} 9.899922       8.538321       {txt}Sum of Wgt. {res}    2006946
+
+{txt}50%    {res} 10.18133                      {txt}Mean          {res} 10.17549
+                        {txt}Largest       Std. Dev.     {res} .4654781
+{txt}75%    {res} 10.45954       12.97666
+{txt}90%    {res} 10.71085       12.97666       {txt}Variance      {res} .2166699
+{txt}95%    {res} 10.87684       13.05159       {txt}Skewness      {res}  .002704
+{txt}99%    {res} 11.30172       13.43361       {txt}Kurtosis      {res} 4.366444
+
+                        {txt}m_lnincwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 9.168554       8.533431
+{txt} 5%    {res} 9.612241       8.538321
+{txt}10%    {res} 9.835384       8.538321       {txt}Obs         {res}     160102
+{txt}25%    {res} 10.12307       8.538321       {txt}Sum of Wgt. {res}    3206600
+
+{txt}50%    {res} 10.45954                      {txt}Mean          {res}   10.434
+                        {txt}Largest       Std. Dev.     {res} .4934456
+{txt}75%    {res} 10.73825       13.41147
+{txt}90%    {res} 11.02119       13.41705       {txt}Variance      {res} .2434885
+{txt}95%    {res} 11.20487       13.43178       {txt}Skewness      {res} .0297536
+{txt}99%    {res} 11.62714       13.45527       {txt}Kurtosis      {res} 4.734741
+{txt}
+{com}. sum f_lnincwbf09 m_lnincwbf09 if age>=30 & age<35 [aw=perwt], d
+
+                        {txt}f_lnincwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 8.919093       8.538321
+{txt} 5%    {res} 9.429919       8.538321
+{txt}10%    {res} 9.612241       8.538321       {txt}Obs         {res}     113880
+{txt}25%    {res} 9.960547       8.538321       {txt}Sum of Wgt. {res}    2201843
+
+{txt}50%    {res} 10.30539                      {txt}Mean          {res} 10.26656
+                        {txt}Largest       Std. Dev.     {res} .4989464
+{txt}75%    {res} 10.59307       12.99663
+{txt}90%    {res} 10.84091       13.14349       {txt}Variance      {res} .2489475
+{txt}95%    {res} 11.03936       13.17471       {txt}Skewness      {res}-.0046809
+{txt}99%    {res} 11.45807       13.48344       {txt}Kurtosis      {res} 4.227263
+
+                        {txt}m_lnincwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 9.206776       8.538321
+{txt} 5%    {res} 9.692283       8.538321
+{txt}10%    {res} 9.942742       8.562418       {txt}Obs         {res}     185054
+{txt}25%    {res} 10.28433       8.562418       {txt}Sum of Wgt. {res}    3608786
+
+{txt}50%    {res} 10.59307                      {txt}Mean          {res}  10.5767
+                        {txt}Largest       Std. Dev.     {res} .5224788
+{txt}75%    {res} 10.88853       13.50406
+{txt}90%    {res} 11.18778       13.50406       {txt}Variance      {res} .2729841
+{txt}95%    {res} 11.37583       13.50406       {txt}Skewness      {res} .0274289
+{txt}99%    {res} 11.83686       13.50406       {txt}Kurtosis      {res} 4.734707
+{txt}
+{com}. sum f_lnincwbf09 m_lnincwbf09 if age>=35 & age<40 [aw=perwt], d
+
+                        {txt}f_lnincwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 8.983632       8.538321
+{txt} 5%    {res} 9.429919       8.538321
+{txt}10%    {res}  9.64503       8.538321       {txt}Obs         {res}     146348
+{txt}25%    {res} 10.01771       8.538321       {txt}Sum of Wgt. {res}    2837576
+
+{txt}50%    {res} 10.34621                      {txt}Mean          {res}  10.3297
+                        {txt}Largest       Std. Dev.     {res} .5277038
+{txt}75%    {res} 10.68268       12.99663
+{txt}90%    {res} 10.95162       13.07013       {txt}Variance      {res} .2784713
+{txt}95%    {res} 11.13467       13.19344       {txt}Skewness      {res} .0703616
+{txt}99%    {res} 11.62714       13.48344       {txt}Kurtosis      {res} 4.122827
+
+                        {txt}m_lnincwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 9.206776       8.538321
+{txt} 5%    {res} 9.766391       8.538321
+{txt}10%    {res} 10.01771       8.538321       {txt}Obs         {res}     225684
+{txt}25%    {res} 10.34621       8.538321       {txt}Sum of Wgt. {res}    4419580
+
+{txt}50%    {res} 10.69122                      {txt}Mean          {res} 10.68782
+                        {txt}Largest       Std. Dev.     {res} .5542177
+{txt}75%    {res} 11.03936       13.48864
+{txt}90%    {res} 11.30172       13.49895       {txt}Variance      {res} .3071572
+{txt}95%    {res} 11.50936       13.50406       {txt}Skewness      {res} .0653544
+{txt}99%    {res} 12.13797       13.50406       {txt}Kurtosis      {res} 4.796215
+{txt}
+{com}. sum f_lnincwbf09 m_lnincwbf09 if age>=40 & age<45 [aw=perwt], d
+
+                        {txt}f_lnincwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 9.029441       8.538321
+{txt} 5%    {res} 9.459477       8.538321
+{txt}10%    {res} 9.692283       8.538321       {txt}Obs         {res}     159816
+{txt}25%    {res} 10.01771       8.538321       {txt}Sum of Wgt. {res}    3090956
+
+{txt}50%    {res}  10.3502                      {txt}Mean          {res} 10.36196
+                        {txt}Largest       Std. Dev.     {res} .5351365
+{txt}75%    {res} 10.69122        13.4445
+{txt}90%    {res} 10.99854       13.49895       {txt}Variance      {res} .2863711
+{txt}95%    {res} 11.20487       13.50406       {txt}Skewness      {res} .1285063
+{txt}99%    {res} 11.68121       13.50406       {txt}Kurtosis      {res} 4.268654
+
+                        {txt}m_lnincwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 9.206776       8.538321
+{txt} 5%    {res} 9.821961       8.538321
+{txt}10%    {res} 10.07177       8.538321       {txt}Obs         {res}     233217
+{txt}25%    {res} 10.40825       8.538321       {txt}Sum of Wgt. {res}    4536479
+
+{txt}50%    {res} 10.76492                      {txt}Mean          {res} 10.73801
+                        {txt}Largest       Std. Dev.     {res} .5709211
+{txt}75%    {res} 11.05916       13.50406
+{txt}90%    {res} 11.37583       13.50406       {txt}Variance      {res} .3259509
+{txt}95%    {res} 11.60467       13.50406       {txt}Skewness      {res} .0880864
+{txt}99%    {res} 12.35308       13.51084       {txt}Kurtosis      {res} 4.853728
+{txt}
+{com}. sum f_lnincwbf09 m_lnincwbf09 if age>=45 & age<50 [aw=perwt], d
+
+                        {txt}f_lnincwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 9.044256       8.538321
+{txt} 5%    {res} 9.525229       8.538321
+{txt}10%    {res} 9.692283       8.538321       {txt}Obs         {res}     146698
+{txt}25%    {res} 10.06119       8.538321       {txt}Sum of Wgt. {res}    2831950
+
+{txt}50%    {res} 10.38543                      {txt}Mean          {res}  10.3903
+                        {txt}Largest       Std. Dev.     {res} .5408957
+{txt}75%    {res} 10.73825       13.17942
+{txt}90%    {res} 11.03936       13.48344       {txt}Variance      {res} .2925682
+{txt}95%    {res} 11.22168       13.49895       {txt}Skewness      {res} .1483698
+{txt}99%    {res}  11.7325        13.5522       {txt}Kurtosis      {res} 4.260957
+
+                        {txt}m_lnincwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 9.206776       8.538321
+{txt} 5%    {res} 9.821961       8.538321
+{txt}10%    {res} 10.07177       8.538321       {txt}Obs         {res}     201383
+{txt}25%    {res} 10.44152       8.538321       {txt}Sum of Wgt. {res}    3840851
+
+{txt}50%    {res} 10.81621                      {txt}Mean          {res} 10.76938
+                        {txt}Largest       Std. Dev.     {res}  .584252
+{txt}75%    {res} 11.09763       13.50406
+{txt}90%    {res} 11.41779        13.5522       {txt}Variance      {res} .3413504
+{txt}95%    {res} 11.62714        13.5522       {txt}Skewness      {res} .0432691
+{txt}99%    {res}  12.6488       13.56828       {txt}Kurtosis      {res} 4.813831
+{txt}
+{com}. sum f_lnincwbf09 m_lnincwbf09 if age>=50 & age<55 [aw=perwt], d
+
+                        {txt}f_lnincwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 9.029441       8.538321
+{txt} 5%    {res} 9.525229       8.538321
+{txt}10%    {res} 9.707551       8.538321       {txt}Obs         {res}     128603
+{txt}25%    {res} 10.07177       8.538321       {txt}Sum of Wgt. {res}    2460941
+
+{txt}50%    {res} 10.38543                      {txt}Mean          {res} 10.39197
+                        {txt}Largest       Std. Dev.     {res} .5444051
+{txt}75%    {res} 10.72465        13.4463
+{txt}90%    {res} 11.03936       13.45527       {txt}Variance      {res} .2963769
+{txt}95%    {res} 11.23821       13.47822       {txt}Skewness      {res} .1999249
+{txt}99%    {res}  11.7325       13.48344       {txt}Kurtosis      {res} 4.477191
+
+                        {txt}m_lnincwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 9.206776       8.538321
+{txt} 5%    {res} 9.815182       8.538321
+{txt}10%    {res} 10.07177       8.538321       {txt}Obs         {res}     164707
+{txt}25%    {res} 10.45954       8.538321       {txt}Sum of Wgt. {res}    3085867
+
+{txt}50%    {res} 10.81621                      {txt}Mean          {res} 10.78942
+                        {txt}Largest       Std. Dev.     {res} .5977636
+{txt}75%    {res} 11.13467       13.50406
+{txt}90%    {res} 11.44482       13.56828       {txt}Variance      {res} .3573213
+{txt}95%    {res} 11.69168       13.56828       {txt}Skewness      {res} .0385137
+{txt}99%    {res} 12.72945       13.56828       {txt}Kurtosis      {res} 4.720248
+{txt}
+{com}. sum f_lnincwbf09 m_lnincwbf09 if age>=55 & age<60 [aw=perwt], d
+
+                        {txt}f_lnincwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 8.967883       8.538321
+{txt} 5%    {res} 9.478709       8.538321
+{txt}10%    {res} 9.692283       8.538321       {txt}Obs         {res}      88415
+{txt}25%    {res} 10.01771       8.538321       {txt}Sum of Wgt. {res}    1682107
+
+{txt}50%    {res} 10.34621                      {txt}Mean          {res}  10.3568
+                        {txt}Largest       Std. Dev.     {res} .5415225
+{txt}75%    {res} 10.68268       13.45527
+{txt}90%    {res} 11.00062       13.49895       {txt}Variance      {res} .2932466
+{txt}95%    {res} 11.22168       13.49895       {txt}Skewness      {res} .2600358
+{txt}99%    {res}  11.7325       13.49895       {txt}Kurtosis      {res} 4.641652
+
+                        {txt}m_lnincwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 9.155482       8.538321
+{txt} 5%    {res} 9.766391       8.538321
+{txt}10%    {res} 10.01771       8.538321       {txt}Obs         {res}     118970
+{txt}25%    {res} 10.40448       8.538321       {txt}Sum of Wgt. {res}    2227730
+
+{txt}50%    {res} 10.80363                      {txt}Mean          {res} 10.77354
+                        {txt}Largest       Std. Dev.     {res} .6213716
+{txt}75%    {res} 11.13467        13.5522
+{txt}90%    {res} 11.45807       13.56828       {txt}Variance      {res} .3861027
+{txt}95%    {res}  11.7325       13.56828       {txt}Skewness      {res} .1586387
+{txt}99%    {res} 12.86391       13.64943       {txt}Kurtosis      {res} 4.649358
+{txt}
+{com}. sum f_lnincwbf09 m_lnincwbf09 if age>=60 & age<65 [aw=perwt], d
+
+                        {txt}f_lnincwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 8.919093       8.538321
+{txt} 5%    {res} 9.429919       8.538321
+{txt}10%    {res}  9.62877       8.538321       {txt}Obs         {res}      46224
+{txt}25%    {res}  10.0009       8.538321       {txt}Sum of Wgt. {res}     879954
+
+{txt}50%    {res} 10.32601                      {txt}Mean          {res} 10.32208
+                        {txt}Largest       Std. Dev.     {res} .5521135
+{txt}75%    {res} 10.64779       13.14349
+{txt}90%    {res} 10.97322       13.16042       {txt}Variance      {res} .3048293
+{txt}95%    {res} 11.18778       13.48691       {txt}Skewness      {res} .3399846
+{txt}99%    {res} 11.76206       13.56828       {txt}Kurtosis      {res} 4.976121
+
+                        {txt}m_lnincwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 9.029441       8.538321
+{txt} 5%    {res} 9.612241       8.538321
+{txt}10%    {res} 9.930695       8.538321       {txt}Obs         {res}      66855
+{txt}25%    {res} 10.34621       8.538321       {txt}Sum of Wgt. {res}    1242367
+
+{txt}50%    {res} 10.71085                      {txt}Mean          {res} 10.70971
+                        {txt}Largest       Std. Dev.     {res}  .652087
+{txt}75%    {res} 11.05916       13.50406
+{txt}90%    {res} 11.44482       13.50406       {txt}Variance      {res} .4252175
+{txt}95%    {res}  11.7325        13.5522       {txt}Skewness      {res} .1962116
+{txt}99%    {res} 12.87673       13.56828       {txt}Kurtosis      {res} 4.487016
+{txt}
+{com}. sum f_lnincwbf09 m_lnincwbf09 if age>=65 & age<70 [aw=perwt], d
+
+                        {txt}f_lnincwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 8.736772       8.538321
+{txt} 5%    {res} 9.206776       8.538321
+{txt}10%    {res} 9.429919       8.538321       {txt}Obs         {res}      12156
+{txt}25%    {res} 9.801482       8.538321       {txt}Sum of Wgt. {res}     229307
+
+{txt}50%    {res} 10.20003                      {txt}Mean          {res} 10.20704
+                        {txt}Largest       Std. Dev.     {res}  .631015
+{txt}75%    {res} 10.59307       13.03188
+{txt}90%    {res}  10.9538       13.20498       {txt}Variance      {res} .3981799
+{txt}95%    {res} 11.20487       13.50406       {txt}Skewness      {res} .4770761
+{txt}99%    {res} 11.97152       13.50406       {txt}Kurtosis      {res} 4.607393
+
+                        {txt}m_lnincwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 8.736772       8.538321
+{txt} 5%    {res} 9.206776       8.538321
+{txt}10%    {res} 9.469139       8.538321       {txt}Obs         {res}      18016
+{txt}25%    {res} 9.887343       8.538321       {txt}Sum of Wgt. {res}     330579
+
+{txt}50%    {res} 10.50833                      {txt}Mean          {res} 10.49155
+                        {txt}Largest       Std. Dev.     {res} .8089499
+{txt}75%    {res} 11.01096       13.49895
+{txt}90%    {res} 11.45807       13.50406       {txt}Variance      {res}    .6544
+{txt}95%    {res} 11.77172       13.50406       {txt}Skewness      {res}  .359261
+{txt}99%    {res} 12.89565       13.56828       {txt}Kurtosis      {res} 3.410938
+{txt}
+{com}. sum f_lnincwbf09 m_lnincwbf09 if agegroup~=. [aw=perwt], d
+
+                        {txt}f_lnincwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 8.967883       8.533431
+{txt} 5%    {res} 9.429919       8.538321
+{txt}10%    {res} 9.653063       8.538321       {txt}Obs         {res}     942799
+{txt}25%    {res} 10.01771       8.538321       {txt}Sum of Wgt. {res}   18221580
+
+{txt}50%    {res} 10.34621                      {txt}Mean          {res} 10.32898
+                        {txt}Largest       Std. Dev.     {res} .5318066
+{txt}75%    {res} 10.66248       13.50406
+{txt}90%    {res} 10.95598       13.50406       {txt}Variance      {res} .2828183
+{txt}95%    {res} 11.15269        13.5522       {txt}Skewness      {res} .1659406
+{txt}99%    {res} 11.65993       13.56828       {txt}Kurtosis      {res}  4.38369
+
+                        {txt}m_lnincwbf09
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res} 9.206776       8.533431
+{txt} 5%    {res} 9.707551       8.538321
+{txt}10%    {res} 9.983804       8.538321       {txt}Obs         {res}    1373988
+{txt}25%    {res} 10.34621       8.538321       {txt}Sum of Wgt. {res}   26498839
+
+{txt}50%    {res} 10.68268                      {txt}Mean          {res}    10.68
+                        {txt}Largest       Std. Dev.     {res} .5817648
+{txt}75%    {res} 11.03936       13.56828
+{txt}90%    {res} 11.34684       13.56828       {txt}Variance      {res} .3384502
+{txt}95%    {res} 11.56999       13.56828       {txt}Skewness      {res} .1276007
+{txt}99%    {res} 12.24533       13.64943       {txt}Kurtosis      {res} 4.679749
+{txt}
+{com}.  
+. *---------------------------------------------------------------------------------------------------*
+. /* Create sample: Non-College graduates, white, US-born, All Employment Status (not just full time)*/
+. 
+. *---------------------------------------------------------------------------------------------------*
+. 
+. clear
+{txt}
+{com}. 
+. use ./coded_datasets/IPUMS_2000_coded.dta
+{txt}
+{com}. 
+. /*Create sample: white, us born, non-college educated*/
+.         
+.         drop if white~=1
+{txt}(1546309 observations deleted)
+
+{com}.         drop if bpl > 99
+{txt}(419232 observations deleted)
+
+{com}.         drop if educd >= 101
+{txt}(1406556 observations deleted)
+
+{com}.         
+.         drop if fulltime==1 & low1==1
+{txt}(23911 observations deleted)
+
+{com}.         drop if fulltime==0 & low2==1
+{txt}(98374 observations deleted)
+
+{com}.         drop if fulltime==0 & high1==1
+{txt}(3768 observations deleted)
+
+{com}.         
+. /*1. Generating the log income means by age group*/
+. 
+. reg lnincwbf09 female _Iagegroup_2 _Iagegroup_3 _Iagegroup_4 _Iagegroup_5 _Iagegroup_6 _Iagegroup_7 _Iagegroup_8 _Iagegroup_9 fage2 fage3 fage4 fage5 fage6 fage7 fage8 fage9 [aw=perwt], r
+{txt}(sum of wgt is   5.8961e+07)
+
+Linear regression                                      Number of obs ={res} 3066100
+                                                       {txt}F( 17,3066082) ={res}20580.65
+                                                       {txt}Prob > F      = {res} 0.0000
+                                                       {txt}R-squared     = {res} 0.1318
+                                                       {txt}Root MSE      = {res} .85105
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}  lnincwbf09{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 6}female {c |}{col 14}{res}{space 2}-.4849011{col 26}{space 2} .0032069{col 37}{space 1} -151.21{col 46}{space 3}0.000{col 54}{space 4}-.4911865{col 67}{space 3}-.4786157
+{txt}_Iagegroup_2 {c |}{col 14}{res}{space 2}  .178648{col 26}{space 2} .0025996{col 37}{space 1}   68.72{col 46}{space 3}0.000{col 54}{space 4} .1735529{col 67}{space 3}  .183743
+{txt}_Iagegroup_3 {c |}{col 14}{res}{space 2} .2963667{col 26}{space 2} .0025107{col 37}{space 1}  118.04{col 46}{space 3}0.000{col 54}{space 4} .2914458{col 67}{space 3} .3012875
+{txt}_Iagegroup_4 {c |}{col 14}{res}{space 2} .3503549{col 26}{space 2} .0025171{col 37}{space 1}  139.19{col 46}{space 3}0.000{col 54}{space 4} .3454214{col 67}{space 3} .3552883
+{txt}_Iagegroup_5 {c |}{col 14}{res}{space 2} .3834803{col 26}{space 2} .0026117{col 37}{space 1}  146.83{col 46}{space 3}0.000{col 54}{space 4} .3783615{col 67}{space 3} .3885991
+{txt}_Iagegroup_6 {c |}{col 14}{res}{space 2} .3983392{col 26}{space 2} .0027605{col 37}{space 1}  144.30{col 46}{space 3}0.000{col 54}{space 4} .3929286{col 67}{space 3} .4037498
+{txt}_Iagegroup_7 {c |}{col 14}{res}{space 2} .3359763{col 26}{space 2} .0031055{col 37}{space 1}  108.19{col 46}{space 3}0.000{col 54}{space 4} .3298897{col 67}{space 3} .3420629
+{txt}_Iagegroup_8 {c |}{col 14}{res}{space 2} .0983822{col 26}{space 2} .0040953{col 37}{space 1}   24.02{col 46}{space 3}0.000{col 54}{space 4} .0903556{col 67}{space 3} .1064089
+{txt}_Iagegroup_9 {c |}{col 14}{res}{space 2}-.5503805{col 26}{space 2} .0065876{col 37}{space 1}  -83.55{col 46}{space 3}0.000{col 54}{space 4} -.563292{col 67}{space 3}-.5374689
+{txt}{space 7}fage2 {c |}{col 14}{res}{space 2}-.0906504{col 26}{space 2} .0044621{col 37}{space 1}  -20.32{col 46}{space 3}0.000{col 54}{space 4} -.099396{col 67}{space 3}-.0819048
+{txt}{space 7}fage3 {c |}{col 14}{res}{space 2}-.1352753{col 26}{space 2} .0042543{col 37}{space 1}  -31.80{col 46}{space 3}0.000{col 54}{space 4}-.1436136{col 67}{space 3}-.1269369
+{txt}{space 7}fage4 {c |}{col 14}{res}{space 2}-.1188665{col 26}{space 2} .0041848{col 37}{space 1}  -28.40{col 46}{space 3}0.000{col 54}{space 4}-.1270686{col 67}{space 3}-.1106644
+{txt}{space 7}fage5 {c |}{col 14}{res}{space 2}-.0925503{col 26}{space 2} .0042749{col 37}{space 1}  -21.65{col 46}{space 3}0.000{col 54}{space 4} -.100929{col 67}{space 3}-.0841716
+{txt}{space 7}fage6 {c |}{col 14}{res}{space 2}-.1003161{col 26}{space 2}  .004429{col 37}{space 1}  -22.65{col 46}{space 3}0.000{col 54}{space 4}-.1089967{col 67}{space 3}-.0916354
+{txt}{space 7}fage7 {c |}{col 14}{res}{space 2}-.1297551{col 26}{space 2} .0049126{col 37}{space 1}  -26.41{col 46}{space 3}0.000{col 54}{space 4}-.1393837{col 67}{space 3}-.1201265
+{txt}{space 7}fage8 {c |}{col 14}{res}{space 2}-.1025592{col 26}{space 2} .0062464{col 37}{space 1}  -16.42{col 46}{space 3}0.000{col 54}{space 4}-.1148019{col 67}{space 3}-.0903165
+{txt}{space 7}fage9 {c |}{col 14}{res}{space 2} .0727455{col 26}{space 2} .0095366{col 37}{space 1}    7.63{col 46}{space 3}0.000{col 54}{space 4} .0540541{col 67}{space 3} .0914369
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 10.25979{col 26}{space 2} .0018903{col 37}{space 1} 5427.72{col 46}{space 3}0.000{col 54}{space 4} 10.25608{col 67}{space 3} 10.26349
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. /*2. Including controls- education, weeks worked, hours worked*/
+. reg lnincwbf09 female _Iagegroup_2 _Iagegroup_3 _Iagegroup_4 _Iagegroup_5 _Iagegroup_6 _Iagegroup_7 _Iagegroup_8 _Iagegroup_9 fage2 fage3 fage4 fage5 fage6 fage7 fage8 fage9 yrsch911 yrsch12 yrsch1315 lnuhrs lnweeks1 [aw=perwt], r
+{txt}(sum of wgt is   5.8961e+07)
+
+Linear regression                                      Number of obs ={res} 3066100
+                                                       {txt}F( 22,3066077) ={res}75752.72
+                                                       {txt}Prob > F      = {res} 0.0000
+                                                       {txt}R-squared     = {res} 0.5754
+                                                       {txt}Root MSE      = {res} .59518
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}  lnincwbf09{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 6}female {c |}{col 14}{res}{space 2}-.2385315{col 26}{space 2}   .00208{col 37}{space 1} -114.68{col 46}{space 3}0.000{col 54}{space 4}-.2426082{col 67}{space 3}-.2344548
+{txt}_Iagegroup_2 {c |}{col 14}{res}{space 2} .1334732{col 26}{space 2} .0019471{col 37}{space 1}   68.55{col 46}{space 3}0.000{col 54}{space 4} .1296569{col 67}{space 3} .1372895
+{txt}_Iagegroup_3 {c |}{col 14}{res}{space 2} .2388992{col 26}{space 2} .0018983{col 37}{space 1}  125.85{col 46}{space 3}0.000{col 54}{space 4} .2351787{col 67}{space 3} .2426197
+{txt}_Iagegroup_4 {c |}{col 14}{res}{space 2} .2867993{col 26}{space 2} .0019139{col 37}{space 1}  149.85{col 46}{space 3}0.000{col 54}{space 4} .2830482{col 67}{space 3} .2905505
+{txt}_Iagegroup_5 {c |}{col 14}{res}{space 2} .3107819{col 26}{space 2}  .002015{col 37}{space 1}  154.23{col 46}{space 3}0.000{col 54}{space 4} .3068326{col 67}{space 3} .3147313
+{txt}_Iagegroup_6 {c |}{col 14}{res}{space 2}  .340093{col 26}{space 2}  .002148{col 37}{space 1}  158.33{col 46}{space 3}0.000{col 54}{space 4} .3358829{col 67}{space 3} .3443031
+{txt}_Iagegroup_7 {c |}{col 14}{res}{space 2} .3645966{col 26}{space 2} .0024113{col 37}{space 1}  151.20{col 46}{space 3}0.000{col 54}{space 4} .3598705{col 67}{space 3} .3693226
+{txt}_Iagegroup_8 {c |}{col 14}{res}{space 2} .3163579{col 26}{space 2} .0029703{col 37}{space 1}  106.51{col 46}{space 3}0.000{col 54}{space 4} .3105362{col 67}{space 3} .3221795
+{txt}_Iagegroup_9 {c |}{col 14}{res}{space 2} .1160238{col 26}{space 2} .0046966{col 37}{space 1}   24.70{col 46}{space 3}0.000{col 54}{space 4} .1068185{col 67}{space 3}  .125229
+{txt}{space 7}fage2 {c |}{col 14}{res}{space 2}-.0491371{col 26}{space 2} .0028965{col 37}{space 1}  -16.96{col 46}{space 3}0.000{col 54}{space 4}-.0548142{col 67}{space 3}  -.04346
+{txt}{space 7}fage3 {c |}{col 14}{res}{space 2}-.0998506{col 26}{space 2} .0027973{col 37}{space 1}  -35.70{col 46}{space 3}0.000{col 54}{space 4}-.1053332{col 67}{space 3}-.0943681
+{txt}{space 7}fage4 {c |}{col 14}{res}{space 2}-.1184969{col 26}{space 2} .0027865{col 37}{space 1}  -42.53{col 46}{space 3}0.000{col 54}{space 4}-.1239583{col 67}{space 3}-.1130354
+{txt}{space 7}fage5 {c |}{col 14}{res}{space 2}-.1116906{col 26}{space 2} .0029064{col 37}{space 1}  -38.43{col 46}{space 3}0.000{col 54}{space 4}-.1173871{col 67}{space 3}-.1059942
+{txt}{space 7}fage6 {c |}{col 14}{res}{space 2}-.1265951{col 26}{space 2} .0030447{col 37}{space 1}  -41.58{col 46}{space 3}0.000{col 54}{space 4}-.1325626{col 67}{space 3}-.1206277
+{txt}{space 7}fage7 {c |}{col 14}{res}{space 2}-.1606965{col 26}{space 2} .0033723{col 37}{space 1}  -47.65{col 46}{space 3}0.000{col 54}{space 4} -.167306{col 67}{space 3}-.1540869
+{txt}{space 7}fage8 {c |}{col 14}{res}{space 2}-.1366083{col 26}{space 2} .0041184{col 37}{space 1}  -33.17{col 46}{space 3}0.000{col 54}{space 4}-.1446802{col 67}{space 3}-.1285364
+{txt}{space 7}fage9 {c |}{col 14}{res}{space 2}-.0386034{col 26}{space 2} .0062287{col 37}{space 1}   -6.20{col 46}{space 3}0.000{col 54}{space 4}-.0508114{col 67}{space 3}-.0263954
+{txt}{space 4}yrsch911 {c |}{col 14}{res}{space 2} .0749786{col 26}{space 2} .0033557{col 37}{space 1}   22.34{col 46}{space 3}0.000{col 54}{space 4} .0684016{col 67}{space 3} .0815556
+{txt}{space 5}yrsch12 {c |}{col 14}{res}{space 2} .2695714{col 26}{space 2} .0030461{col 37}{space 1}   88.50{col 46}{space 3}0.000{col 54}{space 4} .2636011{col 67}{space 3} .2755417
+{txt}{space 3}yrsch1315 {c |}{col 14}{res}{space 2}  .436581{col 26}{space 2} .0030829{col 37}{space 1}  141.61{col 46}{space 3}0.000{col 54}{space 4} .4305387{col 67}{space 3} .4426234
+{txt}{space 6}lnuhrs {c |}{col 14}{res}{space 2}  .885133{col 26}{space 2} .0016184{col 37}{space 1}  546.92{col 46}{space 3}0.000{col 54}{space 4}  .881961{col 67}{space 3}  .888305
+{txt}{space 4}lnweeks1 {c |}{col 14}{res}{space 2} .9358724{col 26}{space 2} .0015273{col 37}{space 1}  612.78{col 46}{space 3}0.000{col 54}{space 4}  .932879{col 67}{space 3} .9388658
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 3.071353{col 26}{space 2} .0078933{col 37}{space 1}  389.11{col 46}{space 3}0.000{col 54}{space 4} 3.055882{col 67}{space 3} 3.086823
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. /*3. Including controls- education, weeks worked, children, hours worked, female*children */
+. reg lnincwbf09 female _Iagegroup_2 _Iagegroup_3 _Iagegroup_4 _Iagegroup_5 _Iagegroup_6 _Iagegroup_7 _Iagegroup_8 _Iagegroup_9 fage2 fage3 fage4 fage5 fage6 fage7 fage8 fage9 yrsch911 yrsch12 yrsch1315 lnuhrs lnweeks1 chldo5 chldu5 fchldo5 fchldu5 [aw=perwt], r
+{txt}(sum of wgt is   5.8961e+07)
+
+Linear regression                                      Number of obs ={res} 3066100
+                                                       {txt}F( 26,3066073) ={res}65890.33
+                                                       {txt}Prob > F      = {res} 0.0000
+                                                       {txt}R-squared     = {res} 0.5785
+                                                       {txt}Root MSE      = {res} .59302
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}  lnincwbf09{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 6}female {c |}{col 14}{res}{space 2}-.1765581{col 26}{space 2} .0022593{col 37}{space 1}  -78.15{col 46}{space 3}0.000{col 54}{space 4}-.1809863{col 67}{space 3}  -.17213
+{txt}_Iagegroup_2 {c |}{col 14}{res}{space 2} .1086583{col 26}{space 2} .0019472{col 37}{space 1}   55.80{col 46}{space 3}0.000{col 54}{space 4} .1048418{col 67}{space 3} .1124748
+{txt}_Iagegroup_3 {c |}{col 14}{res}{space 2}  .206633{col 26}{space 2} .0019398{col 37}{space 1}  106.52{col 46}{space 3}0.000{col 54}{space 4} .2028311{col 67}{space 3}  .210435
+{txt}_Iagegroup_4 {c |}{col 14}{res}{space 2} .2595927{col 26}{space 2}  .002002{col 37}{space 1}  129.67{col 46}{space 3}0.000{col 54}{space 4} .2556688{col 67}{space 3} .2635166
+{txt}_Iagegroup_5 {c |}{col 14}{res}{space 2} .2961323{col 26}{space 2}  .002106{col 37}{space 1}  140.61{col 46}{space 3}0.000{col 54}{space 4} .2920045{col 67}{space 3}   .30026
+{txt}_Iagegroup_6 {c |}{col 14}{res}{space 2} .3423567{col 26}{space 2} .0022168{col 37}{space 1}  154.44{col 46}{space 3}0.000{col 54}{space 4} .3380119{col 67}{space 3} .3467014
+{txt}_Iagegroup_7 {c |}{col 14}{res}{space 2} .3816385{col 26}{space 2} .0024612{col 37}{space 1}  155.06{col 46}{space 3}0.000{col 54}{space 4} .3768147{col 67}{space 3} .3864624
+{txt}_Iagegroup_8 {c |}{col 14}{res}{space 2} .3403687{col 26}{space 2} .0030095{col 37}{space 1}  113.10{col 46}{space 3}0.000{col 54}{space 4} .3344702{col 67}{space 3} .3462672
+{txt}_Iagegroup_9 {c |}{col 14}{res}{space 2} .1409429{col 26}{space 2} .0047203{col 37}{space 1}   29.86{col 46}{space 3}0.000{col 54}{space 4} .1316912{col 67}{space 3} .1501946
+{txt}{space 7}fage2 {c |}{col 14}{res}{space 2}-.0071773{col 26}{space 2}  .002909{col 37}{space 1}   -2.47{col 46}{space 3}0.014{col 54}{space 4}-.0128788{col 67}{space 3}-.0014758
+{txt}{space 7}fage3 {c |}{col 14}{res}{space 2}-.0392223{col 26}{space 2} .0028914{col 37}{space 1}  -13.57{col 46}{space 3}0.000{col 54}{space 4}-.0448893{col 67}{space 3}-.0335553
+{txt}{space 7}fage4 {c |}{col 14}{res}{space 2}-.0624914{col 26}{space 2} .0029445{col 37}{space 1}  -21.22{col 46}{space 3}0.000{col 54}{space 4}-.0682624{col 67}{space 3}-.0567203
+{txt}{space 7}fage5 {c |}{col 14}{res}{space 2}-.0778728{col 26}{space 2}  .003054{col 37}{space 1}  -25.50{col 46}{space 3}0.000{col 54}{space 4}-.0838585{col 67}{space 3}-.0718872
+{txt}{space 7}fage6 {c |}{col 14}{res}{space 2} -.123204{col 26}{space 2} .0031654{col 37}{space 1}  -38.92{col 46}{space 3}0.000{col 54}{space 4} -.129408{col 67}{space 3}    -.117
+{txt}{space 7}fage7 {c |}{col 14}{res}{space 2}-.1804088{col 26}{space 2} .0034765{col 37}{space 1}  -51.89{col 46}{space 3}0.000{col 54}{space 4}-.1872227{col 67}{space 3} -.173595
+{txt}{space 7}fage8 {c |}{col 14}{res}{space 2}-.1670968{col 26}{space 2} .0042048{col 37}{space 1}  -39.74{col 46}{space 3}0.000{col 54}{space 4}-.1753381{col 67}{space 3}-.1588555
+{txt}{space 7}fage9 {c |}{col 14}{res}{space 2}-.0729318{col 26}{space 2} .0062848{col 37}{space 1}  -11.60{col 46}{space 3}0.000{col 54}{space 4}-.0852498{col 67}{space 3}-.0606138
+{txt}{space 4}yrsch911 {c |}{col 14}{res}{space 2} .0743882{col 26}{space 2} .0033468{col 37}{space 1}   22.23{col 46}{space 3}0.000{col 54}{space 4} .0678285{col 67}{space 3} .0809479
+{txt}{space 5}yrsch12 {c |}{col 14}{res}{space 2} .2689068{col 26}{space 2} .0030378{col 37}{space 1}   88.52{col 46}{space 3}0.000{col 54}{space 4} .2629529{col 67}{space 3} .2748607
+{txt}{space 3}yrsch1315 {c |}{col 14}{res}{space 2} .4345475{col 26}{space 2} .0030744{col 37}{space 1}  141.34{col 46}{space 3}0.000{col 54}{space 4} .4285218{col 67}{space 3} .4405731
+{txt}{space 6}lnuhrs {c |}{col 14}{res}{space 2} .8774236{col 26}{space 2} .0016186{col 37}{space 1}  542.09{col 46}{space 3}0.000{col 54}{space 4} .8742512{col 67}{space 3}  .880596
+{txt}{space 4}lnweeks1 {c |}{col 14}{res}{space 2} .9320448{col 26}{space 2} .0015253{col 37}{space 1}  611.04{col 46}{space 3}0.000{col 54}{space 4} .9290552{col 67}{space 3} .9350345
+{txt}{space 6}chldo5 {c |}{col 14}{res}{space 2} .1099033{col 26}{space 2} .0011404{col 37}{space 1}   96.37{col 46}{space 3}0.000{col 54}{space 4} .1076682{col 67}{space 3} .1121385
+{txt}{space 6}chldu5 {c |}{col 14}{res}{space 2} .0928184{col 26}{space 2} .0015683{col 37}{space 1}   59.19{col 46}{space 3}0.000{col 54}{space 4} .0897446{col 67}{space 3} .0958921
+{txt}{space 5}fchldo5 {c |}{col 14}{res}{space 2} -.178888{col 26}{space 2} .0016342{col 37}{space 1} -109.46{col 46}{space 3}0.000{col 54}{space 4} -.182091{col 67}{space 3} -.175685
+{txt}{space 5}fchldu5 {c |}{col 14}{res}{space 2}-.0774493{col 26}{space 2} .0024946{col 37}{space 1}  -31.05{col 46}{space 3}0.000{col 54}{space 4}-.0823387{col 67}{space 3}-.0725599
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 3.069648{col 26}{space 2} .0079027{col 37}{space 1}  388.43{col 46}{space 3}0.000{col 54}{space 4} 3.054159{col 67}{space 3} 3.085137
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+.         
+. log close
+      {txt}name:  {res}<unnamed>
+       {txt}log:  {res}/disk/homedirs/nber/abulafi/abulk/IPUMS/Output/gender_wage_gap_full_census_2000.smcl
+  {txt}log type:  {res}smcl
+ {txt}closed on:  {res}27 Sep 2013, 18:25:01
+{txt}{.-}
+{smcl}
+{txt}{sf}{ul off}
