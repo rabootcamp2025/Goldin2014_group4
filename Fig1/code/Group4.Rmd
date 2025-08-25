@@ -85,7 +85,13 @@ $\alpha + \gamma_i$ が$agegroup_i$における男女の賃金差（対数）を
 ５．調査年とその時の年齢から出生年を計算し、出生年ごとに年齢別の男女賃金差の対数を計算し、グラフに図示
 
 
-# レプリケーション結果
+# レプリケーション結果{.tabset}
+
+利用したデータが1970年から2000年までは10年間隔、それ以降は5年間隔で行われたため、グラフにした際に欠損値があった。
+
+Goldinはそれに対して前後の調査回コーホートの平均値を使用したため、それに即した結果は3.2で示してある。
+
+## 平均値補完なし
 
 ```{r}
 #回帰結果のリストを作る
@@ -210,56 +216,77 @@ G1
 
 ```
 
+## Goldin(2014)に合わせたグラフの作成
+
+
+```{r}
+df_long_f3 <- df_long_f |>
+  complete(age, birth_year) |>
+  arrange(age, desc(birth_year)) |>
+  group_by(age) |>
+  mutate(wage_gap2 = if_else(
+    !is.na(wage_gap), wage_gap, (lag(wage_gap) + lead(wage_gap))/2
+  )) |>
+  ungroup() |>
+  filter(!is.na(wage_gap2))
+  
+
+```
+
+```{r}
+# グラフ２
+G2 <- ggplot(df_long_f3, aes(x = age, y = wage_gap2, color = factor(birth_year), group = birth_year)) +
+   geom_line(size=1) +
+  geom_point() +
+  labs(
+    x = "Age",
+    y = "log(female/male earning), [female/male earnings]",
+    color = "Birth Year",
+    title = "Relative Earning of College Graduate Men and Women for Synthetic Cohorts"
+  ) +
+  theme_classic()+
+  theme(
+    axis.ticks.length = unit(-0.2, "cm"),
+    axis.text.x = element_text(margin=margin(t=5)),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    panel.grid.major.y = element_line(color = "grey80"))+
+  scale_x_continuous(breaks = seq(20, 70, 5), limits = c(20,70), position = "top") +
+  scale_y_continuous(breaks = seq(-0.8, 0, 0.1), limits = c(-0.8,0)) +
+  annotate("text",
+           x = 22.5,
+           y=seq(-0.8, 0, 0.1),
+           label = sprintf("[%.2f]",
+                           exp(seq(-0.8, 0, 0.1)),
+                           hjust = 0, size = 0.5)
+  ) +  scale_color_manual(
+    values = c("1923" = "orange",
+               "1928" = "black",
+               "1933" = "red",
+               "1938" = "blue",
+               "1943" = "green",
+               "1948" = "purple",
+               "1953" = "yellow",
+               "1958" = "brown",
+               "1963" = "skyblue",
+               "1968" = "pink",
+               "1973" = "gold",
+               "1978" = "lightgreen"
+               )
+  )
+
+G2
+
+```
 
 
 # 結果の解釈
 
-- 男女間の賃金の格差は20世紀後半にかけて全体的に縮小した。
+- 男女間の賃金の格差は20世紀後半にかけて全体的に縮小し、U字が平たくなった。
 - 時代に関わらず、年齢と賃金格差はU字の関係にあり、40代をピークに賃金格差は最も大きくなる。
 - 女性が子育てに従事する30代、40代のうちは通年就業であっても、子育てと両立できるような職種しか選択できず、それらの賃金が相対的に低いため、男女間の賃金格差が生じると考えられる。
+- 50代を超えると、子育てを終えた女性が職場復帰するため職業選択の幅が広がり、男女間の格差も縮小する。
 
-
-# Goldin(2014)に合わせたグラフの作成（未完）
-
-```{r}
-#df_long_f2 <- df_long_f |>
-  #filter(birth_year %in% c(1943, 1953, 1963, 1973) & age_group == "f_age1")
-```
-
-```{r}
-#d1 <- c(0,0,0)
-#d2 <- c(0,0,0)
-#wage1 <- c((df_long_f2[1, 3] + df_long_f2[2, 3])/2, 27, 1948)
-#age1 <- c((df_long_f2[1, 3] + df_long_f2[2, 3])/2, 37, 1938)
-#birth1 <- c((df_long_f2[1, 3] + df_long_f2[2, 3])/2, 47, 1928)
-
-#data2 <- data.frame(d1, d2, wage1, age1, birth1)
-
-```
-```{r}
-#data2
-```
-```{r}
-#data2[,3 ,5]
-```
-
-
-
-
-```{r}
-
-#グラフ2
-#G2 <- ggplot(df_long_f, aes(x = age, y = wage_gap, color = factor(birth_year), group = birth_year)) +
-  #geom_line(size=1) +
-  #geom_point() +
-  #labs(
-    #x = "年齢",
-   # y = "男女賃金差",
-   # color = "出生年"
-  #) +
- # theme_minimal()
-#G2
-```
 
 
 
