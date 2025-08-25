@@ -17,7 +17,7 @@ output:
 
 knitr::opts_chunk$set(echo = TRUE,message = FALSE, warning = FALSE)
 
-library(tidyverse)
+pacman::p_load(tidyverse, here)
 
 ```
 
@@ -32,6 +32,60 @@ result_1990 <- read_rds(here::here("Fig1", "data", "cleaned", "1990_result.rds")
 result_2000 <- read_rds(here::here("Fig1", "data", "cleaned", "2000_result.rds"))
 ```
 
+
+
+# 課題の内容
+- 論文の問い
+
+20世紀を通じて男女の賃金水準や就業率は大きく近づき、男女の賃金格差のうち人的資本で説明される部分は大きく改善されてきた。
+
+しかし、今もなお男女間の労働市場での格差は存在しており、それはどのような制度的・社会的要因によって生じているのだろうか。
+
+- 論文で見つけたこと
+
+アメリカのCensusデータを用いて、残存する男女の賃金差を検証。
+
+→　残された格差の大部分は同じ職業内における男女差、特に職業における柔軟性の欠如が原因である。
+
+- レプリケーション課題
+
+20世紀後半にかけて、男女間の賃金格差が縮小したことを示すグラフを作成する。
+
+
+
+
+# 取り組んだ手順
+
+１． IPUMSから性別、年齢、出生地、人種、教育年数、職業、週の労働時間、年間の労働週数、年収を取得。
+
+２．サンプルの取捨選択
+- 25～69歳
+
+- アメリカ生まれ
+
+- 白人
+
+- 大卒以上
+
+- 非軍人
+
+- 週35時間以上の労働時間、年40週以上の労働日数
+
+- 年収5075ドル以上（35時間×40週×2009年の最低賃金×0.5）
+
+３． 5歳ごとに年齢コーホートを作成。
+
+４．以下の回帰式で回帰分析
+　$\log(wage) = \alpha + \beta*female + \sum_{i=2}^{9}\gamma_i *agegroup_i +  \sum_{i=2}^{9}\delta_i *female*agegroup_i + \varepsilon_i$  
+
+ここで、$female$は女性ダミー、$agegroup_i$は年齢コーホート別ダミー。
+
+$\alpha + \gamma_i$ が$agegroup_i$における男女の賃金差（対数）を示す。
+
+５．調査年とその時の年齢から出生年を計算し、出生年ごとに年齢別の男女賃金差の対数を計算し、グラフに図示
+
+
+# レプリケーション結果
 
 ```{r}
 #回帰結果のリストを作る
@@ -58,17 +112,12 @@ function_1 <- function(model){
   
 ```
 
-
-
 ```{r}
 #各リストに対してfunction_1を実行し、データフレームにする
 results <- map_dfr(result_list, function_1) |>
   rename(f_age1 = d_female)  #1列目の名前を他とそろえる
 ```
 
-```{r}
-results
-```
 
 ```{r}
 
@@ -106,38 +155,92 @@ df_long_f <- df_long %>%
 ```
 
 ```{r}
-# グラフ1
+#birht yearを降順に
+df_long_f <- df_long_f |>
+  mutate(birth_year = factor(birth_year, levels = sort(unique(birth_year), decreasing = TRUE)))
+
+```
+
+
+```{r}
+
+
 G1 <- ggplot(df_long_f, aes(x = age, y = wage_gap, color = factor(birth_year), group = birth_year)) +
   geom_line(size=1) +
   geom_point() +
   labs(
-    x = "年齢",
-    y = "男女賃金差",
-    color = "出生年"
+    x = "Age",
+    y = "log(female/male earning), [female/male earnings]",
+    color = "Birth Year",
+    title = "Relative Earning of College Graduate Men and Women for Synthetic Cohorts"
   ) +
-  theme_minimal()
+  theme_classic()+
+  theme(
+    axis.ticks.length = unit(-0.2, "cm"),
+    axis.text.x = element_text(margin=margin(t=5)),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    panel.grid.major.y = element_line(color = "grey80"))+
+  scale_x_continuous(breaks = seq(20, 70, 5), limits = c(20,70), position = "top") +
+  scale_y_continuous(breaks = seq(-0.8, 0, 0.1), limits = c(-0.8,0)) +
+  annotate("text",
+           x = 22.5,
+           y=seq(-0.8, 0, 0.1),
+           label = sprintf("[%.2f]",
+                           exp(seq(-0.8, 0, 0.1)),
+                           hjust = 0, size = 0.5)
+  ) +  scale_color_manual(
+    values = c("1923" = "orange",
+               "1928" = "black",
+               "1933" = "red",
+               "1938" = "blue",
+               "1943" = "green",
+               "1948" = "purple",
+               "1953" = "yellow",
+               "1958" = "brown",
+               "1963" = "skyblue",
+               "1968" = "pink",
+               "1973" = "gold",
+               "1978" = "lightgreen"
+               )
+  )
+
+  
 G1
+
 ```
+
+
+
+# 結果の解釈
+
+- 男女間の賃金の格差は20世紀後半にかけて全体的に縮小した。
+- 時代に関わらず、年齢と賃金格差はU字の関係にあり、40代をピークに賃金格差は最も大きくなる。
+- 女性が子育てに従事する30代、40代のうちは通年就業であっても、子育てと両立できるような職種しか選択できず、それらの賃金が相対的に低いため、男女間の賃金格差が生じると考えられる。
+
+
+# Goldin(2014)に合わせたグラフの作成（未完）
+
 ```{r}
-df_long_f2 <- df_long_f |>
-  filter(birth_year %in% c(1943, 1953, 1963, 1973) & age_group == "f_age1")
+#df_long_f2 <- df_long_f |>
+  #filter(birth_year %in% c(1943, 1953, 1963, 1973) & age_group == "f_age1")
 ```
 
 ```{r}
-d1 <- c(0,0,0)
-d2 <- c(0,0,0)
-wage1 <- c((df_long_f2[1, 3] + df_long_f2[2, 3])/2, 27, 1948)
-age1 <- c((df_long_f2[1, 3] + df_long_f2[2, 3])/2, 37, 1938)
-birth1 <- c((df_long_f2[1, 3] + df_long_f2[2, 3])/2, 47, 1928)
+#d1 <- c(0,0,0)
+#d2 <- c(0,0,0)
+#wage1 <- c((df_long_f2[1, 3] + df_long_f2[2, 3])/2, 27, 1948)
+#age1 <- c((df_long_f2[1, 3] + df_long_f2[2, 3])/2, 37, 1938)
+#birth1 <- c((df_long_f2[1, 3] + df_long_f2[2, 3])/2, 47, 1928)
 
-data2 <- data.frame(d1, d2, wage1, age1, birth1)
+#data2 <- data.frame(d1, d2, wage1, age1, birth1)
 
 ```
 ```{r}
-data2
+#data2
 ```
 ```{r}
-data2[,3 ,5]
+#data2[,3 ,5]
 ```
 
 
@@ -146,46 +249,17 @@ data2[,3 ,5]
 ```{r}
 
 #グラフ2
-G2 <- ggplot(df_long_f, aes(x = age, y = wage_gap, color = factor(birth_year), group = birth_year)) +
-  geom_line(size=1) +
-  geom_point() +
-  labs(
-    x = "年齢",
-    y = "男女賃金差",
-    color = "出生年"
-  ) +
-  theme_minimal()
-G2
+#G2 <- ggplot(df_long_f, aes(x = age, y = wage_gap, color = factor(birth_year), group = birth_year)) +
+  #geom_line(size=1) +
+  #geom_point() +
+  #labs(
+    #x = "年齢",
+   # y = "男女賃金差",
+   # color = "出生年"
+  #) +
+ # theme_minimal()
+#G2
 ```
-
-
-# 課題の内容
-
-
-# 取り組んだ手順
-1. データリストを読み込み、一つのリスト（result_list)の中に格納しました。
-2. 係数から男女の賃金差を計算する関数（function_1）を作成し、1.で作成したリスト（result_list）内の各リストに対して実行しました。実行した結果をデータフレーム（results）として保存しました。
-3. 
-
-# レプリケーション結果
-
-以下にグラフを作成するコードを記入してください。
-
-適宜チャンクを分けてください。
-```{r}
-pacman::p_load(tidyverse, foreign, haven, estimatr, fixest, here)
-```
-
-```{r}
-
-```
-
-
-
-
-# 結果の解釈
-
-ここに結果の解釈を記入してください。
 
 
 
