@@ -1,4 +1,4 @@
-pacman::p_load(tidyverse, foreign, haven, estimatr, fixest)
+pacman::p_load(tidyverse, foreign, haven, estimatr, fixest, here)
 
 
 #データの読み込み
@@ -111,7 +111,13 @@ summary(model_1)
 
 coef <- model_1$coefficients
 
-coef
+
+
+
+
+
+
+result_0911 <- read_rds(here::here("output", "figure1", "0911_result.rds"))
 
 
 

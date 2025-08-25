@@ -3,25 +3,25 @@
     "path": "D:/Goldin2014_group4/Fig1/code/cleaned.R",
     "project_path": "Fig1/code/cleaned.R",
     "type": "r_source",
-    "hash": "0",
+    "hash": "1496283094",
     "contents": "",
     "dirty": false,
     "created": 1755914940458.0,
     "source_on_save": false,
-    "relative_order": 3,
+    "relative_order": 2,
     "properties": {
         "tempName": "Untitled1",
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "120,0",
-        "scrollLine": "89"
+        "cursorPosition": "117,0",
+        "scrollLine": "95"
     },
     "folds": "",
-    "lastKnownWriteTime": 1756003550,
+    "lastKnownWriteTime": 1756089718,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1756003549332,
+    "last_content_update": 1756089716241,
     "read_only": false,
     "read_only_alternatives": []
 }
