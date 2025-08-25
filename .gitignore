@@ -2,7 +2,6 @@
 *.dta
 *.rds
 *.pdf
-*.html
 *.pptx
 *.zip
 *.Rproj
